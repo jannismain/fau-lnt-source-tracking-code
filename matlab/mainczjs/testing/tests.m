@@ -1,0 +1,1 @@
+results_doa = runtests('doa_trig_test');
