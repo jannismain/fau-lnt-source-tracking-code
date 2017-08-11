@@ -1,5 +1,6 @@
-# Texpad Files
-.texpadtmp
+# App Configuration Files
+.texpadtmp\
+.vscode
 
 # macOS-specific files
 .DS_Store
@@ -28,6 +29,9 @@
 *.mtc1
 *.out
 *.synctex.gz
+*.ps
+*.fls
+*.fdb_latexmk
 *.pdf
 
 # Project-specific files
