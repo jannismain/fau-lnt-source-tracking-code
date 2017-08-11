@@ -4,7 +4,7 @@
 # macOS-specific files
 .DS_Store
 
-# LaTeX build files
+# LaTeX build files (taken from https://gist.github.com/kogakure/149016)
 *.aux
 *.glo
 *.idx
@@ -28,6 +28,7 @@
 *.mtc1
 *.out
 *.synctex.gz
+*.pdf
 
 # Project-specific files
 ausarbeitung-encoding-backup.*
