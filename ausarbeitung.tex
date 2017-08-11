@@ -1,0 +1,183 @@
+\documentclass[12pt,twoside,a4paper]{report} % Die Option a4paper kann nötig sein, um das PDF drucken zu können.
+
+%\makeindex
+\usepackage{german,a4}
+\usepackage{color}
+\usepackage[dvips]{graphicx}
+\usepackage{psfrag}
+\usepackage{epsfig}
+\usepackage[latin1]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tikz}
+\usepackage{iflang}
+
+% set image-path
+\graphicspath{{images/}}
+\include{makros}
+
+% Dimensions of...
+% ...site
+\setlength{\textwidth}{15.5 true cm}
+\setlength{\textheight}{22 true cm}
+% ...margin
+\oddsidemargin  0.5 cm
+\evensidemargin 0.5 cm
+\topmargin      0 cm
+\parindent 		0 cm
+
+% Language
+\selectlanguage{english}
+
+
+\renewcommand{\baselinestretch}{1.5}
+\renewcommand{\captionfont}{\linespread{1}\normalsize}
+\renewcommand{\textfraction}{0}
+
+% Fancyhdr
+\setlength{\headheight}{0.75cm}
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[EL,OR]{\thepage}
+	\fancyhead[ER]{\leftmark}
+	\fancyhead[OL]{\leftmark}
+}
+\fancypagestyle{newfancy}{
+	\fancyhf{}
+	\fancyhead[EL,OR]{\thepage}
+%	\fancyhead[ER]{\rightmark}
+	\fancyhead[OL]{\rightmark}
+	}
+\pagestyle{newfancy}
+
+\renewcommand{\chaptermark}[1]{\markboth{\uppercase{\chaptername \ \thechapter.\ #1}}{}}
+\renewcommand{\sectionmark}[1]{ \markright{ \uppercase{\thesection.\ #1}}{}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    C O N F I G    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  D O C U M E N T  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% TITLE
+\input{structure/title-page}
+\input{helpers/empty-page}
+\addtocounter{page}{-1}
+
+% Declaration
+\newpage
+\chapter*{Declaration of Authorship}
+\thispagestyle{empty}
+\input{structure/declaration}
+\pagenumbering{Roman}
+\input{helpers/empty-page}
+\thispagestyle{empty}
+\cleardoublepage
+
+% Table of Contents
+\addtocounter{page}{-2}
+\tableofcontents
+\clearpage
+
+
+% Summary
+\renewcommand{\chaptermark}[1]{ \markboth{ \uppercase{#1}}{}}
+\input{helpers/empty-page}
+\chaptermark{Abstract}
+\renewcommand{\chaptermark}[1]{\markboth{\uppercase{\chaptername \ \thechapter.\ #1}}{}}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{structure/abstract}
+\clearpage
+
+% Abbreviations
+\renewcommand{\chaptermark}[1]{ \markboth{ \uppercase{#1}}{}}
+\chaptermark{List of Abbreviations}
+\renewcommand{\chaptermark}[1]{\markboth{\uppercase{\chaptername \ \thechapter.\ #1}}{}}
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\input{structure/abbreviations}
+\clearpage
+
+% List of Symbols
+\renewcommand{\chaptermark}[1]{ \markboth{ \uppercase{#1}}{}}
+\renewcommand{\sectionmark}[1]{ \markright{ \uppercase{#1}}{}}
+\chaptermark{List of Symbols}
+\sectionmark{List of Symbols}
+\renewcommand{\chaptermark}[1]{\markboth{\uppercase{\chaptername \ \thechapter.\ #1}}{}}
+\renewcommand{\sectionmark}[1]{ \markright{ \uppercase{\thesection.\ #1}}{}}
+
+\chapter*{List of Symbols}
+\addcontentsline{toc}{chapter}{List of Symbols}
+\input{structure/symbols}
+\clearpage
+\input{helpers/empty-page}
+
+
+%%%%%%%%%%%%%%%%%%%  Main Text  %%%%%%%%%%%%%%%%%%%
+
+% Formula Margins
+\setlength{\belowdisplayskip}{0.5cm}
+\setlength{\belowdisplayshortskip}{0.5cm}
+\pagenumbering{arabic}
+
+\renewcommand{\sectionmark}[1]{ \markright{ \uppercase{\chaptername \ \thechapter.\ #1}}{}}
+\chapter{Introduction}
+\chaptermark{Introduction}
+\sectionmark{Introduction}
+\label{chap:intro}
+\input{chapters/intro}
+
+\renewcommand{\sectionmark}[1]{ \markright{ \uppercase{\thesection.\ #1}}{}}
+\chapter[Theoretical Background]{Theoretical Background}
+\chaptermark{Theoretical Background}
+\label{chap:Theoretical Background}
+\input{chapters/theory_intro.tex}
+
+\section{EM-Algorithmus}
+\label{sec:em}
+\input{chapters/theory_em.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  D O C U M E N T  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  A P P E N D I X  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ANHANG
+\begin{appendix}
+	\renewcommand{\chaptermark}[1]{\markboth{\uppercase{Anhang \ \thechapter.\ #1}}{}}
+	
+	\chapter{Anhang Kapitel}
+	\chaptermark{Anhang Kapitel}
+	
+	\section{Anhang Abschnitt}
+	\label{sec:AAbschnitt}
+	% \input{}
+	\clearpage
+	\newpage
+	\renewcommand{\chaptermark}[1]{\markboth{\uppercase{\chaptername \ \thechapter.\ #1}}{}}
+\end{appendix}
+
+% ABBILDUNGSVERZEICHNIS
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\listoffigures
+
+% TABELLENVERZIECHNIS
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+\listoftables
+
+% LITERATURVERZEICHNIS
+
+%nicht referenzierte Literaturstellen
+\nocite{}
+
+% Literaturverzeichnis einbinden, alpha, plain, unsrt, abbrv
+\newpage
+%Eintrag im Inhaltsverzeichnis
+\addtocounter{page}{1}
+\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\addtocounter{page}{-1}
+%\bibliographystyle{alphadin}%{alpha}
+%\bibliography{da}
+
+\end{document}

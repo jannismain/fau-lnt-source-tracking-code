@@ -1,0 +1,33 @@
+# Texpad Files
+.texpadtmp
+
+# macOS-specific files
+.DS_Store
+
+# LaTeX build files
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc1
+*.out
+*.synctex.gz
+
+# Project-specific files
+ausarbeitung-encoding-backup.*

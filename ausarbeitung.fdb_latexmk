@@ -1,0 +1,14 @@
+# Fdb version 3
+["pdflatex"] 1497105062 "ausarbeitung.tex" "ausarbeitung.pdf" "ausarbeitung" 1497105062
+  "/usr/local/texlive/2017basic/texmf-dist/fonts/tfm/public/cm/cmr12.tfm" 1480098701 1288 655e228510b4c2a1abe905c368440826 ""
+  "/usr/local/texlive/2017basic/texmf-dist/tex/latex/base/report.cls" 1480098821 22880 e7be6f7dd8c05d5108bf3a7d8cabe59a ""
+  "/usr/local/texlive/2017basic/texmf-dist/tex/latex/base/size12.clo" 1480098821 8303 1d67e16498f00f63da792fab169302fc ""
+  "/usr/local/texlive/2017basic/texmf-dist/web2c/texmf.cnf" 1494087824 32646 eadc4ca26cdbe7105ac7c593aa8c4f72 ""
+  "/usr/local/texlive/2017basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1497102711 2588968 9395b47bbaa7bf25109b124e52fb4fdb ""
+  "/usr/local/texlive/2017basic/texmf.cnf" 1496851631 628 b344fac068e513a3e5fe2214c3a47398 ""
+  "ausarbeitung.aux" 1497104729 8 a94a2480d3289e625eea47cd1b285758 ""
+  "ausarbeitung.tex" 1497105059 5264 7bd76f8f05222bce791bafa06eb5502b ""
+  "german.sty" 0 -1 0 ""
+  (generated)
+  "ausarbeitung.log"
+  "ausarbeitung.pdf"

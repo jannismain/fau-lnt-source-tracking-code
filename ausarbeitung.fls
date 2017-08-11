@@ -1,0 +1,11 @@
+PWD /Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/Ausarbeitung
+INPUT /usr/local/texlive/2017basic/texmf.cnf
+INPUT /usr/local/texlive/2017basic/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2017basic/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT ausarbeitung.tex
+OUTPUT ausarbeitung.log
+INPUT /usr/local/texlive/2017basic/texmf-dist/tex/latex/base/report.cls
+INPUT /usr/local/texlive/2017basic/texmf-dist/tex/latex/base/report.cls
+INPUT /usr/local/texlive/2017basic/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2017basic/texmf-dist/tex/latex/base/size12.clo
+INPUT /usr/local/texlive/2017basic/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
