@@ -5,6 +5,9 @@
 # macOS-specific files
 .DS_Store
 
+# Matlab temp files
+*.asv
+
 # LaTeX build files (taken from https://gist.github.com/kogakure/149016)
 *.aux
 *.glo
