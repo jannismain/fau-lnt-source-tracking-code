@@ -1,6 +1,7 @@
 
 function cfg = set_params_evaluate_Gauss(cfg)
 
+path = mfilename('fullpath');
 cfg.c = 343; % sound velocity
 cfg.n_mic = 2;
 cfg.synth_room.mspacing = 0.2;
@@ -45,9 +46,9 @@ cfg.Y = length(cfg.mesh_y);
 
 cfg.P = cfg.X*cfg.Y; % Number of Gridpoints
 
-cfg.synth_room.src_paths = {'../../audio/1.WAV',...
-    '../../audio/2.WAV',...
-    '../../audio/3.WAV',...
+cfg.synth_room.src_paths = {'1.WAV',...
+    '2.WAV',...
+    '3.WAV',...
     'whitenoise3.wav'};
 
 cfg.M = cfg.synth_room.Nh;
