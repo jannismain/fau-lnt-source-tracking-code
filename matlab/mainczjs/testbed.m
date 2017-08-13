@@ -1,31 +1,27 @@
 %% Setup Environment
+clear all;
+tic;
 config_update;
 load('config.mat');
 cprintf('err', '--------------------- S T A R T ---------------------\n');
 
 %% Simulate Environment
-[y, fig] = simulate(ROOM, R, S);
+try
+    load('x.mat');
+    fig = plot_room(ROOM, R, S);
+catch err
+    [x, fig] = simulate(ROOM, R, S);
+    save('x.mat', 'x');
+end
 
 %% Calculate STFT
-y_hat = stft(y);
+[X, phi] = stft(x);
+cfg = set_params_evaluate_Gauss();
+% phi = bren_stft(cfg, x);
 
-%% Calculate DOA
-doa = doa_from_stft(y_hat, fig);
-
-% load('y_hat.mat');
-% save('y_hat.mat', 'y_hat');
-
-%% Debugging
-% size(doa);
-% doa_vec = reshape(doa(1,:,:), [size(doa, 2)*size(doa, 3) 1]);
-% nansum(doa_vec)/nansum(doa_vec~=0);
-% % nansum(doa_vec~=pi && doa_vec ~= 0);
-% doa_not_pi = sum(doa_vec~=pi);
-% doa_zero = sum(doa_vec == 0);
-% size(doa_vec, 1);
-
-%% EM-Algorithm
-em_algorithm(y_hat, fig);
+%% Estimate Location (GMM+EM-Algorithmus)
+subplot_tight(2,2,[2 4], PLOT_BORDER);
+[est_error1, est_error2] = bren_estimate_location(cfg, phi);
 
 %% End
 cprintf('err', '\n---------------------   E N D   ---------------------\n');

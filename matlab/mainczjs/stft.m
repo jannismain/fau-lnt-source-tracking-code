@@ -1,58 +1,41 @@
-function y_hat = stft(y)
+function [X, phi] = stft(x)
 % STFT calculates the short-time fourier transformation of y using specific
 % parameters that allow for later DOA estimation
-
-
-%% This snippet allows to call testbed without switching editor window
-if ~(exist('y','var'))
-    testbed;
-    return;
-end
 
 %% START
 load('config.mat')
 
-PLOT = [0 1];
+PLOT = [0 0];
 
-cprintf('*blue', '\n<stft.m>\n');
+cprintf('*blue', '\n<stft.m>');
+fprintf(' (t = %2.4f)\n', toc);
 m = "Calculate STFT of received signal..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     
-    %% set fft properties
-    fft_window_samples = round(fft_window_time*fs);  % 500
-    fft_window = hanning(fft_window_samples);  % 500x1
-
-    fft_step_time = 0.015;
-    fft_step_samples = round(fft_step_time*fs);  % 300
-
-    fft_overlap_samples = fft_window_samples - fft_step_samples;  % 200 overlapping samples
-    fft_bins = 2^(ceil(log(fft_window_samples)/log(2)));  % 512 fft bins for STFT
-    fft_bins_net = fft_bins/2+1;  % 257 non-redundant bins
-    
-    %% preallocate result matrix by running test stft on first (longest)
-    % input
-    test=spectrogram(y(1,:),fft_window,fft_overlap_samples,fft_bins,fs); % determine dimensions of stft-output for proper allocation below
-    [n_bins, n_samples_y_hat] = size(test);
-    fprintf('%s n_bins = %d (should be %d)\n', FORMAT_PREFIX, n_bins, fft_bins);
-    fprintf('%s n_samples_y_hat = %d\n', FORMAT_PREFIX, n_samples_y_hat);
-    y_hat = zeros(n_receivers, n_bins, n_samples_y_hat);
-    
+    X = zeros(fft_bins_net, 296, 2, n_receiver_pairs);  % TODO: Find out how to calculate 296
+    phi = zeros(em.K,em.T,n_receiver_pairs);
     %% actual stft calculation
-    for r = 1:n_receivers
-        y_hat(r,:,:) = spectrogram(y(r,:),fft_window,fft_overlap_samples,fft_bins,fs);  % 2x257x1401
-        fprintf('%s STFT Signal Y%d: %dx%dx%d\n', FORMAT_PREFIX, r, size(y_hat, 1), size(y_hat, 2), size(y_hat, 3));
+    for mic_pair = 1:n_receiver_pairs
+        for mic = 1:2
+            x_temp = x(:,mic,mic_pair) + 0.01*(rand(size(x(:,1,mic_pair)))-0.5);
+            X(:,:,mic,mic_pair) = specgram(x_temp,fft_bins,fs,fft_window,fft_overlap_samples);
+%             fprintf('%s STFT Signal X%d: %dx%dx%dx%d\n', FORMAT_PREFIX, r, size(X, 1), size(X, 2), size(X, 3), size(X, 4));
+        end
+        phi(:,:,mic_pair) = (X(fft_freq_range,:,2,mic_pair)./X(fft_freq_range,:,1,mic_pair)).*abs(X(fft_freq_range,:,1,mic_pair)./X(fft_freq_range,:,2,mic_pair));
     end
-    % truncate signal
-    y_hat = y_hat(:,:,1:fft_trunc);  % 2x257x500
-    fprintf('%s Truncated STFT Signal to %dx%dx%d\n', FORMAT_PREFIX, size(y_hat, 1), size(y_hat, 2), size(y_hat, 3));
-    
+    fprintf('    -> size(x) = %dx%dx%d\n', size(x_temp, 1), size(x_temp, 2), size(x_temp, 3));
+    fprintf('    -> size(X) = %dx%dx%d\n', size(X, 1), size(X, 2), size(X, 3));
+    fprintf('    -> size(phi) = %dx%dx%d\n', size(phi, 1), size(phi, 2), size(phi, 3));
+%     fprintf('%s Truncated STFT Signal to %dx%dx%d\n', FORMAT_PREFIX, size(X, 1), size(X, 2), size(X, 3));
+%     fprintf('%s size(phi) = %dx%dx%d', FORMAT_PREFIX, size(phi, 1), size(phi, 2), size(phi, 3));    
+    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     if PLOT(1) && PLOT(counter)
         figure;
         for r = 1:n_receivers
             subplot(n_receivers, 2,r*2-1);
-            plot(angle(squeeze(y_hat(r,1:10, 1:10))));
+            plot(angle(squeeze(X(r,1:10, 1:10))));
             title(strcat("STFT(R_{", num2str(r), "})"))
             subplot(n_receivers, 2,r*2);
-            spectrogram(y(r,:),fft_window,fft_overlap_samples,fft_bins,fs,'yaxis');
+            spectrogram(x(r,:),fft_window,fft_overlap_samples,fft_bins,fs,'yaxis');
         end
     end
 end
