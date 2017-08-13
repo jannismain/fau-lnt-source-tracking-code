@@ -1,4 +1,4 @@
-function DOA = doa_from_stft(y_hat, fig)
+function DOA = phi_from_stft(y_hat, fig)
 % DOA_FROM_STFT calculates the direction of arrival of components of the STFT
 % spectrum Y
 
@@ -28,7 +28,6 @@ m = "Calculate Degree of Arrival (DOA) of received signals"; counter = next_step
     coeff = repmat(1./(2*pi*freq),1,size(y_hat(1,:,:),3));
     % freq begins at 0, divide by 0 gives NaN... TODO: not do this
     cconj = squeeze(y_hat(1,:,:).*conj(y_hat(2,:,:)));
-    display(cconj)
     fprintf("%s Coefficients: %dx%dx%d\n", FORMAT_PREFIX, size(coeff, 1), size(coeff, 2), size(coeff, 3)); 
     fprintf("%s Conjugated Signal: %dx%dx%d\n", FORMAT_PREFIX, size(cconj, 1), size(cconj, 2), size(cconj, 3)); 
     % fix for peaks at 0 and 180 degrees: modulo 2*pi...

@@ -14,7 +14,7 @@ PLOT_BORDER = .06;
 n_receivers = size(R, 1);
 n_sources = size(S, 1);
 
-fig_size = [1000 800];  % width x height
+fig_size = [1600 800];  % width x height
 scr_size = get(0,'ScreenSize');
 fig_xpos = ceil((scr_size(3)-fig_size(1))/2); % center the figure on the screen horizontally
 fig_ypos = ceil((scr_size(4)-fig_size(2))/2); % center the figure on the screen vertically
@@ -25,7 +25,7 @@ fig_room = figure('Name','Simulated Environment',...
                   'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)],...
                   'MenuBar','none');
 % movegui(fig_room,'center')  % alternative to have figure in the middle of the screen
-subplot_tight(2,2,[1 2], PLOT_BORDER);
+subplot_tight(2,2,[1 3], PLOT_BORDER);
 hold on;
 title('Room')
 
@@ -43,10 +43,6 @@ for r = 1:n_receivers
         end
     end
 end
-%x_s1r1 = linspace(S(1,1), R(1,1), 100);
-%y_s1r1 = linspace(S(1,2), R(1,2), 100);
-%x_s2r2 = linspace(S(2,1), R(2,1), 100);
-%y_s2r2 = linspace(S(2,2), R(2,2), 100);
 
 % plot receivers, sources and their connecting lines
 for r = 1:n_receivers
@@ -62,8 +58,5 @@ for r = 1:n_receivers
         plot(squeeze(rs_connection(r, s, 1, :)), squeeze(rs_connection(r, s, 2, :)), 'Color', [0.8, 0.8, 0.8], 'LineStyle', '--')
     end
 end
-
-%plot(x_s1r1, y_s1r1, 'Color', [0.8, 0.8, 0.8], 'LineStyle', '--')
-%plot(x_s2r2, y_s2r2, 'Color', [0.8, 0.8, 0.8], 'LineStyle', '--')
 
 end
