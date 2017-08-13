@@ -8,6 +8,7 @@
 # Matlab temp files
 *.asv
 *.mat
+*.m~
 
 # LaTeX build files (taken from https://gist.github.com/kogakure/149016)
 *.aux
