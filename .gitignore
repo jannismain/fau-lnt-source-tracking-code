@@ -1,5 +1,5 @@
 # App Configuration Files
-.texpadtmp\
+.texpadtmp
 .vscode
 
 # macOS-specific files
@@ -9,6 +9,9 @@
 *.asv
 *.mat
 *.m~
+
+# Matlab binary files
+*.mexmaci64
 
 # LaTeX build files (taken from https://gist.github.com/kogakure/149016)
 *.aux
@@ -37,7 +40,17 @@
 *.ps
 *.fls
 *.fdb_latexmk
-*.pdf
+
+# LyX source files
+*.lyx
+
+# BibTeX Temp Files
+*.bib.bak
+*.bib.sav
+
 
 # Project-specific files
 ausarbeitung-encoding-backup.*
+
+# Other
+*.pdf
