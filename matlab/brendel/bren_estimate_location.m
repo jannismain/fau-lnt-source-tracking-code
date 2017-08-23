@@ -1,8 +1,8 @@
 function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
 %BREN_ESTIMATE_LOCATION Summary of this function goes here
 %   Detailed explanation goes here
-
-%% Stuff
+    
+    PLOT_ROOM_BORDER = 1;
 
     if ~(exist("cfg.T", 'var'))
         cfg.T = 296;
@@ -48,7 +48,7 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     for iter = 1:10
         
         fprintf('  EM Iter. #%2d: ', iter);
-        fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);
+        fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
         
         psi_old = psi;
         
@@ -64,7 +64,6 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
         var_denominator = squeeze(sum(sum(sum(sum(sum(bsxfun(@times,reshape(mu,size(mu,1),size(mu,2),size(mu,3),size(mu,4),1),ang_dist),5),4),3),2),1));
         var_numerator = cfg.n_pairs*squeeze(sum(sum(sum(sum(mu,4),3),2),1));
         variance = var_denominator./var_numerator;
-        
         
         psi_plot = zeros(cfg.Y,cfg.X);
         psi_plot((cfg.N_margin+1):(cfg.Y-cfg.N_margin),(cfg.N_margin+1):(cfg.X-cfg.N_margin)) = psi;
@@ -150,6 +149,7 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     psi_plot((cfg.N_margin+1):(cfg.Y-cfg.N_margin),(cfg.N_margin+1):(cfg.X-cfg.N_margin)) = psi_complete;
     imagesc(cfg.mesh_x,cfg.mesh_y,psi_plot)
     set(gca,'Ydir','Normal')
+    set(gca, 'box', 'off')
     hold on
     for idx_pair = 1:cfg.n_pairs
         plot(cfg.synth_room.mloc(:, 1,idx_pair), cfg.synth_room.mloc(:, 2,idx_pair), 'x','MarkerSize', 12, 'Linewidth',2,'Color','g');
@@ -158,11 +158,10 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     plot(cfg.synth_room.sloc(:, 1), cfg.synth_room.sloc(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','w');
     plot(loc_est1(1), loc_est1(2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
     plot(loc_est2(1), loc_est2(2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
-    axis([0,cfg.synth_room.dim(1),0,cfg.synth_room.dim(2)])
-    colorbar
-    title(sprintf('GMM - Est. Err.: %1.2f m  %1.2f m  T60 = %1.2f sec', est_error1,est_error2,cfg.synth_room.t60));
-    xlabel('x-Axis \rightarrow')
-    ylabel('y-Axis \rightarrow')
+    axis([-PLOT_ROOM_BORDER,cfg.synth_room.dim(1)+PLOT_ROOM_BORDER,-PLOT_ROOM_BORDER,cfg.synth_room.dim(2)+PLOT_ROOM_BORDER]);
+    colorbar('East', 'AxisLocation', 'out', 'Ticks', [0.01 0.02 0.03]);
+%     colormap(flipud(gray));  % apply inverted b/w colormap
+    title(sprintf('Location Estimate\n(Est. Err.: %1.2fm, %1.2fm, T60=%1.2fs)', est_error1,est_error2,cfg.synth_room.t60));
     pause(0.1)
 
 end
