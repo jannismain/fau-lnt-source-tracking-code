@@ -10,8 +10,8 @@
 *.mat
 *.m~
 
-# Matlab binary files
-*.mexmaci64
+# Matlab binary files (will keep them as long as they are small)
+# *.mexmaci64
 
 # LaTeX build files (taken from https://gist.github.com/kogakure/149016)
 *.aux
@@ -47,7 +47,6 @@
 # BibTeX Temp Files
 *.bib.bak
 *.bib.sav
-
 
 # Project-specific files
 ausarbeitung-encoding-backup.*
