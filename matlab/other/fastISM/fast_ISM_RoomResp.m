@@ -152,7 +152,7 @@ w_len = w_len + mod(w_len,2) - 1;	% make w_len odd
 w_len_half = floor(w_len/2);
 
 %-=:=- Measure average energy -=:=-
-if (starttime_sind+w_len_half)>RIRe_len,
+if (starttime_sind+w_len_half)>RIRe_len
     error('Problem when computing diffuse reverberations (parameter ''Diffuse_dB'' might be too small).');
 end
 we_sind_vec = [starttime_sind+w_len_half:w_len:RIRe_len];  % window end indices
@@ -162,7 +162,7 @@ if wb_sind_vec(1)<=0, wb_sind_vec(1) = 1; end           % case where t0 is less 
 n_win_meas = length(wc_sind_vec);
 
 en_vec_meas = zeros(1,n_win_meas);
-for ww=1:n_win_meas,
+for ww=1:n_win_meas
     en_vec_meas(ww) = mean( RIRe(wb_sind_vec(ww):we_sind_vec(ww)).^2 );
 end
 
