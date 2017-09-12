@@ -1,4 +1,4 @@
-function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
+function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
 %BREN_ESTIMATE_LOCATION Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -80,11 +80,17 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     clear pdf;
     
     thres_max = 0.5;
-    fprintf('compute localization errors...\n')
+    fprintf('Compute localization errors...\n')
+    size(psi)
+    psi(1,:) = 0;
+    psi(size(psi, 1),:) = 0;
+    psi(:,1) = 0;
+    psi(:,size(psi, 2)) = 0;
     psi_complete = psi;
-    psi_trunc = zeros(size(psi_complete));
-    psi_trunc(psi_complete>0.001) = psi_complete(psi_complete>0.001);
-    psi_trunc_complete = psi_trunc;
+    
+%     psi_trunc = zeros(size(psi_complete));
+%     psi_trunc(psi_complete>0.001) = psi_complete(psi_complete>0.001);
+%     psi_trunc_complete = psi_trunc;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -162,6 +168,9 @@ function [ est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     colorbar('East', 'AxisLocation', 'out', 'Ticks', [0.01 0.02 0.03]);
 %     colormap(flipud(gray));  % apply inverted b/w colormap
     title(sprintf('Location Estimate\n(Est. Err.: %1.2fm, %1.2fm, T60=%1.2fs)', est_error1,est_error2,cfg.synth_room.t60));
+    figure(3)
+    surf(cfg.mesh_x,cfg.mesh_y,psi_plot)
+    shading interp
     pause(0.1)
 
 end
