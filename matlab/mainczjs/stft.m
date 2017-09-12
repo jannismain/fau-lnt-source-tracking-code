@@ -28,14 +28,9 @@ m = "Calculate STFT of received signal..."; counter = next_step(m, counter, STEP
 %     fprintf('%s Truncated STFT Signal to %dx%dx%d\n', FORMAT_PREFIX, size(X, 1), size(X, 2), size(X, 3));
 %     fprintf('%s size(phi) = %dx%dx%d', FORMAT_PREFIX, size(phi, 1), size(phi, 2), size(phi, 3));    
     fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+    
     if PLOT(1) && PLOT(counter)
-        figure;
-        for r = 1:n_receivers
-            subplot(n_receivers, 2,r*2-1);
-            plot(angle(squeeze(X(r,1:10, 1:10))));
-            title(strcat("STFT(R_{", num2str(r), "})"))
-            subplot(n_receivers, 2,r*2);
-            spectrogram(x(r,:),fft_window,fft_overlap_samples,fft_bins,fs,'yaxis');
-        end
+        subplot_tight(1,5,5, 0.06);
+        % plotting code
     end
 end
