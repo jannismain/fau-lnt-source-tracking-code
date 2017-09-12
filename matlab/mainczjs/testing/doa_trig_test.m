@@ -19,11 +19,10 @@ S  = [S1;                    % Source   1 position [ x y z ] (m)
 fig = plot_room(ROOM, R, S);
 counter = 1;
 
-
 %% Test 1: 45 degree angles, single source, single receiver
 DOA_expected = [-45, 45, 90];
 for s = 1:size(S, 1)
-   DOA = doa(S(s, :), R1);
+   DOA = doa_trig(S(s, :), R1);
    %fprintf(FORMAT_ANGLE, DOA, DOA_expected(s));
    assert(DOA == DOA_expected(s))
 end
@@ -33,7 +32,7 @@ m = "PASSED (exact angles, single source, single receiver)"; counter = next_step
 %% Test 2: 45 degree angles, single source, two receivers
 DOA_expected = [-45, 45, 90];
 for s = 1:size(S, 1)
-   DOA = doa(S(s, :), R);
+   DOA = doa_trig(S(s, :), R);
    %fprintf(FORMAT_ANGLE, DOA, DOA_expected(s));
    assert(DOA == DOA_expected(s))
 end
@@ -42,7 +41,7 @@ m = "PASSED (exact angles, single source, two receivers)"; counter = next_step(m
 
 %% Test 3: 45 degree angles, two sources, two receivers
 DOA_expected = [-45, 45, 90];
-DOA = doa(S, R);
+DOA = doa_trig(S, R);
 assert(size(DOA, 1) == size(S, 1))
 for s = 1:size(S, 1)
    %fprintf(FORMAT_ANGLE, DOA(s), DOA_expected(s));
