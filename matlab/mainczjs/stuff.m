@@ -82,3 +82,25 @@
 %     n_samples_s = source_length*fs;  % trim signals to 3 seconds instead of the shortest signal length
 %     S_data = S_data(1:n_samples_s, :);
 %     fprintf("%s Truncated S to %dx%d\n", FORMAT_PREFIX, size(S_data, 1), size(S_data, 2));
+
+%% testbed_dynamic.m -> visualize random sample of audio signals
+% fig_size = [1800 1400];  % width x height
+% scr_size = get(0,'ScreenSize');
+% fig_xpos = ceil((scr_size(3)-fig_size(1))/2); % center the figure on the screen horizontally
+% fig_ypos = ceil((scr_size(4)-fig_size(2))/2); % center the figure on the screen vertically
+% 
+% f = figure('Name','Sample of Simulated RIRs',...
+%                   'NumberTitle','off',...
+%                   'Color','white',...
+%                   'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)],...
+%                   'MenuBar','none');
+% for n = 1:9
+%     ax = subplot_tight(3,3,n, .05);
+%     m = randi(24,1);
+%     t = randi(201,1);
+% %     rir = cell2mat(temp.RIR_cell(m,t));
+% %     source = conv(source,rir);
+%     plot(source_data(:,1))
+% %     ylim([-0.1 0.1])
+%     title('Signal at mic #1');
+% end

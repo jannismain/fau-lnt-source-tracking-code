@@ -65,7 +65,13 @@ R    = [2.1, 1.0, 1.0;  % bottom
 %         3.15, 0]; 
 % Source position(s) [ x y ] (m)
 S    = [3 2 1;
-        4 4 1];
+        4 2 1];
+sources.movement = [0 2 0];
+sources.signal_length = 3;  % length of source signals [s]
+sources.trajectory_samples = 10;
+
+sources.trajectory = get_trajectory_from_source(S(2,:),sources.movement, sources.trajectory_samples);
+
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
 n_sources = size(S, 1);

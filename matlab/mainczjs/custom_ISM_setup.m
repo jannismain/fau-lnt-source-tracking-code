@@ -40,35 +40,14 @@ function [SetupStruc] = ISM_setup()
 % relation to Lehmann & Johansson's ISM implementation will set the
 % 'abs_weight' parameter to [1 1 1 1 1 1], which will lead to uniform
 % absorption coefficients for all room boundaries.
-%
-% The structure 'SetupStruc' may contain one of the two fields 'T60' or
-% 'T20'. T60 corresponds to the time required by the impulse response to
-% decay by 60dB, whereas T20 is defined as the time required for the
-% impulse response to decay from -5 to -25dB. Simply define either one of
-% these fields in the file below. Set this value to 0 for anechoic
-% environments (direct path only).
 
-config_update;
 load('config.mat');
-
 SetupStruc.Fs = fs;                 % sampling frequency in Hz
-
 SetupStruc.c = c;                   % (optional) propagation speed of acoustic waves in m/s
-
 SetupStruc.room = room.dimensions;        % room dimensions in m
-
 SetupStruc.mic_pos = R;
-
-SetupStruc.src_samples = 201;
-
-src_x_trajectory = linspace(2,4,SetupStruc.src_samples).';
-% defines a straight line in front of the mic array, with 101 source points along the trajectory (1cm distance increment).
-src_y_trajectory = ones(SetupStruc.src_samples,1)*2.0;
-src_z_trajectory = ones(SetupStruc.src_samples,1)*1.0;
-
-SetupStruc.src_traj = [src_x_trajectory src_y_trajectory src_z_trajectory];   % [x y z] positions of source trajectory in m. 
-
-                                    
+SetupStruc.src_samples = sources.trajectory_samples;
+SetupStruc.src_traj = sources.trajectory;                                 
 SetupStruc.T60 = 0.4;                 % reverberation time T60, or define a T20 field instead!
 % SetupStruc.T20 = 0.15;                % reverberation time T20, or define a T60 field instead!
 
@@ -77,7 +56,8 @@ SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights
 
 
 % Uncomment the following for a 3D plot of the above setup:
-% plot3(SetupStruc.src_traj(:,1),SetupStruc.src_traj(:,2),SetupStruc.src_traj(:,3),'ro-','markersize',4); hold on;
-% plot3(SetupStruc.mic_pos(:,1),SetupStruc.mic_pos(:,2),SetupStruc.mic_pos(:,3),'ko','markerfacecolor',ones(1,3)*.6);
-% axis equal; axis([0 SetupStruc.room(1) 0 SetupStruc.room(2) 0 SetupStruc.room(3)]);
-% box on; xlabel('x-axis (m)'); ylabel('y-axis (m)'); zlabel('z-axis (m)');
+subplot_tight(2,1,1,0.06);
+plot3(SetupStruc.src_traj(:,1),SetupStruc.src_traj(:,2),SetupStruc.src_traj(:,3),'ro-','markersize',4); hold on;
+plot3(SetupStruc.mic_pos(:,1),SetupStruc.mic_pos(:,2),SetupStruc.mic_pos(:,3),'ko','markerfacecolor',ones(1,3)*.6);
+axis equal; axis([0 SetupStruc.room(1) 0 SetupStruc.room(2) 0 SetupStruc.room(3)]);
+box on; xlabel('x-axis (m)'); ylabel('y-axis (m)'); zlabel('z-axis (m)');
