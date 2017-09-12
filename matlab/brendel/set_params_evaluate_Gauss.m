@@ -6,7 +6,7 @@ cfg.n_mic = 2;
 cfg.synth_room.mspacing = 0.2;
 cfg.sig_len = 3;
 cfg.fs = 16000;     % Sampling frequency for audio acquisition and playback
-cfg.nsrc = 2;       % Number of sources
+cfg.nsrc = 1;       % Number of sources
 
 cfg.freq_range = 40:65;
 cfg.K = length(cfg.freq_range);  % em.K
@@ -26,7 +26,7 @@ cfg.freq = ((0:cfg.nfft/2)/cfg.nfft*cfg.fs).'; % frequency vector [Hz]
 % parameter settings for synthetic RIRs
 cfg.synth_room.dim = [6, 6, 6.1];  % room dimensions [x, y, z]
 
-cfg.synth_room.t60 = 0.3;       % reverberation time
+cfg.synth_room.t60 = 0.4;       % reverberation time
 
 cfg.synth_room.order = 3;        % reflections order of RIRs
 cfg.synth_room.Nh = 10*1024;         % length of RIRs
@@ -34,7 +34,7 @@ cfg.synth_room.height = 1;
 
 %% Grid
 cfg.mesh_res = 0.1;
-cfg.N_margin = 1/cfg.mesh_res;
+cfg.N_margin = (1/cfg.mesh_res);  % +1, +2, ... does not solve issue with peaks at mesh borders, where mic pairs are located
 cfg.mesh_x = (0:cfg.mesh_res:cfg.synth_room.dim(1));
 cfg.mesh_y = (0:cfg.mesh_res:cfg.synth_room.dim(2));
 [cfg.pos_x,cfg.pos_y] =  meshgrid(cfg.mesh_x,cfg.mesh_y);  % room.pos_x, ...
@@ -76,7 +76,7 @@ cfg.endIR = cfg.M; % ... until this sample (0 to take the whole recorded RIR)
 % end
 
 % vonMises2
-cfg.synth_room.sloc = [3, 2,cfg.synth_room.height;...         %sources location: X/Y/Z (sources height is fixed)
+cfg.synth_room.sloc = [4, 2,cfg.synth_room.height;         %sources location: X/Y/Z (sources height is fixed)
                        4, 4,cfg.synth_room.height];
 
 cfg.n_src = size(cfg.synth_room.sloc,1);
