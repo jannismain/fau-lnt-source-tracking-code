@@ -2,7 +2,14 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
 %BREN_ESTIMATE_LOCATION Summary of this function goes here
 %   Detailed explanation goes here
     
-    PLOT_ROOM_BORDER = 1;
+cprintf('*blue', '\n<bren_estimate_location.m>\n');
+
+load('config.mat', 'counter');
+load('config.mat', 'STEP');
+load('config.mat', 'STOP_AFTER_STEP');
+load('config.mat', 'FORMAT_PREFIX');
+
+PLOT_ROOM_BORDER = 1;
 
     if ~(exist("cfg.T", 'var'))
         cfg.T = 296;
@@ -12,7 +19,7 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     phi_mat = reshape(phi,cfg.K,cfg.T,1,1,cfg.n_pairs);
     phi_mat = repmat(phi_mat,1,1,cfg.Y-2*cfg.N_margin,cfg.X-2*cfg.N_margin,1);
     
-    fprintf('Compute distances...');
+    m = "Compute distances..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     norm_differences = zeros(cfg.Y-2*cfg.N_margin,cfg.X-2*cfg.N_margin,cfg.n_pairs);
     for idx_pairs = 1:cfg.n_pairs
         for idx_x = (cfg.N_margin+1):(cfg.X-cfg.N_margin)
@@ -23,22 +30,29 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     end
     
     norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
-    fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
+    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     
-    fprintf('Compute Phi Tilde...');
+    m = "Compute phi tilde..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*cfg.freq(cfg.freq_range), (norm_differences)/(cfg.c)))); % K/T/Y/X
     
     clear norm_differences;
-    fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
+    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     
-    fprintf('Compute Angular Distances...');
-    ang_dist = bsxfun(@power,abs((bsxfun(@minus,phi_mat,phi_tilde_mat))),2);
-    fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
+    m = "Compute angular distances..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+    try
+        load('ang_dist.mat');
+    catch err
+        ang_dist = bsxfun(@power,abs((bsxfun(@minus,phi_mat,phi_tilde_mat))),2);
+        save('ang_dist.mat', 'ang_dist');
+    end
+    
+    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     
     clear phi_mat;
     clear phi_tilde_mat;
     
     %% EM Algorithm
+    m = "EM-Iterations..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     % Assign equal prior probabilities to each cluster.
     psi = ones(cfg.Y-2*cfg.N_margin,cfg.X-2*cfg.N_margin,1) * (1 /(cfg.X-2*cfg.N_margin)*(cfg.Y-2*cfg.N_margin));
     psi_old = zeros(size(psi));
@@ -47,7 +61,7 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     variance = 0.1;%10;
     for iter = 1:10
         
-        fprintf('  EM Iter. #%2d: ', iter);
+        fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
         fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
         
         psi_old = psi;
@@ -80,7 +94,7 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     clear pdf;
     
     thres_max = 0.5;
-    fprintf('Compute localization errors...\n')
+    m = "Compute localization errors..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     size(psi)
     psi(1,:) = 0;
     psi(size(psi, 1),:) = 0;
@@ -133,13 +147,13 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
     diff2 = norm(cfg.synth_room.sloc(2,1:2)-loc_est1);
     [est_error1_complete,idx_est_error_1] = min([diff1,diff2]);
     est_error2_complete = norm(cfg.synth_room.sloc(3-idx_est_error_1,1:2)-loc_est2);
-    fprintf('    -> Estimation errors: %1.2f m   %1.2f m\n', est_error1_complete,est_error2_complete);
+    fprintf('%s Estimation errors: %1.2f m   %1.2f m\n', FORMAT_PREFIX, est_error1_complete,est_error2_complete);
     
     diff1_rev = norm(cfg.synth_room.sloc(1,1:2)-loc_est2);
     diff2_rev = norm(cfg.synth_room.sloc(2,1:2)-loc_est2);
     [est_error2_complete_rev,idx_est_error_2_rev] = min([diff1_rev,diff2_rev]);
     est_error1_complete_rev = norm(cfg.synth_room.sloc(3-idx_est_error_2_rev,1:2)-loc_est1);
-    fprintf('    -> Estimation errors: %1.2f m   %1.2f m\n', est_error1_complete_rev,est_error2_complete_rev);
+    fprintf('%s Estimation errors: %1.2f m   %1.2f m\n', FORMAT_PREFIX, est_error1_complete_rev,est_error2_complete_rev);
     
     [~,idx_error] = min([est_error1_complete,est_error2_complete,est_error1_complete_rev,est_error2_complete_rev]);
     if(idx_error<=2)
@@ -161,6 +175,10 @@ function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
         plot(cfg.synth_room.mloc(:, 1,idx_pair), cfg.synth_room.mloc(:, 2,idx_pair), 'x','MarkerSize', 12, 'Linewidth',2,'Color','g');
         hold on;
     end
+%     for r = 1:cfg.n_mic
+%         plot(cfg.R(r,1), cfg.R(r,2), 'x', 'MarkerSize', 12, 'LineWidth', 2, 'Color', 'g')
+%     end
+    
     plot(cfg.synth_room.sloc(:, 1), cfg.synth_room.sloc(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','w');
     plot(loc_est1(1), loc_est1(2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
     plot(loc_est2(1), loc_est2(2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');

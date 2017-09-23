@@ -1,35 +1,37 @@
 
 function cfg = set_params_evaluate_Gauss()
 
-cfg.c = 343; % sound velocity
-cfg.n_mic = 2;
-cfg.synth_room.mspacing = 0.2;
-cfg.sig_len = 3;
-cfg.fs = 16000;     % Sampling frequency for audio acquisition and playback
-cfg.nsrc = 1;       % Number of sources
+load('config.mat');
 
-cfg.freq_range = 40:65;
-cfg.K = length(cfg.freq_range);  % em.K
+cfg.c = c; % sound velocity
+cfg.n_mic = n_receivers;
+cfg.synth_room.mspacing = 0.2;
+cfg.sig_len = sources.signal_length;
+cfg.fs = fs;     % Sampling frequency for audio acquisition and playback
+cfg.nsrc = n_sources;       % Number of sources
+
+cfg.freq_range = fft_freq_range;
+cfg.K = em.K;  % em.K
 
 %% STFT parameters
-cfg.wintime = 0.05;                            % (=fft_window_time) window length [s]
-cfg.steptime = 0.010;                          % (=fft_step_time) frame shift [s]
-cfg.winpts = round(cfg.wintime*cfg.fs);        % (=fft_window_samples) window length [samples]
-cfg.window = hanning(cfg.winpts)';             % (=fft_window) hanning window
-cfg.steppts = round(cfg.steptime*cfg.fs);      % (=fft_step_samples) frame shift [samples]
-cfg.n_overlap = cfg.winpts - cfg.steppts;      % (=fft_overlap_samples) overlap of the windows [samples]
-cfg.nfft = 2^(ceil(log(cfg.winpts)/log(2)));   % (=fft_bins) number of fft bins for STFT
-cfg.n_bins = cfg.nfft/2+1;                     % (=fft_bins_net) number of non-redundant bins
+cfg.wintime = fft_window_time;                            % (=fft_window_time) window length [s]
+cfg.steptime = fft_step_time;                          % (=fft_step_time) frame shift [s]
+cfg.winpts = fft_window_samples;        % (=fft_window_samples) window length [samples]
+cfg.window = fft_window;             % (=fft_window) hanning window
+cfg.steppts = fft_step_samples;      % (=fft_step_samples) frame shift [samples]
+cfg.n_overlap = fft_overlap_samples;      % (=fft_overlap_samples) overlap of the windows [samples]
+cfg.nfft = fft_bins;   % (=fft_bins) number of fft bins for STFT
+cfg.n_bins = fft_bins_net;                     % (=fft_bins_net) number of non-redundant bins
 
-cfg.freq = ((0:cfg.nfft/2)/cfg.nfft*cfg.fs).'; % frequency vector [Hz]
+cfg.freq = freq; % frequency vector [Hz]
 
 % parameter settings for synthetic RIRs
-cfg.synth_room.dim = [6, 6, 6.1];  % room dimensions [x, y, z]
+cfg.synth_room.dim = room.dimensions;  % room dimensions [x, y, z]
 
-cfg.synth_room.t60 = 0.4;       % reverberation time
+cfg.synth_room.t60 = rir.t_reverb;       % reverberation time
 
-cfg.synth_room.order = 3;        % reflections order of RIRs
-cfg.synth_room.Nh = 10*1024;         % length of RIRs
+cfg.synth_room.order = rir.reflect_order;        % reflections order of RIRs
+cfg.synth_room.Nh = rir.length;         % length of RIRs
 cfg.synth_room.height = 1;
 
 %% Grid
@@ -76,8 +78,7 @@ cfg.endIR = cfg.M; % ... until this sample (0 to take the whole recorded RIR)
 % end
 
 % vonMises2
-cfg.synth_room.sloc = [4, 2,cfg.synth_room.height;         %sources location: X/Y/Z (sources height is fixed)
-                       4, 4,cfg.synth_room.height];
+cfg.synth_room.sloc = S;
 
 cfg.n_src = size(cfg.synth_room.sloc,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,6 +87,7 @@ cfg.n_src = size(cfg.synth_room.sloc,1);
 shift_mic = 0;
 
 % bottom
+cfg.R = R;
 x_posBottom = [2.2,2.8,3.8] -0.1;
 cfg.synth_room.mloc(:,:,1) = [x_posBottom(1),1+shift_mic,cfg.synth_room.height;
     x_posBottom(1)+cfg.synth_room.mspacing,1,cfg.synth_room.height];
