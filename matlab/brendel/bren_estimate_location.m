@@ -1,4 +1,4 @@
-function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
+function [ psi, est_error1, est_error2, loc_est1, loc_est2 ] = bren_estimate_location( cfg, phi )
 cprintf('*blue', '\n<%s.m>\n', mfilename);
 
 load('config.mat', 'counter');
@@ -119,6 +119,8 @@ PLOT_ROOM_BORDER = 1;
         end
     end
     
+    % Assumption: This removes possible locations for loc_est2 within thres_max
+    % of loc_est1 and looks for loc_est2 outside of thres_max radius
     while(norm(loc_est1-loc_est2) < thres_max)
         psi(idx_maxY2,idx_maxX2) = 0;
         if(sum(sum(psi)) == 0)
