@@ -41,6 +41,9 @@ matlab/mainczjs/config.mat
 *.ps
 *.fls
 *.fdb_latexmk
+*.run.xml
+*.bcf
+*.tpbuild
 
 # LyX source files
 *.lyx
