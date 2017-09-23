@@ -34,17 +34,7 @@ rectangle('Position',[ROOM_FIXPOINT;ROOM_FIXPOINT;ROOM_WIDTH;ROOM_HEIGHT]);
 plot(ROOM_FIXPOINT - ROOM_BORDER, ROOM_FIXPOINT - ROOM_BORDER, '.', 'Color', 'w')
 plot(ROOM_WIDTH + ROOM_BORDER, ROOM_HEIGHT + ROOM_BORDER, '.', 'Color', 'w')
 
-% calculate connecting lines between sources and receivers
-rs_connection = zeros(n_receivers, n_sources, 2, 100);
-for r = 1:n_receivers
-    for s = 1:n_sources
-        for dim = 1:2
-            rs_connection(r, s, dim, :) = linspace(S(s,dim), R(r,dim), 100);
-        end
-    end
-end
-
-% plot receivers, sources and their connecting lines
+% plot receivers and sources
 for r = 1:n_receivers
     plot(R(r,1), R(r,2), 'O', 'MarkerSize', PLOT_ELEM_SIZE, 'Color', 'b')
 end
