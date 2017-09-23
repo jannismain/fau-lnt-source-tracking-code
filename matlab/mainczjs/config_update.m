@@ -1,3 +1,4 @@
+function config_update = config_update(n_sources, random_sources, min_distance)
 %% save current workspace
 save_env = 0;
 if save_env == 1
@@ -6,8 +7,20 @@ if save_env == 1
     save(tmpfile);
     clearvars('-except', 'tmpfile save_env');
 else
-    clearvars('-except', 'save_env');
+    clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error');
 end
+
+if nargin < 1
+    n_sources = 2;
+end
+if nargin < 2
+    random_sources = false;
+end
+if nargin < 3
+    min_distance = 5;
+end
+
+cprintf('*blue', '\n<config_update.m>\n');
 
 %% Plot
 PLOT_BORDER = .06;
@@ -30,46 +43,57 @@ rir.reflect_order = 3;           % −1 equals maximum reflection order!
 room.dimension = 3;              % Room dimension
 mics.orientation = [pi/2 0];     % Microphone orientation [azimuth elevation] in radians
 mics.hp_filter = 1;              % Enable high-pass filter
+mics.distance_wall = 1;
 
 %% Testbed
 % Room dimensions    [ x y ] (m)
 ROOM = [6 6 6.1];
 room.dimensions = [6 6 6.1];
 
+RminX = mics.distance_wall;
+RminY = mics.distance_wall;
+RmaxX = room.dimensions(1)-mics.distance_wall;
+RmaxY = room.dimensions(2)-mics.distance_wall;
 % Receiver position  [ x y ] (m)
-R    = [2.1, 1.0, 1.0;  % bottom       
-        2.3, 1.0, 1.0;
-        2.7, 1.0, 1.0;
-        2.9, 1.0, 1.0;
-        3.7, 1.0, 1.0;
-        3.9, 1.0, 1.0;
-        5.0, 2.2, 1.0;  % right
-        5.0, 2.4, 1.0;
-        5.0, 2.8, 1.0;
-        5.0, 3.0, 1.0;
-        5.0, 3.8, 1.0;
-        5.0, 4.0, 1.0;
-        2.2, 5.0, 1.0;  % top
-        2.4, 5.0, 1.0;
-        3.0, 5.0, 1.0;
-        3.2, 5.0, 1.0;
-        3.8, 5.0, 1.0;
-        4.0, 5.0, 1.0;
-        1.0, 2.1, 1.0;  % left
-        1.0, 2.3, 1.0;
-        1.0, 2.9, 1.0;
-        1.0, 3.1, 1.0;
-        1.0, 3.7, 1.0;
-        1.0, 3.9, 1.0];
+R    = [2.1, RminY, 1.0;  % bottom       
+        2.3, RminY, 1.0;
+        2.7, RminY, 1.0;
+        2.9, RminY, 1.0;
+        3.7, RminY, 1.0;
+        3.9, RminY, 1.0;
+        RmaxX, 2.2, 1.0;  % right
+        RmaxX, 2.4, 1.0;
+        RmaxX, 2.8, 1.0;
+        RmaxX, 3.0, 1.0;
+        RmaxX, 3.8, 1.0;
+        RmaxX, 4.0, 1.0;
+        2.2, RmaxY, 1.0;  % top
+        2.4, RmaxY, 1.0;
+        3.0, RmaxY, 1.0;
+        3.2, RmaxY, 1.0;
+        3.8, RmaxY, 1.0;
+        4.0, RmaxY, 1.0;
+        RminX, 2.1, 1.0;  % left
+        RminX, 2.3, 1.0;
+        RminX, 2.9, 1.0;
+        RminX, 3.1, 1.0;
+        RminX, 3.7, 1.0;
+        RminX, 3.9, 1.0];
 %         2.85, 0;
 %         3.15, 0]; 
 % Source position(s) [ x y ] (m)
-S    = [3 2 1;
-        4 2 1];
-sources.movement = [0 2 0];
+if random_sources == false
+    S    = [3 2 1;
+            4 2 1];
+    S = S(1:n_sources,:);
+else
+    S = get_random_sources(n_sources, 15, min_distance);
+end
 sources.signal_length = 3;  % length of source signals [s]
-sources.trajectory_samples = 10;
 
+% dynamic source information
+sources.movement = [0 2 0];
+sources.trajectory_samples = 10;
 sources.trajectory = get_trajectory_from_source(S(2,:),sources.movement, sources.trajectory_samples);
 
 n_receivers = size(R, 1);
@@ -129,4 +153,6 @@ if save_env == 1
     clear('tmpfile');
 else
     clear all;
+end
+
 end
