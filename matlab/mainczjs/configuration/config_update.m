@@ -20,7 +20,7 @@ if nargin < 3
     min_distance = 5;
 end
 
-cprintf('*blue', '\n<config_update.m>\n');
+cprintf('*blue', '\n<%s.m>\n', mfilename);
 
 %% Plot
 PLOT_BORDER = .06;
@@ -50,11 +50,11 @@ mics.distance_wall = 1;
 ROOM = [6 6 6.1];
 room.dimensions = [6 6 6.1];
 
+% Receiver position  [ x y ] (m)
 RminX = mics.distance_wall;
 RminY = mics.distance_wall;
 RmaxX = room.dimensions(1)-mics.distance_wall;
 RmaxY = room.dimensions(2)-mics.distance_wall;
-% Receiver position  [ x y ] (m)
 R    = [2.1, RminY, 1.0;  % bottom       
         2.3, RminY, 1.0;
         2.7, RminY, 1.0;
@@ -79,8 +79,7 @@ R    = [2.1, RminY, 1.0;  % bottom
         RminX, 3.1, 1.0;
         RminX, 3.7, 1.0;
         RminX, 3.9, 1.0];
-%         2.85, 0;
-%         3.15, 0]; 
+ 
 % Source position(s) [ x y ] (m)
 if random_sources == false
     S    = [3 2 1;
@@ -91,7 +90,7 @@ else
 end
 sources.signal_length = 3;  % length of source signals [s]
 
-% dynamic source information
+% Source Movement
 sources.movement = [0 2 0];
 sources.trajectory_samples = 10;
 sources.trajectory = get_trajectory_from_source(S(2,:),sources.movement, sources.trajectory_samples);

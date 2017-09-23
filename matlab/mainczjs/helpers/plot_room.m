@@ -53,12 +53,6 @@ for s = 1:n_sources
     text(S(s,1)+ROOM_TEXT_OFFSET_X, S(s,2)+ROOM_TEXT_OFFSET_Y, strcat('s_{',int2str(s),'}'), 'Interpreter', 'tex', 'FontSize', 14, 'Color', 'r')
 end
 
-% for r = 1:n_receivers
-%     for s = 1:n_sources
-%         plot(squeeze(rs_connection(r, s, 1, :)), squeeze(rs_connection(r, s, 2, :)), 'Color', [0.8, 0.8, 0.8], 'LineStyle', '--')
-%     end
-% end
-
 axis([-ROOM_BORDER,ROOM_WIDTH+ROOM_BORDER,-ROOM_BORDER,ROOM_HEIGHT+ROOM_BORDER]);
 
 end
