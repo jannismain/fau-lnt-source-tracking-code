@@ -1,18 +1,18 @@
 %% Setup Environment
 clear all;
-tic;
-config_update;
-load('config.mat');
 cprintf('err', '--------------------- S T A R T ---------------------\n');
+tic;
+config_update(2, true, 10);
+load('config.mat');
 
 %% Simulate Environment
-try
-    load('x.mat');
-    fig = plot_room(ROOM, R, S);
-catch err
+% try
+%     load('x.mat');
+%     fig = plot_room(ROOM, R, S);
+% catch err
     [x, fig] = simulate(ROOM, R, S);
-    save('x.mat', 'x');
-end
+%     save('x.mat', 'x');
+% end
 
 %% Calculate STFT
 [X, phi] = stft(x);

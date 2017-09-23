@@ -12,14 +12,10 @@ function [x, fig] = simulate(ROOM, R, S)
 cprintf('*blue', '\n<simulate.m>');
 fprintf(' (t = %2.4f)\n', toc);
 load('config.mat')
-PLOT = [1 1 0 0 0 0 0]; % boolean plotting flag: [ all | step1 | step2 | ... | stepX ]
 
 %% Setting up the environment...
 m = "Setting up the environment..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
-    
-    if PLOT(1) && PLOT(counter)
-        fig = plot_room(ROOM, R, S);
-    end
+    fig = plot_room(ROOM, R, S);
 
 %% Calculate RIRs
 m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
@@ -47,7 +43,6 @@ m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step
 m = "Load source data..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
     
     S_data = zeros(source_length*fs, n_sources);
-%     n_samples_s = 0;
     for s = 1:n_sources
         [temp, fs_temp] = audioread(strcat(int2str(s),'.WAV'));
         if fs_temp ~= fs
