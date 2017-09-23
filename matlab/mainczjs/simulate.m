@@ -9,7 +9,7 @@ function [x, fig] = simulate(ROOM, R, S)
 %
 
 %% START
-cprintf('*blue', '\n<simulate.m>');
+cprintf('*blue', '\n<%s.m>\n', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 load('config.mat')
 

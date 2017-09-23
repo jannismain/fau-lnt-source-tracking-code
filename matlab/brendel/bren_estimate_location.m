@@ -1,8 +1,5 @@
 function [ psi, est_error1, est_error2 ] = bren_estimate_location( cfg, phi )
-%BREN_ESTIMATE_LOCATION Summary of this function goes here
-%   Detailed explanation goes here
-    
-cprintf('*blue', '\n<bren_estimate_location.m>\n');
+cprintf('*blue', '\n<%s.m>\n', mfilename);
 
 load('config.mat', 'counter');
 load('config.mat', 'STEP');
@@ -32,24 +29,18 @@ PLOT_ROOM_BORDER = 1;
     norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
     fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     
+%% Phi Tilde
     m = "Compute phi tilde..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
-    phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*cfg.freq(cfg.freq_range), (norm_differences)/(cfg.c)))); % K/T/Y/X
-    
-    clear norm_differences;
-    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
-    
+        phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*cfg.freq(cfg.freq_range), (norm_differences)/(cfg.c)))); % K/T/Y/X
+        clear norm_differences;
+        fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+
+%% Angular Distances
     m = "Compute angular distances..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
-    try
-        load('ang_dist.mat');
-    catch err
         ang_dist = bsxfun(@power,abs((bsxfun(@minus,phi_mat,phi_tilde_mat))),2);
-        save('ang_dist.mat', 'ang_dist');
-    end
-    
-    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
-    
-    clear phi_mat;
-    clear phi_tilde_mat;
+        fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+        clear phi_mat;
+        clear phi_tilde_mat;
     
     %% EM Algorithm
     m = "EM-Iterations..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
@@ -57,12 +48,11 @@ PLOT_ROOM_BORDER = 1;
     psi = ones(cfg.Y-2*cfg.N_margin,cfg.X-2*cfg.N_margin,1) * (1 /(cfg.X-2*cfg.N_margin)*(cfg.Y-2*cfg.N_margin));
     psi_old = zeros(size(psi));
     
-    % Use the overal variance of the dataset as the initial variance for each cluster.
-    variance = 0.1;%10;
+    variance = 0.1;%10; % Use the overal variance of the dataset as the initial variance for each cluster.
     for iter = 1:10
         
         fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
-        fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
+        fprintf('\x0394\x03C8 = %2.4f (t = %02.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
         
         psi_old = psi;
         
@@ -102,11 +92,7 @@ PLOT_ROOM_BORDER = 1;
     psi(:,size(psi, 2)) = 0;
     psi_complete = psi;
     
-%     psi_trunc = zeros(size(psi_complete));
-%     psi_trunc(psi_complete>0.001) = psi_complete(psi_complete>0.001);
-%     psi_trunc_complete = psi_trunc;
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Location Determination
     
     [~,idx_maxX1] = max(max(psi,[],1));
     [~,idx_maxY1] = max(max(psi,[],2));
@@ -143,6 +129,8 @@ PLOT_ROOM_BORDER = 1;
         loc_est2 = [cfg.mesh_x(idx_maxX2),cfg.mesh_y(idx_maxY2)]+ cfg.N_margin*cfg.mesh_res;
     end
     
+%% Error Calculation
+    
     diff1 = norm(cfg.synth_room.sloc(1,1:2)-loc_est1);
     diff2 = norm(cfg.synth_room.sloc(2,1:2)-loc_est1);
     [est_error1_complete,idx_est_error_1] = min([diff1,diff2]);
@@ -164,7 +152,7 @@ PLOT_ROOM_BORDER = 1;
         est_error2 = est_error2_complete_rev;
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plotting
     
     psi_plot((cfg.N_margin+1):(cfg.Y-cfg.N_margin),(cfg.N_margin+1):(cfg.X-cfg.N_margin)) = psi_complete;
     imagesc(cfg.mesh_x,cfg.mesh_y,psi_plot)
@@ -175,9 +163,6 @@ PLOT_ROOM_BORDER = 1;
         plot(cfg.synth_room.mloc(:, 1,idx_pair), cfg.synth_room.mloc(:, 2,idx_pair), 'x','MarkerSize', 12, 'Linewidth',2,'Color','g');
         hold on;
     end
-%     for r = 1:cfg.n_mic
-%         plot(cfg.R(r,1), cfg.R(r,2), 'x', 'MarkerSize', 12, 'LineWidth', 2, 'Color', 'g')
-%     end
     
     plot(cfg.synth_room.sloc(:, 1), cfg.synth_room.sloc(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','w');
     plot(loc_est1(1), loc_est1(2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
