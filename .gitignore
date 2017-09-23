@@ -9,6 +9,7 @@
 *.asv
 *.mat
 *.m~
+matlab/mainczjs/config.mat
 
 # Matlab binary files (will keep them as long as they are small)
 # *.mexmaci64
