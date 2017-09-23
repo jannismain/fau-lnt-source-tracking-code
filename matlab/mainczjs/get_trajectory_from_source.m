@@ -25,5 +25,4 @@ if not(nargin < 2)
 else
     error("This function requires at least 2 input arguments 'source'  and 'movement'.")
 end
-
-src_traj
+end
