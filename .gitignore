@@ -57,3 +57,7 @@ ausarbeitung-encoding-backup.*
 
 # Other
 *.pdf
+
+# matlab figures output
+*.eps
+*tikz.tex

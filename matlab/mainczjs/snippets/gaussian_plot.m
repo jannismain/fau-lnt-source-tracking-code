@@ -1,4 +1,4 @@
-
+function f = gaussian_plot()
 N = 4.0;
 x=linspace(-N, N, 60);
 y=x;
@@ -24,7 +24,7 @@ z3=prob*(1000/sqrt(2*pi).*exp(-((X-mid).^2/var)-((Y-mid).^2/var)));
 % z2=5*0.001*(1000/sqrt(2*pi).*exp(-((X.^2/var2)+(Y.^2/var2))+3));
 z=z1+z2+z3+z4+z5;
 
-figure('Name','Gaussian Mixture Model',...
+f = figure('Name','Gaussian Mixture Model',...
                   'NumberTitle','off',...
                   'Color','white');
 hold on;
@@ -34,3 +34,4 @@ surf(X,Y,z);
 colormap('jet');
 % shading interp
 axis tight
+end
