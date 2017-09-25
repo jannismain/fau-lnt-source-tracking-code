@@ -17,12 +17,15 @@ if nargin < 5, snr = 0; end
 cprintf('-comment', '                E V A L U A T I O N                \n');
 
 % change path to results dir
-PATH_RESULTS_FOLDER_ROOT = 'matlab/mainczjs/evaluation/results/';
-PATH_RESULTS_FOLDER_NAME = sprintf('%d_Sources_%d_MinDistance_%d_SNR', n_sources, min_distance, snr);
-PATH_RESULTS_RELATIVE = strcat(PATH_RESULTS_FOLDER_ROOT, PATH_RESULTS_FOLDER_NAME);
+PATH_SRC = '/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/';
+cd(PATH_SRC);
+PATH_MATLAB_RESULTS_ROOT = 'matlab/mainczjs/evaluation/results/';
+PATH_MATLAB_RESULTS_FOLDER_NAME = sprintf('%d_Sources_%d_MinDistance_%d_SNR', n_sources, min_distance, snr);
+PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, PATH_MATLAB_RESULTS_FOLDER_NAME);
+PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/plots/static/tikz-data/');
 oldpath = pwd;
-mkdir(PATH_RESULTS_FOLDER_ROOT, PATH_RESULTS_FOLDER_NAME);
-cd(PATH_RESULTS_RELATIVE);
+[~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, PATH_MATLAB_RESULTS_FOLDER_NAME);  % at least 2 argout's are required to suppress warning if dir already exists
+cd(PATH_MATLAB_RESULTS);
 
 % init filename
 time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS');
@@ -61,7 +64,7 @@ for trial=1:trials
     %% archive results
     fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
     saveas(fig, strcat(fname_trial, 'fig.fig'), 'fig');
-    matlab2tikz(strcat(oldpath, '/latex/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', false, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'plots/static/tikz-data/', 'dataPath', 'latex/plots/static/tikz-data/', 'noSize', true, 'showInfo', false);
+    matlab2tikz(strcat(PATH_SRC, '/latex/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
     close(fig);
     movefile('config.mat', strcat(fname_trial, 'config.mat'));
     

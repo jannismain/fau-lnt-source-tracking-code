@@ -181,7 +181,7 @@ PLOT_ROOM_BORDER = 1;
     axis([-PLOT_ROOM_BORDER,cfg.synth_room.dim(1)+PLOT_ROOM_BORDER,-PLOT_ROOM_BORDER,cfg.synth_room.dim(2)+PLOT_ROOM_BORDER]);
     % colorbar('East', 'AxisLocation', 'out', 'Ticks', [0.01 0.02 0.03]);
 %     colormap(flipud(gray));  % apply inverted b/w colormap
-    title(sprintf('Location Estimate\n(Est. Err.: %1.2fm, %1.2fm, T60=%1.2fs)', est_error1,est_error2,cfg.synth_room.t60));
+    % title(sprintf('Location Estimate\n(Est. Err.: %1.2fm, %1.2fm, T60=%1.2fs)', est_error1,est_error2,cfg.synth_room.t60));
     subplot_tight(1,2,2);
     surf(cfg.mesh_x,cfg.mesh_y,psi_plot)
     view([-65 25]);
