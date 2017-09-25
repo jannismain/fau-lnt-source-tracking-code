@@ -57,6 +57,12 @@ ausarbeitung-encoding-backup.*
 
 # Other
 *.pdf
+testing/
+
+# Evaluation Results
+matlab/mainczjs/evaluation/results
+latex/plots/static
+latex/plots/dynamic
 
 # matlab figures output
 *.eps
