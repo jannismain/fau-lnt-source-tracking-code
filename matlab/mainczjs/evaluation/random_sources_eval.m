@@ -47,12 +47,13 @@ for trial=1:trials
     [~, X, phi] = evalc('stft(x);');
     cfg = set_params_evaluate_Gauss();
     [~, psi, est_error1, est_error2, loc_est1, loc_est2, fig] = evalc('bren_estimate_location(cfg, phi);');
+    loc = reshape(S(:, 1:2)', 1, size(S, 1)*2);
     if trials>1
-        loc = reshape(S(:, 1:2)', 1, size(S, 1)*2);
         loc_err(trial, :) = [est_error1, est_error2];
         loc_est(trial, :) = [loc_est1(1), loc_est1(2), loc_est2(1), loc_est2(2)];
     else
         loc_err = [est_error1, est_error2];
+        loc_est = [loc_est1(1), loc_est1(2), loc_est2(1), loc_est2(2)];
     end
     %% print results
     for s=1:n_sources
@@ -71,7 +72,7 @@ for trial=1:trials
 end
 
 %% results
-cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (Total Runtime = %s)\n', mean(mean(loc_err)), max(max(loc_err)), min(min(loc_err)), num2str(toc)');
+cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (Runtime per trial is %0.2f, total runtime is %0.2f)\n', mean(mean(loc_err)), max(max(loc_err)), min(min(loc_err)), toc'/trials, toc');
 save(strcat(fname_base, 'results.mat'), 'results');
 save(strcat(fname_base, 'results.txt'), 'results', '-ascii', '-double', '-tabs');
 cd(oldpath);
