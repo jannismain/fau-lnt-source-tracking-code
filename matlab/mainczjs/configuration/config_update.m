@@ -1,14 +1,5 @@
 function config_update = config_update(n_sources, random_sources, min_distance)
-%% save current workspace
-save_env = 0;
-if save_env == 1
-    clear('save')
-    tmpfile = join(['tmp_', datestr(now, 'yyyy-mm-dd_HH-MM-ss'), '.mat']);
-    save(tmpfile);
-    clearvars('-except', 'tmpfile save_env');
-else
-    clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error');
-end
+clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error');
 
 if nargin < 1
     n_sources = 2;
@@ -20,7 +11,8 @@ if nargin < 3
     min_distance = 5;
 end
 
-cprintf('*blue', '\n<%s.m>\n', mfilename);
+cprintf('*blue', '\n<%s.m>', mfilename);
+fprintf(' (t = %2.4f)\n', toc);
 
 %% Plot
 PLOT_BORDER = .06;
@@ -134,24 +126,6 @@ em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
 
 %% Store new values
-save('config_new.mat', '-regexp', '^(?!(tmpfile)$).')
-% opt = input('Do you want to overwrite "config.mat" with "config_new.mat" (y/n) [y]: ', 's');
-opt = 'y';
-if isequal(opt, 'y') || isequal(opt, 'Y') || isempty(opt)
-    %delete('config.mat');
-    movefile('config_new.mat','config.mat');
-else
-    delete('config_new.mat');
-end
-
-%% Restore workspace
-if save_env == 1 
-    clearvars('-except', 'tmpfile');
-    load(tmpfile);
-    delete(tmpfile);
-    clear('tmpfile');
-else
-    clear all;
-end
+save('config.mat', '-regexp', '^(?!(tmpfile)$).')
 
 end
