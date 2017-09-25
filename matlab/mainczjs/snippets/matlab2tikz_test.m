@@ -30,6 +30,6 @@ fig = gaussian_plot();
 view([-45 45])
 axis tight;
 cleanfigure();
-matlab2tikz('latex/plots/static/gaussian-tikz.tex', 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'plots/static/tikz-data/', 'dataPath', 'latex/plots/static/tikz-data/', 'noSize', true, 'showInfo', false);%, 'maxChunkLength', 120);
+matlab2tikz('testing/gaussian-tikz.tex', 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', true, 'relativeDataPath', 'testing/tikz-data/', 'dataPath', 'testing/tikz-data/', 'noSize', false, 'showInfo', false, 'standalone', true);%, 'maxChunkLength', 120);
 % matlab2tikz('latex/plots/static/gaussian-tikz.tex');
 % print -dpsc latex/plots/static/gaussian.eps
