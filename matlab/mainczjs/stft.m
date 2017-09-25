@@ -9,7 +9,7 @@ PLOT = [0 0];
 
 cprintf('*blue', '\n<stft.m>');
 fprintf(' (t = %2.4f)\n', toc);
-m = "Calculate STFT of received signal..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Calculate STFT of received signal..."; counter = next_step(m, counter);
     
     X = zeros(fft_bins_net, 296, 2, n_receiver_pairs);  % TODO: Find out how to calculate 296
     phi = zeros(em.K,em.T,n_receiver_pairs);

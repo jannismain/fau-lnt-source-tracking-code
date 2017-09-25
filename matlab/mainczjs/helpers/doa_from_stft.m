@@ -2,19 +2,12 @@ function DOA = phi_from_stft(y_hat, fig)
 % DOA_FROM_STFT calculates the direction of arrival of components of the STFT
 % spectrum Y
 
-%% This snippet allows to call testbed without switching editor window
-if ~(exist('y_hat','var'))
-    testbed;
-    return;
-end
-
 %% Start
-cprintf('*keywords', '\n<doa_from_stft.m>\n');
+cprintf('*keywords', '\n<%s>\n', mfilename);
 load('config.mat')
-PLOT = [1 1];
 
 %% DOA Calculation
-m = "Calculate Degree of Arrival (DOA) of received signals"; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Calculate Degree of Arrival (DOA) of received signals"; counter = next_step(m, counter);
     
     fft_bins = 512;
     freq = ((0:fft_bins/2)/fft_bins*fs).';
@@ -37,23 +30,13 @@ m = "Calculate Degree of Arrival (DOA) of received signals"; counter = next_step
     hilf(hilf<-1) = -1;
     hold on;
     DOA = acosd(hilf);
-%     
-%     for b = 1:n_bins
-%         Y_m_hat_corr(b) = squeeze(y_hat(1,:,b))*conj(squeeze(y_hat(2,:,b)))';
-%         Y_m_hat_corr_arg(b) = angle(Y_m_hat_corr(b));
-%         TDOA(b) = (1/(2*pi*fs))*Y_m_hat_corr_arg(b);
-%         DOA(b) = (deg2rad(90)-acos((c/d_r)*TDOA(b)))/pi;
-%     end
-%     display(Y_m_hat_corr');
-%     display(Y_m_hat_corr_arg');
-    
-    if PLOT(1) && PLOT(counter)
-        subplot_tight(2,2,3,PLOT_BORDER);
-        histogram(DOA);
-        title('DOA Estimation')
-%         for b = 1:fft_bins
-%             fprintf('%s DOA(b%d) = %2.4f\x03C0 (%2.3f\x00B0)\n', FORMAT_PREFIX , b, deg2rad(DOA(b)), DOA(b));
-%         end
-%         fprintf('   %s Average DOA: %2.4f\x03C0 (%2.3f\x00B0)\n', FORMAT_PREFIX, sum(DOA)/length(DOA), deg2rad(sum(DOA)/length(DOA)));
+
+%% Output
+    subplot_tight(2,2,3,PLOT_BORDER);
+    histogram(DOA);
+    title('DOA Estimation')
+    for b = 1:fft_bins
+        fprintf('%s DOA(b%d) = %2.4f\x03C0 (%2.3f\x00B0)\n', FORMAT_PREFIX , b, deg2rad(DOA(b)), DOA(b));
     end
+    fprintf('   %s Average DOA: %2.4f\x03C0 (%2.3f\x00B0)\n', FORMAT_PREFIX, sum(DOA)/length(DOA), deg2rad(sum(DOA)/length(DOA)));
 end

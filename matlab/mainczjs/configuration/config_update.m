@@ -19,8 +19,6 @@ PLOT_BORDER = .06;
 PLOT = [1 0 0 0 0 0 1 0 0]; % boolean plotting flag: [ all | step1 | step2 | ... | stepX ]
 
 %% Method Configuration Default Values
-STEP = 0;
-STOP_AFTER_STEP = 0;
 PLAY_AUDIO = 0;
 FORMAT_PREFIX = '      ->'; % indents output of each step
 counter = 1;

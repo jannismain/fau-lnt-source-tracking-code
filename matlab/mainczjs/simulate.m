@@ -14,11 +14,11 @@ fprintf(' (t = %2.4f)\n', toc);
 load('config.mat')
 
 %% Setting up the environment...
-% m = "Setting up the environment..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+% m = "Setting up the environment..."; counter = next_step(m, counter);
 %     fig = plot_room(ROOM, R, S);
 
 %% Calculate RIRs
-m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter);
 
     H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
     for mic_pair = 1:n_receiver_pairs
@@ -40,7 +40,7 @@ m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step
     fprintf("%s Generated RIR %dx%dx%dx%d\n", FORMAT_PREFIX, size(H, 1), size(H, 2), size(H, 3), size(H, 4));
 
 %% Load source data...
-m = "Load source data..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Load source data..."; counter = next_step(m, counter);
     
     S_data = zeros(source_length*fs, n_sources);
     for s = 1:n_sources
@@ -52,7 +52,7 @@ m = "Load source data..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP
     end
 
 %% Y x RIRs
-m = "Convolute source data with room impulse response..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Convolute source data with room impulse response..."; counter = next_step(m, counter);
     
     n_samples_y = source_length*fs;
 

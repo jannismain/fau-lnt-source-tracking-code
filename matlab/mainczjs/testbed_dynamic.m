@@ -26,8 +26,6 @@ x_last_3_seconds = x((size(x,1)-48000)+1:size(x,1),:,:);
 
 sound(x_first_3_seconds(1,4), 16000)
 
-
-
 %% Calculate STFT
 [X, phi] = stft(x_first_3_seconds+x_last_3_seconds);
 cfg = set_params_evaluate_Gauss();
