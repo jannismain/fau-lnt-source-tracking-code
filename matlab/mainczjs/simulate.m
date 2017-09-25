@@ -1,4 +1,4 @@
-function [x, fig] = simulate(ROOM, R, S)
+function [x] = simulate(ROOM, R, S)
 % SIMULATE Simulates a room with two audio sources and receivers and
 % generates the received signal at both receivers
 %
@@ -9,13 +9,13 @@ function [x, fig] = simulate(ROOM, R, S)
 %
 
 %% START
-cprintf('*blue', '\n<%s.m>\n', mfilename);
+cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 load('config.mat')
 
 %% Setting up the environment...
-m = "Setting up the environment..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
-    fig = plot_room(ROOM, R, S);
+% m = "Setting up the environment..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+%     fig = plot_room(ROOM, R, S);
 
 %% Calculate RIRs
 m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
