@@ -78,7 +78,7 @@ if random_sources == false
             4 2 1];
     S = S(1:n_sources,:);
 else
-    S = get_random_sources(n_sources, 15, min_distance);
+    S = get_random_sources(n_sources, 15, min_distance, ROOM);
 end
 sources.signal_length = 3;  % length of source signals [s]
 

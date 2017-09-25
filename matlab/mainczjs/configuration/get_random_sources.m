@@ -1,4 +1,4 @@
-function S = get_random_sources(n_sources, distance_wall, distance_sources)
+function S = get_random_sources(n_sources, distance_wall, distance_sources, ROOM)
 % provides random source positions within a specified 3-dimensional room
 %
 % n_sources = number of sources (int)
@@ -6,21 +6,10 @@ function S = get_random_sources(n_sources, distance_wall, distance_sources)
 % distance_sources = required distance of source from each other
 % [decimeter] (default: 5)
 
-load('config.mat', 'ROOM');
-load('config.mat', 'counter');
-load('config.mat', 'STEP');
-load('config.mat', 'STOP_AFTER_STEP');
-load('config.mat', 'FORMAT_PREFIX');
-m = "Generating random source locations..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+if nargin < 2, distance_wall = 12; end
+if nargin < 3, distance_sources = 5; end
 
-    if nargin < 2
-        distance_wall = 12;
-    end
-    if nargin < 3
-        distance_sources = 5;
-    end
-
-    x_done = false; y_done = false; i = 0;
+x_done = false; y_done = false; i = 0;
 
     while (x_done==false || y_done==false)
 
@@ -39,6 +28,6 @@ m = "Generating random source locations..."; counter = next_step(m, counter, STE
 
     S      = [x_rand y_rand ones(n_sources, 1)];
     distance = min(abs(diff(x_rand)))+min(abs(diff(y_rand)));
-    fprintf("%s ...done! (found %i sufficiently spaced sources (min_distance = %0.2f) after %i attempts)\n", FORMAT_PREFIX, n_sources, distance, i);
+    fprintf("      ...done! (found %i sufficiently spaced sources (min_distance = %0.2f) after %i attempts)\n", n_sources, distance, i);
 
 end
