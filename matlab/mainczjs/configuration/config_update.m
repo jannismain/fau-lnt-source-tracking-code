@@ -1,15 +1,10 @@
-function config_update = config_update(n_sources, random_sources, min_distance)
+function config_update = config_update(n_sources, random_sources, min_distance, T60)
 clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error');
 
-if nargin < 1
-    n_sources = 2;
-end
-if nargin < 2
-    random_sources = false;
-end
-if nargin < 3
-    min_distance = 5;
-end
+if nargin < 1, n_sources = 2; end
+if nargin < 2, random_sources = false; end
+if nargin < 3, min_distance = 5; end
+if nargin < 4, T60 = 0.3; end
 
 cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
@@ -25,8 +20,8 @@ counter = 1;
 
 % Simulation
 fs = 16000;                      % Sample frequency (samples/s)
-c = 343;                         % Sound velocity (m/s)
-rir.t_reverb = 0.3;              % Reverberationtime (s)
+room.c = 343;                         % Sound velocity (m/s)
+rir.t_reverb = T60;              % Reverberationtime (s)
 rir.length = 10*1024;            % Number of samples
 mics.type = 'omnidirectional';   % Type of microphone
 rir.reflect_order = 3;           % −1 equals maximum reflection order!
@@ -69,6 +64,8 @@ R    = [2.1, RminY, 1.0;  % bottom
         RminX, 3.1, 1.0;
         RminX, 3.7, 1.0;
         RminX, 3.9, 1.0];
+room.R = R;
+room.R_pairs = size(R, 1)/2;
  
 % Source position(s) [ x y ] (m)
 if random_sources == false
@@ -78,6 +75,7 @@ if random_sources == false
 else
     S = get_random_sources(n_sources, 15, min_distance, ROOM);
 end
+room.S = S;
 sources.signal_length = 3;  % length of source signals [s]
 
 % Source Movement
@@ -122,6 +120,10 @@ room.Y = length(room.grid_y);
 room.n_pos = room.X * room.Y;  % Number of Gridpoints
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
+em.X = length(room.grid_x);
+em.Y = length(room.grid_y);
+em.P = em.X*em.Y; % Number of Gridpoints
+em.conv_threshold = 0.01;
 
 %% Location Estimation
 elimination_radius = 2;

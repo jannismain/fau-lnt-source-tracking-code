@@ -10,17 +10,16 @@ x = simulate(ROOM, R, S);
 
 %% Calculate STFT
 [X, phi] = stft(x);
-cfg = set_params_evaluate_Gauss();
 
 %% Estimate Location (GMM+EM-Algorithmus)
-psi = em_algorithm(cfg, phi, 5);
+psi = em_algorithm(phi, 5);
 loc_est = estimate_location(psi);
-[est_error1, est_error2] = bren_estimate_location(cfg, loc_est);
+[loc_est_sorted, est_err] = estimation_error(S, loc_est);
 
 %% Plotting results
-psi_plot = zeros(cfg.Y,cfg.X);
-psi_plot((cfg.N_margin+1):(cfg.Y-cfg.N_margin),(cfg.N_margin+1):(cfg.X-cfg.N_margin)) = psi;
-[ fig ] = plot_results( psi_plot, loc_est, cfg );
+psi_plot = zeros(em.Y,em.X);
+psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+[ fig ] = plot_results( psi_plot, loc_est, room);
 
 %% End
 cprintf('comment', '\n---------------------   E N D   ---------------------\n');

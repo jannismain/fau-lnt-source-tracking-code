@@ -18,13 +18,13 @@ load('config.mat')
 %     fig = plot_room(ROOM, R, S);
 
 %% Calculate RIRs
-m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter);
+m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter); %#ok<*NODEF>
 
     H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
     for mic_pair = 1:n_receiver_pairs
         for s = 1:n_sources
             H(:, s, :,mic_pair) = rir_generator(...
-            c, ...
+            room.c, ...
             fs, ...
             R((mic_pair*2-1):(mic_pair*2),:,:), ...
             S(s, :), ...
@@ -52,7 +52,7 @@ m = "Load source data..."; counter = next_step(m, counter);
     end
 
 %% Y x RIRs
-m = "Convolute source data with room impulse response..."; counter = next_step(m, counter);
+m = "Convolute source data with room impulse response..."; counter = next_step(m, counter); %#ok<*NASGU>
     
     n_samples_y = source_length*fs;
 

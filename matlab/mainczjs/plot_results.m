@@ -1,4 +1,4 @@
-function [ fig ] = plot_results( psi, loc_est, cfg )
+function [ fig ] = plot_results( psi, loc_est, room)
 %PLOT_RESULTS Plots location estimation results
 %   Detailed explanation goes here
 
@@ -11,25 +11,21 @@ function [ fig ] = plot_results( psi, loc_est, cfg )
                   'Color','white',...
                   'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)]);
     subplot_tight(1,2,1);
-    imagesc(cfg.mesh_x,cfg.mesh_y,psi)
+    imagesc(room.grid_x,room.grid_y,psi)
     set(gca,'Ydir','Normal')
     set(gca, 'box', 'off')
     hold on
-    for idx_pair = 1:cfg.n_pairs
-        plot(cfg.synth_room.mloc(:, 1,idx_pair), cfg.synth_room.mloc(:, 2,idx_pair), 'x','MarkerSize', 12, 'Linewidth',2,'Color','g');
-        hold on;
-    end
     
-    plot(cfg.synth_room.sloc(:, 1), cfg.synth_room.sloc(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','w');
-    for i=1:size(loc_est, 1)
-        plot(loc_est(i, 1), loc_est(i, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
-    end
-    axis([0,cfg.synth_room.dim(1),0,cfg.synth_room.dim(2)]);
+    plot(room.R(:, 1), room.R(:, 2),'x','MarkerSize', 12, 'Linewidth',2,'Color','g');    
+    plot(room.S(:, 1), room.S(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','w');
+    plot(loc_est(:, 1), loc_est(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
+
+    axis([0,room.dimensions(1),0,room.dimensions(2)]);
     % colorbar('East', 'AxisLocation', 'out', 'Ticks', [0.01 0.02 0.03]);
     % colormap(flipud(gray));  % apply inverted b/w colormap
     % title(sprintf('Location Estimate\n(Est. Err.: %1.2fm, %1.2fm, T60=%1.2fs)', est_error1,est_error2,cfg.synth_room.t60));
     subplot_tight(1,2,2);
-    surf(cfg.mesh_x,cfg.mesh_y,psi)
+    surf(room.grid_x,room.grid_y,psi)
     view([-65 25]);
     shading interp
     pause(0.1)
