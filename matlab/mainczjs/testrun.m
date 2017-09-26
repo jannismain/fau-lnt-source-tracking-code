@@ -13,11 +13,14 @@ x = simulate(ROOM, R, S);
 cfg = set_params_evaluate_Gauss();
 
 %% Estimate Location (GMM+EM-Algorithmus)
-psi = em_algorithm2(cfg, phi);
+psi = em_algorithm(cfg, phi, 5);
 loc_est = estimate_location(psi);
 [est_error1, est_error2] = bren_estimate_location(cfg, loc_est);
-psi_plot = zeros(cfg.X, cfg.Y)
-[ fig ] = plot_results( psi, loc_est, cfg );
+
+%% Plotting results
+psi_plot = zeros(cfg.Y,cfg.X);
+psi_plot((cfg.N_margin+1):(cfg.Y-cfg.N_margin),(cfg.N_margin+1):(cfg.X-cfg.N_margin)) = psi;
+[ fig ] = plot_results( psi_plot, loc_est, cfg );
 
 %% End
 cprintf('comment', '\n---------------------   E N D   ---------------------\n');
