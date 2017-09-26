@@ -1,7 +1,11 @@
 function [results] = random_sources_eval(n_sources, trials, min_distance, T60, snr)
 % Evaluates the localisation algorithm using random source locations
 % TODO: after bren_location_estimate has been dealt with, truly parameterise for n sources (right now only 2 are supported)
+% TODO: Also use different flavors of estimation algorithm (variance fixed
+% or calculated, sources known a priori vs. sources unknown)
 %
+% TODO: Find out what happens, when sources are known a-priori but wrong (3
+% instead of 2 for example)
 % NOTES:
 %   - evalc() is used to supress output from these functions.
 %
@@ -35,11 +39,11 @@ loc_err = zeros(trials, n_sources);
 loc_est = zeros(trials, n_sources*2);
 loc = zeros(trials, n_sources*2);
 results = zeros(trials, n_sources*4+2);  % realX, realY, estX, estY, estErr1, estErr2
+tic;
 
 %% trials
 for trial=1:trials
     cprintf('*blue', '   [Trial %d/%d]: %d sources, %1.2f minimal distance\n', trial, trials, n_sources, min_distance/10);
-    tic;
     evalc('config_update(n_sources, true, min_distance);');
     load('config.mat');
     [~, x] = evalc('simulate(ROOM, R, S);');
@@ -59,7 +63,7 @@ for trial=1:trials
     for s=1:n_sources
         fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s*2-1), loc_est(trial, s*2));
     end
-    fprintf("%s Estimation Error = [%0.2f, %0.2f]\n", FORMAT_PREFIX, est_error1, est_error2);
+    fprintf("%s Estimation Error = [%0.2f, %0.2f] (Elapsed time = %0.2f)\n", FORMAT_PREFIX, est_error1, est_error2, toc');
     results(trial, :) = [loc, loc_est1(1), loc_est1(2), loc_est2(1), loc_est2(2), est_error1, est_error2];
     
     %% archive results
@@ -72,7 +76,7 @@ for trial=1:trials
 end
 
 %% results
-cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (Runtime per trial is %0.2f, total runtime is %0.2f)\n', mean(mean(loc_err)), max(max(loc_err)), min(min(loc_err)), toc'/trials, toc');
+cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (time per trial = %0.2f, total = %0.2f)\n', mean(mean(loc_err)), max(max(loc_err)), min(min(loc_err)), toc'/trials, toc');
 save(strcat(fname_base, 'results.mat'), 'results');
 save(strcat(fname_base, 'results.txt'), 'results', '-ascii', '-double', '-tabs');
 cd(oldpath);
