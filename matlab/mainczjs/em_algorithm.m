@@ -1,4 +1,4 @@
-function [ psi ] = em_algorithm2(cfg, phi)
+function [ psi ] = em_algorithm2(cfg, phi, iterations)
 %EM_ALGORITHM2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,6 +6,7 @@ cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 
 load('config.mat');
+if nargin<3, iterations = 10; end
 
 if ~(exist("cfg.T", 'var'))
     cfg.T = 296;
