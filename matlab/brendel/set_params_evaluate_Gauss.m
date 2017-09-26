@@ -10,7 +10,6 @@ cfg.sig_len = sources.signal_length;
 cfg.fs = fs;     % Sampling frequency for audio acquisition and playback
 cfg.nsrc = n_sources;       % Number of sources
 
-cfg.freq_range = fft_freq_range;
 cfg.K = em.K;  % em.K
 
 %% STFT parameters
@@ -22,8 +21,6 @@ cfg.steppts = fft_step_samples;      % (=fft_step_samples) frame shift [samples]
 cfg.n_overlap = fft_overlap_samples;      % (=fft_overlap_samples) overlap of the windows [samples]
 cfg.nfft = fft_bins;   % (=fft_bins) number of fft bins for STFT
 cfg.n_bins = fft_bins_net;                     % (=fft_bins_net) number of non-redundant bins
-
-cfg.freq = freq; % frequency vector [Hz]
 
 % parameter settings for synthetic RIRs
 cfg.synth_room.dim = room.dimensions;  % room dimensions [x, y, z]
@@ -37,9 +34,9 @@ cfg.synth_room.height = 1;
 %% Grid
 cfg.mesh_res = 0.1;
 cfg.N_margin = (1/cfg.mesh_res);  % +1, +2, ... does not solve issue with peaks at mesh borders, where mic pairs are located
-cfg.mesh_x = (0:cfg.mesh_res:cfg.synth_room.dim(1));
-cfg.mesh_y = (0:cfg.mesh_res:cfg.synth_room.dim(2));
-[cfg.pos_x,cfg.pos_y] =  meshgrid(cfg.mesh_x,cfg.mesh_y);  % room.pos_x, ...
+cfg.mesh_x = room.grid_x;
+cfg.mesh_y = room.grid_y;
+[cfg.pos_x,cfg.pos_y] =  meshgrid(room.grid_x, room.grid_y);
 
 cfg.X = length(cfg.mesh_x);
 cfg.Y = length(cfg.mesh_y);
@@ -54,6 +51,8 @@ cfg.synth_room.src_paths = {'1.WAV',...
 cfg.M = cfg.synth_room.Nh;  % rir.length
 cfg.startIR = 1;   % cut impulse response from this sample...
 cfg.endIR = cfg.M; % ... until this sample (0 to take the whole recorded RIR)
+
+cfg.conv_thres = 0.01;  % EM convergence threshold
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

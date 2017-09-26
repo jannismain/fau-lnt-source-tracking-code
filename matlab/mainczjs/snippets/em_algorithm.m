@@ -7,7 +7,7 @@ function [DOA_vec, psi] = em_algorithm(y_hat, fig)
 load('config.mat')
 cprintf('*blue', '\n<em_algorithm.m>\n');
 fprintf("%s INPUT: y_hat = %dx%dx%d\n", FORMAT_PREFIX, size(y_hat, 1), size(y_hat, 2), size(y_hat, 3)); 
-m = "Estimate DOA using the an EM Algorithm..."; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+m = "Estimate DOA using the an EM Algorithm..."; counter = next_step(m, counter);
 
 phi = squeeze((y_hat(1,:,:)./y_hat(2,:,:)).*abs(y_hat(1,:,:)./y_hat(2,:,:)));
 fprintf("%s INPUT: phi = %dx%dx%d\n", FORMAT_PREFIX, size(phi, 1), size(phi, 2), size(phi, 3)); 

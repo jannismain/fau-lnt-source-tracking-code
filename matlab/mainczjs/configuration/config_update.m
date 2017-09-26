@@ -123,6 +123,9 @@ room.n_pos = room.X * room.Y;  % Number of Gridpoints
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
 
+%% Location Estimation
+elimination_radius = 2;
+
 %% Store new values
 save('config.mat', '-regexp', '^(?!(tmpfile)$).')
 
