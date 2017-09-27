@@ -2,7 +2,7 @@
 trials = 2;
 sources = 2;
 min_distance = 5;
-loc_err = random_sources_eval(sources,trials,min_distance);
+results = random_sources_eval(sources,trials,min_distance);
 
 % %% Evaluation 1: 3 sources, 0.50m minimal distance
 % trials = 100;

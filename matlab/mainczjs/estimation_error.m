@@ -2,8 +2,9 @@ function [ loc_est, est_err ] = assign_estimates( S, loc_est_assorted )
 %ESTIMATION_ERROR Calculates the estimation error based on the true source positions
 %   bla bla
 
+cprintf('*blue', '\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
 if nargin<2, error('Both input arguments "S" and "loc_est" are required!'); end
-if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch!'); end
+if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch! (%s is %dx%d, %s is %dx%d)', inputname(1), size(S), inputname(2), size(loc_est_assorted)); end
 
 % Assign estimation to appropiate source (min error for existing position and estimation)
 

@@ -1,5 +1,5 @@
 function config_update = config_update(n_sources, random_sources, min_distance, T60)
-clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error');
+clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60');
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = false; end
