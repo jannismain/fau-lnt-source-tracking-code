@@ -1,10 +1,11 @@
-function config_update = config_update(n_sources, random_sources, min_distance, T60)
-clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60');
+function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, T60)
+clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall');
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = false; end
 if nargin < 3, min_distance = 5; end
-if nargin < 4, T60 = 0.3; end
+if nargin < 4, distance_wall = 15; end
+if nargin < 5, T60 = 0.3; end
 
 cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
@@ -73,9 +74,10 @@ if random_sources == false
             4 2 1];
     S = S(1:n_sources,:);
 else
-    S = get_random_sources(n_sources, 15, min_distance, ROOM);
+    S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
 end
 room.S = S;
+source.positions = S;
 sources.signal_length = 3;  % length of source signals [s]
 
 % Source Movement
