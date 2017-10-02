@@ -13,10 +13,6 @@ cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 load('config.mat')
 
-%% Setting up the environment...
-% m = "Setting up the environment..."; counter = next_step(m, counter);
-%     fig = plot_room(ROOM, R, S);
-
 %% Calculate RIRs
 m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter); %#ok<*NODEF>
 
