@@ -67,6 +67,7 @@ latex/plots/dynamic
 # matlab figures output
 *.eps
 *tikz.tex
+*fig.fig
 
 # Ulysses files
 *.Ulysses*
