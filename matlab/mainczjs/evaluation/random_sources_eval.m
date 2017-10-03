@@ -86,5 +86,7 @@ end
 cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (time per trial = %0.2f, total = %0.2f)\n', mean(mean(est_err)), max(max(est_err)), min(min(est_err)), toc'/trials, toc');
 save(strcat(fname_base, 'results.mat'), 'results');
 save(strcat(fname_base, 'results.txt'), 'results', '-ascii', '-double', '-tabs');
+matrix2latex(results, strcat(fname_base, 'results.tex'), 'columnLabels', {'$x_1$', '$y_1$', '$x_2$', '$y_2$', '$\hat x_1$','$\hat y_1$','$\hat x_2$','$\hat y_2$','err\textsubscript{1}','err\textsubscript{2}'});
+
 cd(oldpath);
 end
