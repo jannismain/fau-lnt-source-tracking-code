@@ -31,16 +31,17 @@ cprintf('-comment', '                E V A L U A T I O N                \n');
 PATH_SRC = '/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/';
 cd(PATH_SRC);
 PATH_MATLAB_RESULTS_ROOT = 'matlab/mainczjs/evaluation/results/';
-PATH_MATLAB_RESULTS_FOLDER_NAME = sprintf('%d_Sources_%d_MinDistance_%d_SNR', n_sources, min_distance, snr);
+PATH_MATLAB_RESULTS_FOLDER_NAME = sprintf('%dsources', n_sources);
 PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, PATH_MATLAB_RESULTS_FOLDER_NAME);
-PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/plots/static/tikz-data/');
+PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/data/plots/static/tikz-data/');
+PATH_LATEX_RESULTS = strcat(PATH_SRC, 'latex/data/');
 oldpath = pwd;
 [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, PATH_MATLAB_RESULTS_FOLDER_NAME);  % at least 2 argout's are required to suppress warning if dir already exists
 cd(PATH_MATLAB_RESULTS);
 
 % init filename
 time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS');
-fname_base = sprintf('%s_sources_%d_mindistance_%0.1f_', time_start, n_sources, min_distance/10);
+fname_base = sprintf('%s_%ds_%0.1fm_', time_start, n_sources, min_distance/10);
 % init empty matrices
 est_err = zeros(trials, n_sources);
 loc_est = zeros(trials, n_sources, 2);
@@ -76,7 +77,7 @@ for trial=1:trials
     psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
     fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
     saveas(fig, strcat(fname_trial, 'fig.fig'), 'fig');
-    matlab2tikz(strcat(PATH_SRC, '/latex/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
+    matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
     close(fig);
     movefile('config.mat', strcat(fname_trial, 'config.mat'));
     
@@ -86,7 +87,7 @@ end
 cprintf('*err', '   RESULT: mean error = %0.2f, max. error = %0.2f, min. error = %0.2f (time per trial = %0.2f, total = %0.2f)\n', mean(mean(est_err)), max(max(est_err)), min(min(est_err)), toc'/trials, toc');
 save(strcat(fname_base, 'results.mat'), 'results');
 save(strcat(fname_base, 'results.txt'), 'results', '-ascii', '-double', '-tabs');
-matrix2latex(results, strcat(fname_base, 'results.tex'), 'columnLabels', {'$x_1$', '$y_1$', '$x_2$', '$y_2$', '$\hat x_1$','$\hat y_1$','$\hat x_2$','$\hat y_2$','err\textsubscript{1}','err\textsubscript{2}'});
-
+clabels = get_column_names_result(n_sources);
+matrix2latex(results, strcat(PATH_LATEX_RESULTS, 'tables/', fname_base, 'results.tex'), 'columnLabels', clabels);
 cd(oldpath);
 end
