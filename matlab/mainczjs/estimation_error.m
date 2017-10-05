@@ -22,7 +22,7 @@ for s=1:size(S, 1)
     end
     loc_est_assorted(idx_loc_est_assorted, 1:2) = inf;  % 'remove' assigned estimates
 end
-
+est_err(est_err<0.01)=0;  % removes errors due to floating point arithmetic
 try
     [S(:,1:2) loc_est est_err]
 catch
