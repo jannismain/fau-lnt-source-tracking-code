@@ -1,4 +1,4 @@
-function [x] = simulate(ROOM, R, S)
+function [x] = simulate(ROOM, R, sources)
 % SIMULATE Simulates a room with two audio sources and receivers and
 % generates the received signal at both receivers
 %
@@ -9,8 +9,7 @@ function [x] = simulate(ROOM, R, S)
 %
 
 %% START
-cprintf('*blue', '\n<%s.m>', mfilename);
-fprintf(' (t = %2.4f)\n', toc);
+fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 load('config.mat')
 
 %% Calculate RIRs
@@ -23,7 +22,7 @@ m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step
             room.c, ...
             fs, ...
             R((mic_pair*2-1):(mic_pair*2),:,:), ...
-            S(s, :), ...
+            sources.positions(s, :), ...
             ROOM, ...
             rir.t_reverb, ...
             rir.length, ...
@@ -40,7 +39,7 @@ m = "Load source data..."; counter = next_step(m, counter);
     
     S_data = zeros(source_length*fs, n_sources);
     for s = 1:n_sources
-        [temp, fs_temp] = audioread(strcat(int2str(s),'.WAV'));
+        [temp, fs_temp] = audioread(sources.samples(s, :));
         if fs_temp ~= fs
             temp = resample(temp, fs, fs_temp);
         end

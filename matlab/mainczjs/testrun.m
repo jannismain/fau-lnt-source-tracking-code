@@ -6,7 +6,7 @@ config_update(4, true, 10);
 load('config.mat');
 
 %% Simulate Environment
-x = simulate(ROOM, R, S);
+x = simulate(ROOM, R, sources);
 
 %% Calculate STFT
 [X, phi] = stft(x);

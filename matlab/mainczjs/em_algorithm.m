@@ -2,11 +2,11 @@ function [ psi ] = em_algorithm(phi, iterations)
 %EM_ALGORITHM2 Summary of this function goes here
 %   Detailed explanation goes here
 
-cprintf('*blue', '\n<%s.m>', mfilename);
+fprintf('\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 
 load('config.mat');
-if nargin<3, iterations = 10; end
+if nargin>1, em.iterations = iterations; end
 
 if ~(exist("em.T", 'var'))
     em.T = 296;

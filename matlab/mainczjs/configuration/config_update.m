@@ -1,11 +1,13 @@
-function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, T60)
-clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall');
+function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations)
+clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall', 'randomize_samples', 'em_iterations');
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = false; end
 if nargin < 3, min_distance = 5; end
 if nargin < 4, distance_wall = 15; end
-if nargin < 5, T60 = 0.3; end
+if nargin < 5, randomize_samples = false; end
+if nargin < 6, T60 = 0.3; end
+if nargin < 7, em_iterations = 10; end
 
 cprintf('*blue', '\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
@@ -77,7 +79,14 @@ else
     S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
 end
 room.S = S;
-source.positions = S;
+sources.positions = S;
+for n=1:7
+    sources.samples(n, :) = strcat(int2str(n),'.WAV');
+end
+
+if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
+display(sources.samples);
+
 sources.signal_length = 3;  % length of source signals [s]
 
 % Source Movement
@@ -126,9 +135,10 @@ em.X = length(room.grid_x);
 em.Y = length(room.grid_y);
 em.P = em.X*em.Y; % Number of Gridpoints
 em.conv_threshold = 0.01;
+em.iterations = em_iterations;
 
 %% Location Estimation
-elimination_radius = 2;
+elimination_radius = 0;
 
 %% Store new values
 save('config.mat', '-regexp', '^(?!(tmpfile)$).')
