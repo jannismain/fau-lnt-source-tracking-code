@@ -65,6 +65,9 @@ latex/data/plots/static/
 latex/data/plots/
 latex/data/tables/
 
+# Jupyter Notebook temp
+*checkpoint.ipynb
+
 # matlab figures output
 *.eps
 *tikz.tex
