@@ -1,8 +1,8 @@
-function [ loc_est, est_err ] = assign_estimates( S, loc_est_assorted )
+function [ loc_est, est_err ] = estimation_error( S, loc_est_assorted )
 %ESTIMATION_ERROR Calculates the estimation error based on the true source positions
 %   bla bla
 
-cprintf('*blue', '\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
+fprintf('\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
 if nargin<2, error('Both input arguments "S" and "loc_est" are required!'); end
 if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch! (%s is %dx%d, %s is %dx%d)', inputname(1), size(S), inputname(2), size(loc_est_assorted)); end
 
@@ -11,23 +11,45 @@ if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments
 diff = inf;
 est_err = ones(size(loc_est_assorted, 1), 1)*inf;
 loc_est = zeros(size(loc_est_assorted));
+
+%% assign perfect matches
 for s=1:size(S, 1)
-    for s_est=1:size(loc_est_assorted, 1)
-        diff = norm(S(s,1:2)-loc_est_assorted(s_est,1:2));
+    for s2=1:size(loc_est_assorted, 1)
+        if s2<s, continue; end  % check each pair only once
+        diff = norm(S(s2,1:2)-loc_est_assorted(s,1:2));
+        if diff < 0.01
+            est_err(s2) = 0;
+            loc_est(s2, 1:2) = loc_est_assorted(s, 1:2);
+            loc_est_assorted(s, 1:2) = inf;  % remove perfect match from estimates
+            S(s2, 1:2) = inf;  % remove perfect match from sources
+            break
+        end
+    end 
+end
+
+%% assign remaining estimates
+for s=1:size(S, 1)
+    if S(s, 1) == inf, continue; end
+    for s2=1:size(loc_est_assorted, 1)
+        if loc_est_assorted(s2, 1) == inf, continue; end
+        diff = norm(S(s,1:2)-loc_est_assorted(s2,1:2));
         if diff < est_err(s)
             est_err(s) = diff;
-            loc_est(s, 1:2) = loc_est_assorted(s_est, 1:2);
-            idx_loc_est_assorted = s_est;
+            loc_est(s, 1:2) = loc_est_assorted(s2, 1:2);
+            idx_loc_est_assorted = s2;
         end
     end
-    loc_est_assorted(idx_loc_est_assorted, 1:2) = inf;  % 'remove' assigned estimates
+    [~, min_idx] = min(est_err);
+    S(min_idx, 1:2) = inf;  % 'remove' assigned estimates from sources
 end
+
+%% final steps
 est_err(est_err<0.01)=0;  % removes errors due to floating point arithmetic
-try
-    [S(:,1:2) loc_est est_err]
-catch
-    error('TODO: Refactor to reliably allow for more/less estimates than real sources!')
-end
+% try
+%     [S(:,1:2) loc_est est_err];
+% catch
+%     error('TODO: Refactor to reliably allow for more/less estimates than real sources!')
+% end
         
             
 
