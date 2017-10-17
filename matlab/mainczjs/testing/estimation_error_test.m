@@ -4,14 +4,9 @@ S =                [1.5 4.6;
 loc_est_assorted = [3.9 1.7;
                     3.0 4.0];
 tic;
-[~,est_err] = estimation_error(S, loc_est_assorted);
-% Print Results
-% for s=1:size(S, 1)
-%     fprintf("  -> Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f], err=%0.2f\n", s, S(s,1:2), loc_est(s, :), est_err(s));
-% end
-% fprintf("  -> Average Estimation Error = %0.2f (Elapsed time = %0.3f)\n", mean(est_err), toc');
-return
-
+[loc_est,est_err] = estimation_error(S, loc_est_assorted);
+assert(round(est_err(1), 2)==1.62)
+assert(round(est_err(2), 2)==2.72)
 %% Test 1: S(1) not in S_est
 S =                [1.5 1.3;
                     1.8 4.4;
@@ -93,7 +88,7 @@ S_est =            [2.8 4.0;
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~, ~,est_err] = evalc('estimation_error(S, S_est_perm);');
+    [~,est_err] = estimation_error(S, S_est_perm);
     assert(round(mean(est_err), 2)==0.16);
 end
 
@@ -109,7 +104,7 @@ S_est =            [2.8 4.0;
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~, ~,est_err] = evalc('estimation_error(S, S_est_perm);');
+    [~,est_err] = estimation_error(S, S_est_perm);
     assert(round(mean(est_err), 2)==0.23);
 end
 
@@ -124,7 +119,7 @@ mean_err = zeros(10, 1);
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~, ~,est_err] = evalc('estimation_error(S, S_est_perm);');
+    [~,est_err] = estimation_error(S, S_est_perm);
     mean_err(n) = mean(est_err);
 end
 assert(min(mean_err)==max(mean_err));
@@ -137,8 +132,22 @@ for s=2:7
     for n=1:25
         tic;
         S_est_perm = S_est(randperm(length(S_est)),:);
-        [~, ~,est_err] = evalc('estimation_error(S, S_est_perm);');
+        [~, est_err] = estimation_error(S, S_est_perm);
         mean_err(n) = mean(est_err);
     end
     assert(min(mean_err)==max(mean_err));
 end
+
+%% Test 9: 
+S =     [4.7 1.2;
+         1.5 2.9;
+         1.7 4.5;
+         2.3 2.7]
+S_est = [1.5,2.9;
+         2.3,2.7;
+         2.2,4.9;
+         1.1,3.9]
+[loc_est,est_err] = estimation_error(S, S_est);
+display(loc_est);
+display(est_err);
+% assert(round(mean(est_err), 2)==0.16);

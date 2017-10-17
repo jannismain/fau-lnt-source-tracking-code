@@ -22,57 +22,32 @@ for s=1:size(S, 1)
             loc_est(s2, 1:2) = loc_est_assorted(s, 1:2);
             loc_est_assorted(s, 1:2) = inf;  % remove perfect match from estimates
             S(s2, 1:2) = inf;  % remove perfect match from sources
-            break
+            break;
         end
     end 
 end
 
 %% assign remaining estimates
-for s=1:size(S, 1)
-    if S(s, 1) == inf, continue; end
-    for s2=1:size(loc_est_assorted, 1)
-        if loc_est_assorted(s2, 1) == inf, continue; end
-        diff = norm(S(s,1:2)-loc_est_assorted(s2,1:2));
+idx_loc_est_assorted = -1;
+for s=1:size(S, 1)  % go through all real source positions
+    if S(s, 1) == inf, continue; end  % skip, if S(s) has already been assigned
+    for s_est=1:size(loc_est_assorted, 1)  % go through all estimated source positions
+        if loc_est_assorted(s_est, 1) == inf, continue; end  % skip, if S_est(s) has already been assigned
+        diff = norm(S(s,1:2)-loc_est_assorted(s_est,1:2));
         if diff < est_err(s)
             est_err(s) = diff;
-            loc_est(s, 1:2) = loc_est_assorted(s2, 1:2);
-            idx_loc_est_assorted = s2;
+            loc_est(s, 1:2) = loc_est_assorted(s_est, 1:2);
+            idx_loc_est_assorted = s_est;
         end
     end
-    [~, min_idx] = min(est_err);
-    S(min_idx, 1:2) = inf;  % 'remove' assigned estimates from sources
+    if idx_loc_est_assorted > -1
+        loc_est_assorted(idx_loc_est_assorted, 1:2) = inf;  % 'remove' assigned estimates from sources
+    end
 end
 
 %% final steps
 est_err(est_err<0.01)=0;  % removes errors due to floating point arithmetic
-% try
-%     [S(:,1:2) loc_est est_err];
-% catch
-%     error('TODO: Refactor to reliably allow for more/less estimates than real sources!')
-% end
-        
-            
-
-% diff1 = ;
-% diff2 = norm(cfg.synth_room.sloc(2,1:2)-loc_est1);
-% [est_error1_complete,idx_est_error_1] = min([diff1,diff2]);
-% est_error2_complete = norm(cfg.synth_room.sloc(3-idx_est_error_1,1:2)-loc_est2);
-% fprintf('%s Estimation errors: %1.2f m   %1.2f m\n', FORMAT_PREFIX, est_error1_complete,est_error2_complete);
-% 
-% diff1_rev = norm(cfg.synth_room.sloc(1,1:2)-loc_est2);
-% diff2_rev = norm(cfg.synth_room.sloc(2,1:2)-loc_est2);
-% [est_error2_complete_rev,idx_est_error_2_rev] = min([diff1_rev,diff2_rev]);
-% est_error1_complete_rev = norm(cfg.synth_room.sloc(3-idx_est_error_2_rev,1:2)-loc_est1);
-% fprintf('%s Estimation errors: %1.2f m   %1.2f m\n', FORMAT_PREFIX, est_error1_complete_rev,est_error2_complete_rev);
-% 
-% [~,idx_error] = min([est_error1_complete,est_error2_complete,est_error1_complete_rev,est_error2_complete_rev]);
-% if(idx_error<=2)
-%     est_error1 = est_error1_complete;
-%     est_error2 = est_error2_complete;
-% else
-%     est_error1 = est_error1_complete_rev;
-%     est_error2 = est_error2_complete_rev;
-% end
+% TODO: Refactor to reliably allow for more/less estimates than real sources!
 
 end
 
