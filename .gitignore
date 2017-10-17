@@ -57,7 +57,7 @@ ausarbeitung-encoding-backup.*
 
 # Other
 *.pdf
-testing/
+/testing/
 
 # Evaluation Results
 matlab/mainczjs/evaluation/results
