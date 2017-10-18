@@ -12,7 +12,7 @@ x = simulate(ROOM, R, sources);
 
 %% Estimate Location (GMM+EM-Algorithmus)
 psi = em_algorithm(phi, 5);
-loc_est = estimate_location(psi, n_sources, elimination_radius, min_distance);
+loc_est = estimate_location(psi, n_sources, elimination_radius, min_distance, room);
 [loc_est_sorted, est_err] = estimation_error(S, loc_est);
 
 %% Print Results
