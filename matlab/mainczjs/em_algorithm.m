@@ -6,7 +6,7 @@ fprintf('\n<%s.m>', mfilename);
 fprintf(' (t = %2.4f)\n', toc);
 
 load('config.mat');
-if nargin>1, em.iterations = iterations; end
+if nargin>1, em.iterations = iterations; fprintf("WARNING: Overriding EM-Iterations!\n"); end
 
 if ~(exist("em.T", 'var'))
     em.T = 296;
