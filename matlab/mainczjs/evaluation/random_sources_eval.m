@@ -34,6 +34,7 @@ cd(PATH_SRC);
 PATH_MATLAB_RESULTS_ROOT = 'matlab/mainczjs/evaluation/results/';
 PATH_MATLAB_RESULTS_FOLDER_NAME = sprintf('%dsources', n_sources);
 if randomize_samples, PATH_MATLAB_RESULTS_FOLDER_NAME = strcat(PATH_MATLAB_RESULTS_FOLDER_NAME, '-rnd'); end
+if T60>0, PATH_MATLAB_RESULTS_FOLDER_NAME = strcat(PATH_MATLAB_RESULTS_FOLDER_NAME, '-T60'); end
 PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, PATH_MATLAB_RESULTS_FOLDER_NAME);
 PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/data/plots/static/tikz-data/');
 PATH_LATEX_RESULTS = strcat(PATH_SRC, 'latex/data/');
@@ -55,17 +56,17 @@ tic;
 
 %% trials
 for trial=1:trials
-    fprintf('[Trial %d/%d] %ds, %1.2fmin.dist.:', trial, trials, n_sources, min_distance/10);
+    fprintf('[Trial %2d/%2d] %ds, %1.2fmin.dist.:', trial, trials, n_sources, min_distance/10);
     evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60);');
     load('config.mat');
     [log, x] = evalc('simulate(ROOM, R, sources);');
     [log, X, phi] = evalc('stft(x);');
     [log, psi] = evalc('em_algorithm(phi, em_iterations);');
-    [log, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance);');
+    [log, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     [log, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
     
     fprintf(" mean_err = %0.2f (Elapsed time = %0.2f)\n", mean(est_err(trial, :)), toc');
-    if mean(est_err(trial, :))>mean(mean(est_err))
+    if mean(est_err(trial, :))>mean(mean(est_err)*2)
         for s=1:n_sources
             fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
         end
