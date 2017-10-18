@@ -3,7 +3,11 @@ psi = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 tic;
 S = [1.5 4.6; 1.2 2.0];
-S_est = estimate_location(psi, 2, 2, 5);
+room.grid_x = linspace(0,6,61);
+room.grid_y = linspace(0,6,61);
+room.N_margin = 10;
+room.grid_resolution = 0.1;
+S_est = estimate_location(psi, size(S, 1), 0, 5, room);
 [loc_est, est_err] = estimation_error(S, S_est);
 assert(round(max(est_err), 2)==0.14);
 
