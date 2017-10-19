@@ -23,13 +23,12 @@ for n=1:n_sources
         [~,idx_Xmax] = max(max(psi,[],1));  % ~ = max. value of psi at identified index
         [~,idx_Ymax] = max(max(psi,[],2));
         loc_est(n, 1:2) = [room.grid_x(idx_Xmax),room.grid_y(idx_Ymax)] + room.N_margin*room.grid_resolution;
-        fprintf('      -> Estimate #%d at x=%0.2f, y=%0.2f\n', n, loc_est(n, :));
         valid_loc = true;
         if n>1  % is this is not the first estimate, make comparison to other estimates
             for m=1:n-1
                 if(norm(loc_est(n, :)-loc_est(m, :)) < min_distance/10)  % est. too close
                     psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_radius);
-                    fprintf('      -> Estimate #%d is within %0.2fm of #%d. Will skip this one!\n', n, min_distance/10, m);
+                    %                     fprintf('      -> Estimate #%d is within %0.2fm of #%d. Will skip this one!\n', n, min_distance/10, m);
                     valid_loc = false;
                     break;
                 end
@@ -37,6 +36,8 @@ for n=1:n_sources
         else
             psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_radius);
         end
+        if valid_loc, fprintf('      -> Estimate #%d at x=%0.2f, y=%0.2f\n', n, loc_est(n, :)); end
+        if sum(sum(psi))==0, break; end
     end
 end
 
