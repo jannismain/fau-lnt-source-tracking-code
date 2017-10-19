@@ -1,4 +1,4 @@
-function plot_em_steps(psi)
+function plot_em_steps(psi, n_sources, md, room, S)
 %PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations
 %
 %   PARAMETERS:
@@ -13,11 +13,11 @@ loc_est_sorted = zeros(em_iterations, n_sources, 2);
 est_err = zeros(em_iterations, n_sources);
 
 for i=1:size(psi, 1)
-    loc_est = estimate_location(squeeze(psi(i, :, :)), n_sources, elimination_radius, min_distance, room);
+    loc_est = estimate_location(squeeze(psi(i, :, :)), n_sources, 0, md, room);
     [loc_est_sorted(i,:,:), est_err(i,:)] = estimation_error(S, loc_est);
     % plot
     for s=1:n_sources+1
-        subplot_tight(trials,n_sources+1,(t-1)+s)
+        subplot_tight(1,n_sources+1,s)
         if s~=n_sources+1
             plot(est_err(:, s), 'LineWidth',2,'Color',[0.4 0.4 0.4]);
             title(sprintf("S%d Estimation Error", s));
