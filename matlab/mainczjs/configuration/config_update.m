@@ -1,16 +1,16 @@
-function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations)
-clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall', 'randomize_samples', 'em_iterations');
+function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold)
+clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall', 'randomize_samples', 'em_iterations', 'em_conv_threshold');
 
 if nargin < 1, n_sources = 2; end
-if nargin < 2, random_sources = false; end
+if nargin < 2, random_sources = true; end
 if nargin < 3, min_distance = 5; end
-if nargin < 4, distance_wall = 15; end
-if nargin < 5, randomize_samples = false; end
-if nargin < 6, T60 = 0.3; end
-if nargin < 7, em_iterations = 10; end
+if nargin < 4, distance_wall = 12; end
+if nargin < 5, randomize_samples = true; end
+if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)"); end
+if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)"); end
+if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)"); end
 
-cprintf('*blue', '\n<%s.m>', mfilename);
-fprintf(' (t = %2.4f)\n', toc);
+fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
 %% Plot
 PLOT_BORDER = .06;
@@ -85,14 +85,13 @@ for n=1:7
 end
 
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
-display(sources.samples);
 
 sources.signal_length = 3;  % length of source signals [s]
 
 % Source Movement
-sources.movement = [0 2 0];
-sources.trajectory_samples = 10;
-sources.trajectory = get_trajectory_from_source(S(2,:),sources.movement, sources.trajectory_samples);
+% sources.movement = [0 2 0];
+% sources.trajectory_samples = 10;
+% sources.trajectory = get_trajectory_from_source(S(2,:),sources.movement, sources.trajectory_samples);
 
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
@@ -123,24 +122,23 @@ room.N_margin = 1/room.grid_resolution;
 room.grid_x = (0:room.grid_resolution:room.dimensions(1));
 room.grid_y = (0:room.grid_resolution:room.dimensions(2));
 [room.pos_x, room.pos_y] = meshgrid(room.grid_x, room.grid_y);
-
 room.X = length(room.grid_x);
 room.Y = length(room.grid_y);
+room.n_pos = room.X * room.Y;  % Number of Gridpoints
 
 %% EM
-room.n_pos = room.X * room.Y;  % Number of Gridpoints
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
 em.X = length(room.grid_x);
 em.Y = length(room.grid_y);
 em.P = em.X*em.Y; % Number of Gridpoints
-em.conv_threshold = 0.01;
+em.conv_threshold = em_conv_threshold;
 em.iterations = em_iterations;
 
 %% Location Estimation
 elimination_radius = 0;
 
 %% Store new values
-save('config.mat', '-regexp', '^(?!(tmpfile)$).')
+save('config.mat')
 
 end
