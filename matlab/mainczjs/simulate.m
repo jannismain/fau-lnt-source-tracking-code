@@ -13,7 +13,7 @@ fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 load('config.mat')
 
 %% Calculate RIRs
-m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step(m, counter); %#ok<*NODEF>
+m = sprintf("Calculate RIR for each Source-Receiver combination... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NODEF>
 
     H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
     for mic_pair = 1:n_receiver_pairs
@@ -35,7 +35,7 @@ m = "Calculate RIR for each Source-Receiver combination..."; counter = next_step
     fprintf("%s Generated RIR %dx%dx%dx%d\n", FORMAT_PREFIX, size(H, 1), size(H, 2), size(H, 3), size(H, 4));
 
 %% Load source data...
-m = "Load source data..."; counter = next_step(m, counter);
+m = sprintf("Load source data... (t = %2.4f)", toc); counter = next_step(m, counter);
     
     S_data = zeros(source_length*fs, n_sources);
     for s = 1:n_sources
@@ -47,7 +47,7 @@ m = "Load source data..."; counter = next_step(m, counter);
     end
 
 %% Y x RIRs
-m = "Convolute source data with room impulse response..."; counter = next_step(m, counter); %#ok<*NASGU>
+m = sprintf("Convolute source data with room impulse response... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NASGU>
     
     n_samples_y = source_length*fs;
 
@@ -60,10 +60,9 @@ m = "Convolute source data with room impulse response..."; counter = next_step(m
             end
         end
     end
-    fprintf('%s done! (Elapsed Time = %2.4f)\n', FORMAT_PREFIX, toc);
-    
-    fprintf("%s Mixing Signals... ", FORMAT_PREFIX);
+
+%% $x = \sum(Y)$
+m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NASGU>
     x = squeeze(sum(Y, 2));
-    fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
 
 end
