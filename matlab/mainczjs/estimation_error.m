@@ -4,6 +4,7 @@ function [ loc_est, est_err ] = estimation_error( S, loc_est_assorted )
 
 fprintf('\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
 if nargin<2, error('Both input arguments "S" and "loc_est" are required!'); end
+if size(S, 1)==1, loc_est_assorted = loc_est_assorted'; end
 if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch! (%s is %dx%d, %s is %dx%d)', inputname(1), size(S), inputname(2), size(loc_est_assorted)); end
 
 % Assign estimation to appropiate source (min error for existing position and estimation)
