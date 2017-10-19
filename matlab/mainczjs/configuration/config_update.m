@@ -6,18 +6,16 @@ if nargin < 2, random_sources = true; end
 if nargin < 3, min_distance = 5; end
 if nargin < 4, distance_wall = 12; end
 if nargin < 5, randomize_samples = true; end
-if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)"); end
-if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)"); end
-if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)"); end
+if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
+if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)\n"); end
+if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)\n"); end
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
 %% Plot
 PLOT_BORDER = .06;
-PLOT = [1 0 0 0 0 0 1 0 0]; % boolean plotting flag: [ all | step1 | step2 | ... | stepX ]
 
 %% Method Configuration Default Values
-PLAY_AUDIO = 0;
 FORMAT_PREFIX = '      ->'; % indents output of each step
 counter = 1;
 
@@ -81,6 +79,9 @@ end
 room.S = S;
 sources.positions = S;
 for n=1:7
+%     if n>9  % this is necessary when more than 9 sources need to be supported!
+%         fname = split("A,B,C,D,E,F,G,H,I,J,K,L",",");
+%         fname = fname(n-9);
     sources.samples(n, :) = strcat(int2str(n),'.WAV');
 end
 
@@ -137,6 +138,13 @@ em.iterations = em_iterations;
 
 %% Location Estimation
 elimination_radius = 0;
+
+%% Logging
+log_sim="";
+log_stft="";
+log_em="";
+log_estloc="";
+log_esterr="";
 
 %% Store new values
 save('config.mat')

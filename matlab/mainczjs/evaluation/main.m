@@ -33,27 +33,35 @@
 % end
 
 %% Evaluation 4: T60=0.6, EM=5 -> EM=10 (randomised source samples, md=5, wd=12, em=10)
-for i=1:5
-    description='fixed-em-iterations-5';  % use only single quotes, double quotes will raise error in mkdir()
-    trials = 10;
+for i=1:2
+    trials = 25;
     min_distance = 5;
     distance_wall = 12;
     randomise_samples = true;
     T60=0.6;
     SNR=0;
-    em_iterations=5;
+    em_iterations=20;
     em_conv_threshold=-1;
+    guess_randomly=false;
+    description=sprintf('fixed-em-iterations-%d', em_iterations);  % use only single quotes, double quotes will raise error in mkdir()
     for sources = 2:7
-        results = random_sources_eval(description,sources,trials,min_distance,distance_wall,randomise_samples,T60,SNR,em_iterations, em_conv_threshold);
+        results = random_sources_eval(description,sources,trials,min_distance,distance_wall,randomise_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
     end
 end
 
 %% Evaluation 5: Random Estimates
-% trials = 100;
-% md = 5;
-% dw = 12;
-% for s=1:7
-%     random_estimates_eval(s, trials, md, dw);
+% description='guessing-at-random';  % use only single quotes, double quotes will raise error in mkdir()
+% trials = 500;
+% min_distance = 5;
+% distance_wall = 12;
+% randomise_samples = true;
+% T60=0;
+% SNR=0;
+% em_iterations=0;
+% em_conv_threshold=-1;
+% guess_randomly=true;
+% for sources = 1:10
+%     results = random_sources_eval(description,sources,trials,min_distance,distance_wall,randomise_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
 % end
 
 %% Evaluation 6: Plot improvement of location estimates for different em iteration steps
