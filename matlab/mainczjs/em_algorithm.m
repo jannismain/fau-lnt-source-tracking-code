@@ -1,16 +1,16 @@
-function [ psi ] = em_algorithm(phi, iterations)
-%EM_ALGORITHM2 Summary of this function goes here
+function [ psi_ret, iter ] = em_algorithm(phi, iterations, conv_threshold, return_all_psi)
+%EM_ALGORITHM Uses the em-algorithm to find parameters of a gaussian mixture model based
+%on phi
 %   Detailed explanation goes here
+%   phi: matrix with gaussian components
+%   iterations: max. number of em-iterations
+%   conv_threshold: em-iterations stop early, when change in psi is lower than conv_threshold (provide -1 to prevent early stopping)
 
-fprintf('\n<%s.m>', mfilename);
-fprintf(' (t = %2.4f)\n', toc);
-
+fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 load('config.mat');
-if nargin>1, em.iterations = iterations; fprintf("WARNING: Overriding EM-Iterations!\n"); end
-
-if ~(exist("em.T", 'var'))
-    em.T = 296;
-end
+if nargin>1, em.iterations = iterations; fprintf("WARNING: Overriding EM-Iterations (%d)!\n", iterations); end
+if nargin>2, em.conv_threshold = conv_threshold; fprintf("WARNING: Overriding EM convergence threshold (%d)!\n", conv_threshold); end
+if nargin<4, return_all_psi = false; end
 
 freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
 phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
@@ -27,7 +27,7 @@ for idx_pairs = 1:room.R_pairs
 end
 
 norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
-fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
     
 %% Phi Tilde
     m = "Compute phi tilde..."; counter = next_step(m, counter);
@@ -36,7 +36,7 @@ fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     % performance (better, worse?)  --> additional dimension for phi and
     % psi
     clear norm_differences;
-    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+    fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
 
 %% Angular Distances
     m = "Compute angular distances..."; counter = next_step(m, counter);
@@ -45,7 +45,7 @@ fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
 %   ang_dist = abs(phi_mat-phi_tilde_mat).^2;                                 % slightly slower (maybe 0.1 sec on MBP)
     ang_dist = bsxfun(@power,abs(phi_mat-phi_tilde_mat),2);
 
-    fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
+    fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
     clear phi_mat;
     clear phi_tilde_mat;
     
@@ -59,10 +59,13 @@ fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
     psi_old = zeros(size(psi));
     
     variance = 0.1;%10; % Use the overal variance of the dataset as the initial variance for each cluster.
-    for iter = 1:iterations
+    if return_all_psi
+        psi_ret = zeros(em.iterations, size(psi, 1), size(psi, 2));
+    end
+    for iter = 1:em.iterations
         
         fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
-        fprintf('\x0394\x03C8 = %2.4f (t = %02.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
+        fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
         
         psi_old = psi;
         
@@ -80,15 +83,28 @@ fprintf('%s done! (Elapsed Time = %s)\n', FORMAT_PREFIX, num2str(toc)');
         var_denominator = squeeze(sum(sum(sum(sum(sum(bsxfun(@times,reshape(mu,size(mu,1),size(mu,2),size(mu,3),size(mu,4),1),ang_dist),5),4),3),2),1));
         var_numerator = room.R_pairs*squeeze(sum(sum(sum(sum(mu,4),3),2),1));
         variance = var_denominator./var_numerator;
-        
-        if(norm(psi_old(:) - psi(:)) < em.conv_threshold), break; end
+        if return_all_psi
+            psi_ret(iter, :, :) = psi;
+        else
+            psi_ret = psi;
+        end
+        if em.conv_threshold > 0
+            if(norm(psi_old(:) - psi(:)) < em.conv_threshold), break; end
+        end
     end
     
 %% Delete outer margin (around microphones) to eliminate false peaks
-    psi(1,:) = 0;
-    psi(size(psi, 1),:) = 0;
-    psi(:,1) = 0;
-    psi(:,size(psi, 2)) = 0;
-
+    if size(psi_ret, 3) == 1  % return_all_psi == false
+        psi_ret(1,:) = 0;
+        psi_ret(size(psi, 1),:) = 0;
+        psi_ret(:,1) = 0;
+        psi_ret(:,size(psi, 2)) = 0;
+    else  % return_all_psi == true
+        psi_ret(:, 1,:) = 0;
+        psi_ret(:, size(psi, 1),:) = 0;
+        psi_ret(:, :, 1) = 0;
+        psi_ret(:, :,size(psi, 2)) = 0;
+    end
+    psi_ret(iter+1:em.iterations,:,:) = [];  % remove zero rows, so size(psi, 1) gives actual em-iterations
 end
 
