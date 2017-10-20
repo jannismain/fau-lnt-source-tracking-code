@@ -14,7 +14,7 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=false;
         for sources = 2:7
-            results = random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
         end
         
     case 'T60'
@@ -29,7 +29,7 @@ switch eval
             em_conv_threshold=-1;
             guess_randomly=false;
             for sources = 2:7
-                results = random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
             end
         end
     
@@ -45,7 +45,7 @@ switch eval
         guess_randomly=false;
         for em=1:4
             for sources = 2:7
-                results = random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly);
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly);
             end
         end
 
@@ -61,7 +61,7 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=true;
         for sources = 2:7
-            results = random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
         end
     
     case 'em-single'
@@ -69,9 +69,7 @@ switch eval
         md = 5;
         wd = 12;
         rand_sources = true;
-        rand_samples = true;
         T60=0;
-        SNR=0;
         em_iterations=50;
         em_conv_threshold=-1;
         for i=1:5
