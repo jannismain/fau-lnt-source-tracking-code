@@ -1,5 +1,5 @@
-function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold)
-clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall', 'randomize_samples', 'em_iterations', 'em_conv_threshold');
+function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order)
+% clearvars('-except', 'save_env', 'n_sources', 'random_sources', 'min_distance', 'trials', 'trial', 'loc_error', 'T60', 'distance_wall', 'randomize_samples', 'em_iterations', 'em_conv_threshold', 'reflect_order');
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = true; end
@@ -9,6 +9,7 @@ if nargin < 5, randomize_samples = true; end
 if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
 if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)\n"); end
 if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)\n"); end
+if nargin < 8, reflect_order = 3; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
@@ -20,15 +21,15 @@ FORMAT_PREFIX = '      ->'; % indents output of each step
 counter = 1;
 
 % Simulation
-fs = 16000;                      % Sample frequency (samples/s)
-room.c = 343;                         % Sound velocity (m/s)
-rir.t_reverb = T60;              % Reverberationtime (s)
-rir.length = 10*1024;            % Number of samples
-mics.type = 'omnidirectional';   % Type of microphone
-rir.reflect_order = 3;           % −1 equals maximum reflection order!
-room.dimension = 3;              % Room dimension
-mics.orientation = [pi/2 0];     % Microphone orientation [azimuth elevation] in radians
-mics.hp_filter = 1;              % Enable high-pass filter
+fs = 16000;                         % Sample frequency (samples/s)
+room.c = 343;                       % Sound velocity (m/s)
+rir.t_reverb = T60;                 % Reverberationtime (s)
+rir.length = 10*1024;               % Number of samples
+mics.type = 'omnidirectional';      % Type of microphone
+rir.reflect_order = reflect_order;  % −1 equals maximum reflection order!
+room.dimension = 3;                 % Room dimension
+mics.orientation = [pi/2 0];        % Microphone orientation [azimuth elevation] in radians
+mics.hp_filter = 1;                 % Enable high-pass filter
 mics.distance_wall = 1;
 
 %% Testbed
