@@ -33,21 +33,18 @@ fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
     m = "Compute phi tilde..."; counter = next_step(m, counter);
     phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); % K/T/Y/X
     % TODO: Make algorithm dependent on number of sources, evaluate
-    % performance (better, worse?)  --> additional dimension for phi and
-    % psi
+    % performance (better, worse?)  --> additional dimension for phi and psi
     clear norm_differences;
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
-
+    
 %% Angular Distances
     m = "Compute angular distances..."; counter = next_step(m, counter);
-    
-%   ang_dist = bsxfun(@power,abs((bsxfun(@minus,phi_mat,phi_tilde_mat))),2);  % slower by about 1 sec on MBP
-%   ang_dist = abs(phi_mat-phi_tilde_mat).^2;                                 % slightly slower (maybe 0.1 sec on MBP)
-    ang_dist = bsxfun(@power,abs(phi_mat-phi_tilde_mat),2);
-
+    phi_diff = bsxfun(@minus,phi_mat,phi_tilde_mat);
+    ang_dist = bsxfun(@power,abs((phi_diff)),2);  % slower by about 1 sec on MBP
+%   ang_dist = abs(phi_mat-phi_tilde_mat).^2;     % slightly slower (maybe 0.1 sec on MBP)
+%   ang_dist = bsxfun(@power,abs(phi_mat-phi_tilde_mat),2);
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
-    clear phi_mat;
-    clear phi_tilde_mat;
+    clear phi_mat; clear phi_tilde_mat; clear phi_diff;
     
 %% EM Algorithm
     m = "EM-Iterations..."; counter = next_step(m, counter);
