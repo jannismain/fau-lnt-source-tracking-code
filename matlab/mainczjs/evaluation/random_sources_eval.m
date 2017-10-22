@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly)  
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order)  
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -24,7 +24,8 @@ if nargin < 7, T60 = 0; end
 if nargin < 8, snr = 0; end
 if nargin < 9, em_iterations = 10; end
 if nargin < 10, em_conv_threshold = -1; end
-if nargin < 10, guess_randomly = false; end
+if nargin < 11, guess_randomly = false; end
+if nargin < 12, reflect_order = 3; end
 
 
 %% initialisation
@@ -43,7 +44,7 @@ cd(PATH_MATLAB_RESULTS);
 
 % init filename
 time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS');
-fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations);
+fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order);
 % init empty matrices
 est_err = zeros(trials, n_sources);
 loc_est = zeros(trials, n_sources, 2);
@@ -55,8 +56,8 @@ tic;
 
 %% trials
 for trial=1:trials
-    fprintf('[Trial %2d/%2d] %ds, %0.1fmd, %0.1fwd, %0.1fT60, %2dem:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations);
-    evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold);');
+    fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
+    evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order);');
     load('config.mat');
     if guess_randomly
         [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
@@ -68,12 +69,12 @@ for trial=1:trials
         [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     end
     [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
-    fprintf(" mean_err = %0.2f (t = %3.2f)\n", mean(est_err(trial, :)), toc');
-    if mean(est_err(trial, :))>mean(mean(est_err)*2)
-        for s=1:n_sources
-            fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
-        end
-    end
+    fprintf(" err_m = %0.2f (t = %4.2f)\n", mean(est_err(trial, :)), toc');
+%     if mean(est_err(trial, :))>mean(mean(est_err)*2)
+%         for s=1:n_sources
+%             fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
+%         end
+%     end
     
     %% archive results
     loc_est_reshaped = reshape(squeeze(loc_est(trial,:,:))',1,size(loc_est, 2)*size(loc_est, 3));

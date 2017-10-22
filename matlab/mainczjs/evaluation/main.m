@@ -1,6 +1,6 @@
-function main(eval, trials)
+function main(eval, trials, varargin)
 
-clearvars('-except', 'eval', 'trials');
+clearvars('-except', 'eval', 'trials', 'varargin');
 if nargin < 2, trials=100; end
 
 switch eval
@@ -14,8 +14,9 @@ switch eval
         em_iterations=5;
         em_conv_threshold=-1;
         guess_randomly=false;
+        reflect_order=3;
         for sources = 2:7
-            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
         end
         
     case 'T60'
@@ -34,19 +35,26 @@ switch eval
             end
         end
     
-    case 'em_iterations'
+    case 'em-iterations'
         description='em-iterations';
         md = 5;
         wd = 12;
         rand_samples = true;
         T60=0.6;
         SNR=0;
-        em_iterations=[5 10 20 50];
+        if ~(isempty(varargin))
+            fprintf("WARN: User provided non-default evaluation parameter em_iterations = ");
+            print_array(varargin{1}, "0.1f");
+            em_iterations = varargin{1};
+        else
+            em_iterations=[1 5 10 20];
+        end
         em_conv_threshold=-1;
         guess_randomly=false;
-        for em=1:4
+        reflect_order=3;
+        for em=1:length(em_iterations)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly);
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly, reflect_order);
             end
         end
 
@@ -61,8 +69,9 @@ switch eval
         em_iterations=0;
         em_conv_threshold=-1;
         guess_randomly=true;
+        reflect_order=-1;
         for sources = 2:7
-            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
         end
     
     case 'em-single'
@@ -120,8 +129,7 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=false;
         for i=1:length(md)
-            if i==1, min_s = 5; else, min_s = 2; end
-            for sources = min_s:7
+            for sources = 2:7
                 random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);  
             end
         end
@@ -136,10 +144,10 @@ switch eval
         em_iterations=5;
         em_conv_threshold=-1;
         guess_randomly=false;
-        reflect_order=[-1];
+        reflect_order=[-1 3 1];
         for i=1:length(reflect_order)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));  
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));  
             end
         end
     
