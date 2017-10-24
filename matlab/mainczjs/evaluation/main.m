@@ -135,7 +135,7 @@ switch eval
         end
     
     case 'reflect-order'
-        description='reflect_order';  % use only single quotes, double quotes will raise error in mkdir()
+        description='reflect-order';  % use only single quotes, double quotes will raise error in mkdir()
         md = 5;
         wd = 12;
         rand_samples = true;
@@ -144,7 +144,13 @@ switch eval
         em_iterations=5;
         em_conv_threshold=-1;
         guess_randomly=false;
-        reflect_order=[-1 3 1];
+        if ~(isempty(varargin))
+            fprintf("WARN: User provided non-default evaluation parameter reflect_order = ");
+            print_array(varargin{1}, "0.1f");
+            reflect_order = varargin{1};
+        else
+            reflect_order=[-1 3 1];
+        end
         for i=1:length(reflect_order)
             for sources = 2:7
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));  
