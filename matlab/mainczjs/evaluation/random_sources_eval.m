@@ -45,7 +45,7 @@ cd(PATH_MATLAB_RESULTS);
 [~, ~] = mkdir('raw');
 
 % init filename
-time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS');
+time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS.FFF');
 fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_var=%d_var-val=%0.1f_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order, isnumeric(variance), max(isnumeric(variance)*variance, 0.1));
 % init empty matrices
 est_err = zeros(trials, n_sources);
