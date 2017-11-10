@@ -5,11 +5,11 @@ if nargin < 2, random_sources = true; end
 if nargin < 3, min_distance = 5; end
 if nargin < 4, distance_wall = 12; end
 if nargin < 5, randomize_samples = true; end
-if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
-if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)\n"); end
-if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)\n"); end
-if nargin < 9, reflect_order = -1; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
-if nargin < 10, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
+if nargin < 6, T60 = 0.3; fprintf('WARNING: Using default for T60 (0.3)\n'); end
+if nargin < 7, em_iterations = 10; fprintf('WARNING: Using default for em_iterations (10)\n'); end
+if nargin < 8, em_conv_threshold = -1; fprintf('WARNING: Using default for em_conv_threshold (-1)\n'); end
+if nargin < 9, reflect_order = -1; fprintf('WARNING: Using default for rir-reflect_order (3)\n'); end
+if nargin < 10, SNR = 0; fprintf('WARNING: Using default for SNR (0)\n'); end
 if nargin < 11, variance = false; end
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
@@ -43,7 +43,7 @@ RminX = mics.distance_wall;
 RminY = mics.distance_wall;
 RmaxX = room.dimensions(1)-mics.distance_wall;
 RmaxY = room.dimensions(2)-mics.distance_wall;
-R    = [2.1, RminY, 1.0;  % bottom       
+R    = [2.1, RminY, 1.0;  % bottom
         2.3, RminY, 1.0;
         2.7, RminY, 1.0;
         2.9, RminY, 1.0;
@@ -69,7 +69,7 @@ R    = [2.1, RminY, 1.0;  % bottom
         RminX, 3.9, 1.0];
 room.R = R;
 room.R_pairs = size(R, 1)/2;
- 
+
 % Source position(s) [ x y ] (m)
 if random_sources == false
     S    = [4 2];
@@ -81,7 +81,7 @@ room.S = S;
 sources.positions = S;
 for n=1:7
 %     if n>9  % this is necessary when more than 9 sources need to be supported!
-%         fname = split("A,B,C,D,E,F,G,H,I,J,K,L",",");
+%         fname = split('A,B,C,D,E,F,G,H,I,J,K,L',',');
 %         fname = fname(n-9);
     sources.samples(n, :) = strcat(int2str(n),'.WAV');
 end
@@ -144,11 +144,11 @@ em.iterations = em_iterations;
 elimination_radius = 0;
 
 %% Logging
-log_sim="";
-log_stft="";
-log_em="";
-log_estloc="";
-log_esterr="";
+log_sim='';
+log_stft='';
+log_em='';
+log_estloc='';
+log_esterr='';
 
 %% Store new values
 save('config.mat')
