@@ -23,7 +23,7 @@ sshpass -f 'lntpw' scp /Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluati
 # Connect to server and execute matlab script
 sshpass -f 'lntpw' ssh mainczyk@lnt$1.e-technik.uni-erlangen.de << ENDHERE
     # execute script
-    matlab -nodisplay -nosplash -nodesktop -r "cd('/HOMES/mainczyk/source_tracking_thesis/matlab/mainczjs/evaluation/');run('evalrun_lnt');exit;"
+    matlab -nodisplay -nosplash -nodesktop -r "cd('/HOMES/mainczyk/thesis/matlab/mainczjs/evaluation/');run('evalrun_lnt');exit;"
 ENDHERE
 
 # fetch data from lnt server
