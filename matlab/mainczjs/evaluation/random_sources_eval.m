@@ -71,7 +71,7 @@ for trial=1:trials
         [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     end
     [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
-    fprintf(" err_m = %0.2f (t = %4.2f)\n", mean(est_err(trial, :)), toc');
+    fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
 %     if mean(est_err(trial, :))>mean(mean(est_err)*2)
 %         for s=1:n_sources
 %             fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
