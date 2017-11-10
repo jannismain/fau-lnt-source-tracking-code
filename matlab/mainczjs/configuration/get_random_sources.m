@@ -23,7 +23,7 @@ x_done = false; y_done = false; i = 0;
         elseif min(abs(diff(y_rand))) > distance_sources/10
             y_done = true;
         end
-        
+
         if n_sources==1, break; end
     end
 

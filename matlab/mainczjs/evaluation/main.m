@@ -4,7 +4,7 @@ clearvars('-except', 'eval', 'trials', 'varargin');
 if nargin < 2, trials=100; end
 
 switch eval
-    case 'base'  
+    case 'base'
         description='base';  % use only single quotes, double quotes will raise error in mkdir()
         md = 5;
         wd = 12;
@@ -18,7 +18,7 @@ switch eval
         for sources = 2:7
             random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
         end
-        
+
     case 'T60'
         description='T60';
         md = 5;
@@ -34,7 +34,7 @@ switch eval
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
             end
         end
-    
+
     case 'em-iterations'
         description='em-iterations';
         md = 5;
@@ -43,8 +43,8 @@ switch eval
         T60=0.6;
         SNR=0;
         if ~(isempty(varargin))
-            fprintf("WARN: User provided non-default evaluation parameter em_iterations = ");
-            print_array(varargin{1}, "0.1f");
+            fprintf('WARN: User provided non-default evaluation parameter em_iterations = ');
+            print_array(varargin{1}, '0.1f');
             em_iterations = varargin{1};
         else
             em_iterations=[1 5 10 20];
@@ -73,7 +73,7 @@ switch eval
         for sources = 2:7
             random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
         end
-    
+
     case 'em-single'
         sources=4;
         md = 5;
@@ -85,7 +85,7 @@ switch eval
         for i=1:5
             est_err(i, :) = single_example_eval(sources,rand_sources, md, wd, T60, em_iterations, em_conv_threshold);
         end
-        
+
     case 'min-distance'
         description='min-distance';  % use only single quotes, double quotes will raise error in mkdir()
         md = [1 3 5 10];
@@ -98,10 +98,10 @@ switch eval
         guess_randomly=false;
         for i=1:length(md)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);  
+                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
             end
         end
-    
+
     case 'reflect-order'
         description='reflect-order';
         md = 5;
@@ -113,18 +113,18 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=false;
         if ~(isempty(varargin))
-            fprintf("WARN: User provided non-default evaluation parameter reflect_order = ");
-            print_array(varargin{1}, "0.1f");
+            fprintf('WARN: User provided non-default evaluation parameter reflect_order = ');
+            print_array(varargin{1}, '0.1f');
             reflect_order = varargin{1};
         else
             reflect_order=[-1 3 1];
         end
         for i=1:length(reflect_order)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));  
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));
             end
         end
-    
+
     case 'noise'
         description='noise';
         md = 5;
@@ -138,11 +138,11 @@ switch eval
         reflect_order=-1;
         for i=1:length(SNR)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR(i),em_iterations, em_conv_threshold, guess_randomly, reflect_order);  
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR(i),em_iterations, em_conv_threshold, guess_randomly, reflect_order);
             end
         end
-    
-    case 'wd'  
+
+    case 'wd'
         description='wd';  % perfect conditions, increased wd, trying to get 100% success rate!
         md = 5;
         wd = [12, 13, 15];
@@ -158,8 +158,8 @@ switch eval
                 random_sources_eval(description,sources,trials,md,wd(i),rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
             end
         end
-    
-    case 'var'  
+
+    case 'var'
         description='var';  % test fixed variance with different values
         md = 5;
         wd = 12;
@@ -176,8 +176,8 @@ switch eval
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,variance(i));
             end
         end
-    
+
     otherwise
         cprintf('*err', 'This evaluation is not yet defined! Please check the spelling of "%s" or define "%s" as new evaluation!\n', eval, eval);
-        
+
 end
