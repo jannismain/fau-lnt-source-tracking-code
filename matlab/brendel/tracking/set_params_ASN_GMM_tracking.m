@@ -12,7 +12,7 @@ cfg.nsrc = 2;       % Number of sources
 cfg.hop = 100;                        % Refresh rate of the AIR
 cfg.synth_room.height = 1;
 
-cfg.type_of_movement = 'line';       % Source movement 'arc' or 'line'
+cfg.type_of_movement = 'arc';       % Source movement 'arc' or 'line'
 switch lower(cfg.type_of_movement)
     case 'arc'
         cfg.synth_room.sloc_start = [3, 1.5,cfg.synth_room.height;
@@ -53,7 +53,7 @@ cfg.synth_room.t60 = 0.3;       % reverberation time
 % % Reverb2
 % cfg.synth_room.t60 = 0.6;       % reverberation time
 
-cfg.synth_room.order = -1;        % reflections order of RIRs
+cfg.synth_room.order = 3;        % reflections order of RIRs
 cfg.synth_room.Nh = 8*1024;         % length of RIRs
 
 %% Grid

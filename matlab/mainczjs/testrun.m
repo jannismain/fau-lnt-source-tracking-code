@@ -1,21 +1,20 @@
 fprintf('------------------------- T E S T R U N -------------------------\n');
 %% setting parameters
-sources = 7;
+sources = 5;
 md = 5;
 wd = 12;
 rand_samples = true;
-T60=1.0;
+T60=0.0;
 SNR=0;
-em_iterations=5;
-em_conv_threshold=-1;
+em_iterations=100;
+em_conv_threshold=0.0001;
 guess_randomly=false;
-reflect_order=1;
-
+reflect_order=0;
 get_em_history = false;
 
 %% init
 tic;
-config_update(sources, true, md,wd,rand_samples,T60,em_iterations, em_conv_threshold, reflect_order);
+config_update(sources, true, md,wd,rand_samples,T60,em_iterations, em_conv_threshold, reflect_order, SNR);
 load('config.mat');
 
 %% Simulate Environment

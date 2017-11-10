@@ -1,4 +1,4 @@
-function [SetupStruc] = ISM_setup()
+function [SetupStruc] = custom_ISM_setup()
 %ISM_setup  Environmental parameters for image-source method simulation
 %
 % [SetupStruc] = ISM_setup()  
@@ -43,12 +43,14 @@ function [SetupStruc] = ISM_setup()
 
 load('config.mat');
 SetupStruc.Fs = fs;                 % sampling frequency in Hz
-SetupStruc.c = c;                   % (optional) propagation speed of acoustic waves in m/s
+SetupStruc.c = room.c;                   % (optional) propagation speed of acoustic waves in m/s
 SetupStruc.room = room.dimensions;        % room dimensions in m
 SetupStruc.mic_pos = R;
 SetupStruc.src_samples = sources.trajectory_samples;
-SetupStruc.src_traj = sources.trajectory;                                 
-SetupStruc.T60 = 0.4;                 % reverberation time T60, or define a T20 field instead!
+clearvars('current_trajectory');
+load('traj.mat');
+SetupStruc.src_traj = current_trajectory;                             
+SetupStruc.T60 = T60;                 % reverberation time T60, or define a T20 field instead!
 % SetupStruc.T20 = 0.15;                % reverberation time T20, or define a T60 field instead!
 
 SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights for the resulting alpha coefficients.
@@ -56,8 +58,8 @@ SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights
 
 
 % Uncomment the following for a 3D plot of the above setup:
-subplot_tight(2,1,1,0.06);
-plot3(SetupStruc.src_traj(:,1),SetupStruc.src_traj(:,2),SetupStruc.src_traj(:,3),'ro-','markersize',4); hold on;
-plot3(SetupStruc.mic_pos(:,1),SetupStruc.mic_pos(:,2),SetupStruc.mic_pos(:,3),'ko','markerfacecolor',ones(1,3)*.6);
-axis equal; axis([0 SetupStruc.room(1) 0 SetupStruc.room(2) 0 SetupStruc.room(3)]);
-box on; xlabel('x-axis (m)'); ylabel('y-axis (m)'); zlabel('z-axis (m)');
+% figure;
+% plot3(SetupStruc.src_traj(:,1),SetupStruc.src_traj(:,2),SetupStruc.src_traj(:,3),'ro-','markersize',4); hold on;
+% plot3(SetupStruc.mic_pos(:,1),SetupStruc.mic_pos(:,2),SetupStruc.mic_pos(:,3),'ko','markerfacecolor',ones(1,3)*.6);
+% axis equal; axis([0 SetupStruc.room(1) 0 SetupStruc.room(2) 0 SetupStruc.room(3)]);
+% box on; xlabel('x-axis (m)'); ylabel('y-axis (m)'); zlabel('z-axis (m)');

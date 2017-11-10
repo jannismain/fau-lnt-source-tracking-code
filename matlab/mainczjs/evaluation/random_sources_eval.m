@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order)  
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, variance)  
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -26,6 +26,7 @@ if nargin < 9, em_iterations = 10; end
 if nargin < 10, em_conv_threshold = -1; end
 if nargin < 11, guess_randomly = false; end
 if nargin < 12, reflect_order = 3; end
+if nargin < 13, variance = false; end
 
 
 %% initialisation
@@ -38,13 +39,14 @@ PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
 PATH_LATEX_ABS = [PATH_SRC 'latex' filesep 'data' filesep 'plots' filesep 'static' filesep 'tikz-data' filesep];
 PATH_LATEX_RESULTS = [PATH_SRC 'latex' filesep 'data' filesep];
 oldpath = pwd;
-[~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists
+% [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists
+[~, ~] = mkdir(PATH_MATLAB_RESULTS);
 cd(PATH_MATLAB_RESULTS);
 [~, ~] = mkdir('raw');
 
 % init filename
 time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS');
-fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order);
+fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_var=%d_var-val=%0.1f_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order, isnumeric(variance), max(isnumeric(variance)*variance, 0.1));
 % init empty matrices
 est_err = zeros(trials, n_sources);
 loc_est = zeros(trials, n_sources, 2);
@@ -57,7 +59,7 @@ tic;
 %% trials
 for trial=1:trials
     fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
-    evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order);');
+    evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr);');
     load('config.mat');
     if guess_randomly
         [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');

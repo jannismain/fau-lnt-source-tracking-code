@@ -13,8 +13,8 @@ function [ fig ] = plot_results( psi, loc_est, room)
     fig = figure('Name','Location Estimate Result',...
                   'NumberTitle','off',...
                   'Color','white',...
-                  'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)],...
-                  'Visible','off');
+                  'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)]);%,...
+                  %'Visible','off');  TODO: Comment this back in for trial runs!
     
     if iterations>1  % plot entire em-step history
         for i=1:iterations
@@ -30,8 +30,9 @@ function [ fig ] = plot_results( psi, loc_est, room)
 
             axis([0,room.dimensions(1),0,room.dimensions(2)]);
             subplot_tight(2,iterations,i+iterations)
-            surf(room.grid_x,room.grid_y,squeeze(psi(1,:,:)))
-            view([-65 25]);
+            fprintf("grid_x = %dx%d, grid_y = %dx%d, psi = %dx%d", size(room.grid_x, 1), size(room.grid_x, 2), size(room.grid_y, 1), size(room.grid_y, 2), size(psi, 2), size(psi, 3))
+            surf(room.grid_x,room.grid_y,squeeze(psi(i,:,:)))
+            view([-10 35]);
             shading interp
         end
     else            % plot only final result

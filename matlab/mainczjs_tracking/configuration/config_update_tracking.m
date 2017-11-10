@@ -1,18 +1,17 @@
-function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR)
+function config_update = config_update_tracking(n_sources, T60, reflect_order, SNR, samples, source_length, freq_range, sidx)
 
 if nargin < 1, n_sources = 2; end
-if nargin < 2, random_sources = true; end
-if nargin < 3, min_distance = 5; end
-if nargin < 4, distance_wall = 12; end
-if nargin < 5, randomize_samples = true; end
-if nargin < 6, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
-if nargin < 7, em_iterations = 10; fprintf("WARNING: Using default for em_iterations (10)\n"); end
-if nargin < 8, em_conv_threshold = -1; fprintf("WARNING: Using default for em_conv_threshold (-1)\n"); end
-if nargin < 9, reflect_order = -1; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
-if nargin < 10, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
-if nargin < 11, variance = false; end
+if nargin < 2, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
+if nargin < 3, reflect_order = -1; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
+if nargin < 4, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
+if nargin < 5, samples = 20; fprintf("WARNING: Using default for samples (20)\n"); end
+if nargin < 6, source_length = 3; fprintf("WARNING: Using default for source_length (3s)\n"); end
+if nargin < 7 || isempty(freq_range), freq_range = 40:65; fprintf("WARNING: Using default for freq_range (40Hz-65Hz)\n"); end
+if nargin < 8, sidx = false; fprintf("WARNING: Using default for source_length (3s)\n"); end
 
-fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
+try
+    fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
+end
 
 %% Plot
 PLOT_BORDER = .06;
@@ -32,6 +31,7 @@ room.dimension = 3;                 % Room dimension
 mics.orientation = [pi/2 0];        % Microphone orientation [azimuth elevation] in radians
 mics.hp_filter = 1;                 % Enable high-pass filter
 mics.distance_wall = 1;
+room.snr = SNR;
 
 %% Testbed
 % Room dimensions    [ x y ] (m)
@@ -71,31 +71,43 @@ room.R = R;
 room.R_pairs = size(R, 1)/2;
  
 % Source position(s) [ x y ] (m)
-if random_sources == false
-    S    = [4 2];
-    S = S(1:n_sources,:);
+S    =              [4 2 1;
+                     2 4 1;
+                     1 1 1;
+                     5 1 1];
+% Source Movement
+sources.movement = [ 0  2 0;
+                     0 -2 0;
+                     4  4 0;
+                    -4  4 0];
+if sidx
+    S = S(sidx(1):sidx(2),:);
+    sources.movement = sources.movement(sidx(1):sidx(2),:);
 else
-    S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
+    S = S(1:n_sources,:);
 end
 room.S = S;
 sources.positions = S;
+
 for n=1:7
-%     if n>9  % this is necessary when more than 9 sources need to be supported!
-%         fname = split("A,B,C,D,E,F,G,H,I,J,K,L",",");
-%         fname = fname(n-9);
     sources.samples(n, :) = strcat(int2str(n),'.WAV');
 end
 
-if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
+sources.signal_length = source_length;  % length of source signals [s]
 
-sources.signal_length = 3;  % length of source signals [s]
+
+sources.trajectory_samples = samples;
+sources.trajectories = zeros(size(S, 1), sources.trajectory_samples, size(S, 2));
+for s=1:size(S, 1)
+    sources.trajectories(s, :, :) = get_trajectory_from_source(squeeze(S(s,:)),squeeze(sources.movement(s,:)), sources.trajectory_samples);
+end
+current_trajectory = squeeze(sources.trajectories(1, :, :));
 
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
 n_sources = size(S, 1);
 source_length = 3;  % length of source signals [s]
 d_r = R(2, 1) - R(1, 1);
-% doa_wanted = doa_trig(S,R);
 
 %% STFT
 fft_window_time = 0.05;
@@ -110,7 +122,7 @@ fft_bins = 2^(ceil(log(fft_window_samples)/log(2)));  % 512 fft bins for STFT
 fft_bins_net = fft_bins/2+1;
 fft_trunc = 500;
 
-fft_freq_range = 40:65;  % TODO: Find reason for this range
+fft_freq_range = freq_range;  % TODO: Find reason for this range
 freq = ((0:fft_bins/2)/fft_bins*fs).'; % frequency vector [Hz]
 
 %% GMM
@@ -124,21 +136,13 @@ room.Y = length(room.grid_y);
 room.n_pos = room.X * room.Y;  % Number of Gridpoints
 
 %% EM
-if isnumeric(variance)
-    em.var = variance;
-    em.var_fixed = true;
-else
-    em.var = 0.1;
-    em.var_fixed = false;
-end
-
 em.K = length(fft_freq_range);
-em.T = 296;  % # of time bins TODO: calculate
+em.T = floor((source_length*fs-fft_window_samples)/fft_step_samples)+1;
 em.X = length(room.grid_x);
 em.Y = length(room.grid_y);
 em.P = em.X*em.Y; % Number of Gridpoints
-em.conv_threshold = em_conv_threshold;
-em.iterations = em_iterations;
+% em.conv_threshold = em_conv_threshold;
+% em.iterations = em_iterations;
 
 %% Location Estimation
 elimination_radius = 0;

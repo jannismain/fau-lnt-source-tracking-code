@@ -28,7 +28,7 @@ xsrc = zeros(size(s,1), cfg.nsrc, cfg.n_mic, cfg.n_pairs); % structure: xsrc(sam
 for idx_pair = 1:cfg.n_pairs
     for q = 1:cfg.nsrc
         for p = 1:cfg.n_mic
-            [xsrc(:, q, p,idx_pair),beta_hat] = signal_generator(s(:, q).',cfg.c,cfg.fs,squeeze(cfg.mic_path(:,p,:,idx_pair)),cfg.src_path(:,:,q),cfg.synth_room.dim,cfg.synth_room.t60,cfg.synth_room.Nh,'o',cfg.synth_room.order);
+            [xsrc(:, q, p,idx_pair),~] = signal_generator(s(:, q).',cfg.c,cfg.fs,squeeze(cfg.mic_path(:,p,:,idx_pair)),cfg.src_path(:,:,q),cfg.synth_room.dim,cfg.synth_room.t60,cfg.synth_room.Nh,'o',cfg.synth_room.order);
         end
     end
 end

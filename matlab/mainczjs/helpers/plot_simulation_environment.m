@@ -1,3 +1,4 @@
+tic;
 config_update(2, true, 10);
 load('config.mat');
 
@@ -6,6 +7,16 @@ PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/plots/tikz-data/');
 PATH_TIKZ_OUTPUT = strcat(PATH_SRC, 'latex/plots/simulation-environment.tex');
 
 [fig, ax_s, ax_r] = plot_room(ROOM, R, S, 1, 800, 800);
+hold on
+[X,Y] = meshgrid(0:0.1:5.9,0:0.1:5.9);
+Z = ones(60,60);
+plot3(X,Y,Z, 'w.', 'MarkerSize', 1)
+legend off;
+% alpha 0.3
+% surf(peaks(30))
+
+% plot3(10,10,10,'r*')
+% hold off
 
 matlab2tikz(PATH_TIKZ_OUTPUT,...
            'figurehandle', fig,...

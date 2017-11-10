@@ -24,12 +24,12 @@ switch eval
         md = 5;
         wd = 12;
         rand_samples = true;
-        T60=[0.3 0.6 0.9];
+        T60=[0.3 0.9];
         SNR=0;
-        em_iterations=10;
+        em_iterations=5;
         em_conv_threshold=-1;
         guess_randomly=false;
-        for i=1:3
+        for i=1:length(T60)
             for sources = 2:7
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
             end
@@ -101,41 +101,9 @@ switch eval
                 random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);  
             end
         end
-        
-    case 'min-distance-T60-0.3'
-        description='min-distance';  % use only single quotes, double quotes will raise error in mkdir()
-        md = [1 3 5 10];
-        wd = 12;
-        rand_samples = true;
-        T60=0.3;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        for i=1:length(md)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);  
-            end
-        end
-        
-    case 'min-distance-T60-0.0'
-        description='min-distance';  % use only single quotes, double quotes will raise error in mkdir()
-        md = [1 3 5 10];
-        wd = 12;
-        rand_samples = true;
-        T60=0.0;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        for i=1:length(md)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);  
-            end
-        end
     
     case 'reflect-order'
-        description='reflect-order';  % use only single quotes, double quotes will raise error in mkdir()
+        description='reflect-order';
         md = 5;
         wd = 12;
         rand_samples = true;
@@ -154,6 +122,58 @@ switch eval
         for i=1:length(reflect_order)
             for sources = 2:7
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));  
+            end
+        end
+    
+    case 'noise'
+        description='noise';
+        md = 5;
+        wd = 12;
+        rand_samples = true;
+        T60=0.6;
+        SNR=[15 30];
+        em_iterations=5;
+        em_conv_threshold=-1;
+        guess_randomly=false;
+        reflect_order=-1;
+        for i=1:length(SNR)
+            for sources = 2:7
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR(i),em_iterations, em_conv_threshold, guess_randomly, reflect_order);  
+            end
+        end
+    
+    case 'wd'  
+        description='wd';  % perfect conditions, increased wd, trying to get 100% success rate!
+        md = 5;
+        wd = [12, 13, 15];
+        rand_samples = true;
+        T60=0.0;
+        SNR=0;
+        em_iterations=5;
+        em_conv_threshold=-1;
+        guess_randomly=false;
+        reflect_order=0;
+        for i=1:length(wd)
+            for sources = 2:7
+                random_sources_eval(description,sources,trials,md,wd(i),rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
+            end
+        end
+    
+    case 'var'  
+        description='var';  % test fixed variance with different values
+        md = 5;
+        wd = 12;
+        rand_samples = true;
+        T60=0.3;
+        SNR=0;
+        em_iterations=5;
+        em_conv_threshold=-1;
+        guess_randomly=false;
+        reflect_order=3;
+        variance=[0.1 0.5 1];
+        for i=1:length(variance)
+            for sources = 2:7
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,variance(i));
             end
         end
     

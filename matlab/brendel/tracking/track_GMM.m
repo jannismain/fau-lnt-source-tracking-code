@@ -1,7 +1,7 @@
 clear all;
 tic;
 
-cfg.freq_range = 40:65;
+cfg.freq_range = 40:65; % checked
 
 % set simulation parameters
 cfg = set_params_ASN_GMM_tracking(cfg);
@@ -27,9 +27,9 @@ for idx_pair = 1:cfg.n_pairs
     
     %%%%%%%%%%%%%%%%%%%%%%%
     % needed for stored sound files
-    if(idx_pair > 6)
-        phi(:,:,idx_pair) = (X(cfg.freq_range,:,1)./X(cfg.freq_range,:,2)).*abs(X(cfg.freq_range,:,2)./X(cfg.freq_range,:,1));
-    end
+%     if(idx_pair > 6)
+%         phi(:,:,idx_pair) = (X(cfg.freq_range,:,1)./X(cfg.freq_range,:,2)).*abs(X(cfg.freq_range,:,2)./X(cfg.freq_range,:,1));
+%     end
     %%%%%%%%%%%%%%%%%%%%%%
 end
 clear x;

@@ -48,12 +48,12 @@ function [SetupStruc] = ISM_setup()
 % these fields in the file below. Set this value to 0 for anechoic
 % environments (direct path only).
 
-config_update;
+config_update_tracking(3,false,0.3,-1,0);
 load('config.mat');
 
 SetupStruc.Fs = fs;                 % sampling frequency in Hz
 
-SetupStruc.c = c;                   % (optional) propagation speed of acoustic waves in m/s
+SetupStruc.c = room.c;                   % (optional) propagation speed of acoustic waves in m/s
 
 SetupStruc.room = room.dimensions;        % room dimensions in m
 
@@ -67,7 +67,7 @@ src_y_trajectory = ones(SetupStruc.src_samples,1)*2.0;
 src_z_trajectory = ones(SetupStruc.src_samples,1)*1.0;
 
 SetupStruc.src_traj = [src_x_trajectory src_y_trajectory src_z_trajectory];   % [x y z] positions of source trajectory in m. 
-
+% display(SetupStruc.src_traj)
                                     
 SetupStruc.T60 = 0.4;                 % reverberation time T60, or define a T20 field instead!
 % SetupStruc.T20 = 0.15;                % reverberation time T20, or define a T60 field instead!

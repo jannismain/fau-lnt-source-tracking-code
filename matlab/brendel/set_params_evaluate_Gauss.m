@@ -1,9 +1,8 @@
-
 function cfg = set_params_evaluate_Gauss()
 
 load('config.mat');
 
-cfg.c = c; % sound velocity
+cfg.c = room.c; % sound velocity
 cfg.n_mic = n_receivers;
 cfg.synth_room.mspacing = 0.2;
 cfg.sig_len = sources.signal_length;
