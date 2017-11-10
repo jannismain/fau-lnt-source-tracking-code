@@ -29,6 +29,6 @@ x_done = false; y_done = false; i = 0;
 
     S      = [x_rand y_rand ones(n_sources, 1)];
     distance = min(abs(diff(x_rand)))+min(abs(diff(y_rand)));
-    fprintf("      -> done! (found %i sufficiently spaced sources (distance = %0.2f) after %i attempts)\n", n_sources, distance, i);
+    fprintf('      -> done! (found %i sufficiently spaced sources (distance = %0.2f) after %i attempts)\n', n_sources, distance, i);
 
 end

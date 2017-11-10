@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, variance)  
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, variance)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -8,9 +8,9 @@ function [results] = random_sources_eval(description, n_sources, trials, min_dis
 % NOTES:
 %   - evalc() is used to supress output from these functions.
 %
-%#ok<*ASGLU>  % this suppresses "value not used" due to evalc() calls
-%#ok<*NASGU>  % this suppresses "this value is used before assigned" due to evalc() calls
-%#ok<*INUSL>  % this suppresses "input argument might be unused" due to evalc() calls
+%#ok<*ASGLU>  % this suppresses 'value not used' due to evalc() calls
+%#ok<*NASGU>  % this suppresses 'this value is used before assigned' due to evalc() calls
+%#ok<*INUSL>  % this suppresses 'input argument might be unused' due to evalc() calls
 %#ok<*INUSD>
 
 %% setting default arg values
@@ -20,7 +20,7 @@ if nargin < 3, trials = 10; end
 if nargin < 4, min_distance = 5; end
 if nargin < 5, distance_wall = 15; end
 if nargin < 6, randomize_samples = False; end
-if nargin < 7, T60 = 0; end 
+if nargin < 7, T60 = 0; end
 if nargin < 8, snr = 0; end
 if nargin < 9, em_iterations = 10; end
 if nargin < 10, em_conv_threshold = -1; end
@@ -74,15 +74,15 @@ for trial=1:trials
     fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
 %     if mean(est_err(trial, :))>mean(mean(est_err)*2)
 %         for s=1:n_sources
-%             fprintf("%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n", FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
+%             fprintf('%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n', FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
 %         end
 %     end
-    
+
     %% archive results
     loc_est_reshaped = reshape(squeeze(loc_est(trial,:,:))',1,size(loc_est, 2)*size(loc_est, 3));
     S_reshaped = reshape(S(:, 1:2)', 1, size(S, 1)*2);
     results(trial, :) = [S_reshaped loc_est_reshaped est_err(trial, :)];
-    
+
     if ~guess_randomly  % save raw data (fig, config.mat)
         fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
         psi_plot = zeros(em.Y,em.X);
