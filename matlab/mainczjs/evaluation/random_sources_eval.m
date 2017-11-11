@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, variance)
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -14,19 +14,20 @@ function [results] = random_sources_eval(description, n_sources, trials, min_dis
 %#ok<*INUSD>
 
 %% setting default arg values
-if nargin < 1, description = 'no-name-specified'; end
-if nargin < 2, n_sources = 2; end
-if nargin < 3, trials = 10; end
-if nargin < 4, min_distance = 5; end
-if nargin < 5, distance_wall = 15; end
-if nargin < 6, randomize_samples = False; end
-if nargin < 7, T60 = 0; end
-if nargin < 8, snr = 0; end
-if nargin < 9, em_iterations = 10; end
+if nargin < 1,  description = 'no-name-specified'; end
+if nargin < 2,  n_sources = 2; end
+if nargin < 3,  trials = 10; end
+if nargin < 4,  min_distance = 5; end
+if nargin < 5,  distance_wall = 15; end
+if nargin < 6,  randomize_samples = False; end
+if nargin < 7,  T60 = 0; end
+if nargin < 8,  snr = 0; end
+if nargin < 9,  em_iterations = 10; end
 if nargin < 10, em_conv_threshold = -1; end
 if nargin < 11, guess_randomly = false; end
 if nargin < 12, reflect_order = 3; end
-if nargin < 13, variance = false; end
+if nargin < 13, var_init = 0.1; end
+if nargin < 14, var_fixed = false; end
 
 
 %% initialisation
@@ -59,7 +60,7 @@ tic;
 %% trials
 for trial=1:trials
     fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
-    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr);');
+    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed);');
     load(fn_conf);
     if guess_randomly
         [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
