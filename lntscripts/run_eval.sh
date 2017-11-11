@@ -18,13 +18,14 @@ else
 fi
 
 # Copy evaluation matlab script to server
-sshpass -f 'lntpw' scp /Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/evalrun_lnt.m mainczyk@lnt$1.e-technik.uni-erlangen.de:/HOMES/mainczyk/source_tracking_thesis/matlab/mainczjs/evaluation/
+sshpass -f 'lntpw' scp /Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/evalrun_lnt.m mainczyk@lnt$1.e-technik.uni-erlangen.de:/HOMES/mainczyk/thesis/matlab/mainczjs/evaluation/
 
 # Connect to server and execute matlab script
 sshpass -f 'lntpw' ssh mainczyk@lnt$1.e-technik.uni-erlangen.de << ENDHERE
     # execute script
-    matlab -nodisplay -nosplash -nodesktop -r "cd('/HOMES/mainczyk/thesis/matlab/mainczjs/evaluation/');run('evalrun_lnt');exit;"
+    screen
+    screen -dr -X ./run_eval_local.sh
 ENDHERE
 
 # fetch data from lnt server
-sshpass -f 'lntpw' rsync -avz --remove-source-files mainczyk@lnt$1.e-technik.uni-erlangen.de:'/HOMES/mainczyk/Dropbox/01.\ STUDIUM/10.\ Masterarbeit/src/matlab/mainczjs/evaluation/results/' '/Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/results/'
+sshpass -f 'lntpw' rsync -avz --exclude=config*.mat --remove-source-files mainczyk@lnt$1.e-technik.uni-erlangen.de:'/HOMES/mainczyk/Dropbox/01.\ STUDIUM/10.\ Masterarbeit/src/matlab/mainczjs/evaluation/results/' '/Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/results/'
