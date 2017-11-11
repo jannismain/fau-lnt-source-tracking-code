@@ -140,6 +140,7 @@ em.iterations = em_iterations;
 elimination_radius = 0;
 
 %% Logging
+LOGGING = false;
 log_sim='';
 log_stft='';
 log_em='';
