@@ -65,9 +65,9 @@ for trial=1:trials
         [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
         loc_est_assorted(trial, :, :) = random_estimate(:, 1:2);
     else
-        [log_sim, x] = evalc('simulate(ROOM, R, sources);');
-        [log_stft, X, phi] = evalc('stft(x);');
-        [log_em, psi, real_iterations] = evalc('em_algorithm(phi);');
+        [log_sim, x] = evalc('simulate(fn_conf, ROOM, R, sources);');
+        [log_stft, X, phi] = evalc('stft(fn_conf, x);');
+        [log_em, psi, real_iterations] = evalc('em_algorithm(fn_conf, phi);');
         [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     end
     [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
