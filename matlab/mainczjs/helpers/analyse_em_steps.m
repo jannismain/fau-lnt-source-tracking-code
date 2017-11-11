@@ -1,13 +1,14 @@
-function analyse_em_steps(psi, n_sources, md, room)
+function analyse_em_steps(psi, variance, md, room)
 %PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations
 %
 %   PARAMETERS:
 %   psi: a history of estimates psi-matrices size(psi) = (trials x n_sources x coordinate)
 %        Example: size(psi)=7x5x2 for 7 trials with 5 sources (and 2 coordinates)
 
-if size(psi, 3) == 1, err("psi needs to be in the following shape: psi(trial, source, coordinate)"); end
+if size(psi, 3) == 1, error("psi needs to be in the following shape: psi(trial, source, coordinate)"); end
 
 em_iterations = size(psi, 1);
+n_sources = size(room.S, 1);
 % x_vals = linspace(0,em_iterations,em_iterations+1);
 loc_est_sorted = zeros(em_iterations, n_sources, 2);
 est_err = zeros(em_iterations, n_sources);
@@ -16,18 +17,17 @@ scr_size = get(0,'ScreenSize');
 fig_size = [5*scr_size(3)/6 scr_size(4)/2];  % width x height
 fig_xpos = ceil((scr_size(3)-fig_size(1))/2); % center the figure on the screen horizontally
 fig_ypos = ceil((scr_size(4)-fig_size(2))/2); % center the figure on the screen vertically
-fig1 = figure('Name','EM Iterations Overview',...
+fig1 = figure('Name','EM Algorithm: Estimation Error Overview',...
               'NumberTitle','off',...
               'Color','white',...
               'Position', [fig_xpos scr_size(4)-fig_size(2)/1.5-50 fig_size(1) fig_size(2)/1.5],...
-              'Visible','off',...
+              'Visible','on',...
               'MenuBar','none');
-fig2 = figure('Name','Progression of psi',...
+fig2 = figure('Name',sprintf('EM Algorithm: \x03C8 across Iterations'),...
               'NumberTitle','off',...
               'Color','white',...
               'Position', [fig_xpos scr_size(4)-fig_size(2)-scr_size(4)/2 fig_size(1) fig_size(2)],...
-              'Visible','off',...
-              'MenuBar','none');
+              'Visible','on');
 
 for i=1:em_iterations
     loc_est = estimate_location(squeeze(psi(i, :, :)), n_sources, 0, md, room);
@@ -47,8 +47,10 @@ for i=1:em_iterations
         yticks(linspace(0, 4, 21))
         grid on
     end
+
+    %% PLOT PSI
     figure(fig2);
-    subplot_tight(2,em_iterations,i)
+    subplot_tight(3,em_iterations,i)
     
     psi_plot = zeros(room.Y,room.X);
     psi_plot((room.N_margin+1):(room.Y-room.N_margin),(room.N_margin+1):(room.X-room.N_margin)) = squeeze(psi(i,:,:));
@@ -63,11 +65,34 @@ for i=1:em_iterations
     plot(loc_est(:, 1), loc_est(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
 
     axis([0,room.dimensions(1),0,room.dimensions(2)]);
-    subplot_tight(2,em_iterations,i+em_iterations)
+    subplot_tight(3,em_iterations,i+em_iterations)
     surf(room.grid_x,room.grid_y,psi_plot)
-    view([-65 25]);
+    view([45 25]);
+    if i==1  % first iteration
+        z = zlim;
+        zMax = z(2);
+    end
+    zlim([0 zMax*3])
     shading interp
     
-end
+    %% PLOT DELTA PSI
+    subplot_tight(3,em_iterations,i+2*em_iterations)
+    if i>1
+        psi_diff = squeeze(psi(i,:,:)-psi(i-1,:,:));
+    else
+        psi_diff = squeeze(psi(i,:,:));
+    end
+    psi_diff_plot = zeros(room.Y,room.X);
+    psi_diff_plot((room.N_margin+1):(room.Y-room.N_margin),(room.N_margin+1):(room.X-room.N_margin)) = psi_diff(:,:);
+    mesh(room.grid_x,room.grid_y,psi_diff_plot)
+    view([45 10]);
+    zlim([-zMax/3 zMax/3])
+%     set(gca,'PlotBoxAspectRatio',[1 1 0.3])
+
+    end
+
+    figure('Name','EM Algorithm: Variance');
+    plot(variance, 'rx-', 'LineWidth', 1, 'MarkerSize', 6);
+    ylim([0,1]);
     
 end

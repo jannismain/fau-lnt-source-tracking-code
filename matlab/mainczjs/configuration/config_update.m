@@ -1,4 +1,4 @@
-function config_update = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR)
+function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = true; end
@@ -10,7 +10,8 @@ if nargin < 7, em_iterations = 10; fprintf('WARNING: Using default for em_iterat
 if nargin < 8, em_conv_threshold = -1; fprintf('WARNING: Using default for em_conv_threshold (-1)\n'); end
 if nargin < 9, reflect_order = -1; fprintf('WARNING: Using default for rir-reflect_order (3)\n'); end
 if nargin < 10, SNR = 0; fprintf('WARNING: Using default for SNR (0)\n'); end
-if nargin < 11, variance = false; end
+if nargin < 11, var_init = 0.1; end
+if nargin < 12, var_fixed = false; end
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
@@ -124,13 +125,8 @@ room.Y = length(room.grid_y);
 room.n_pos = room.X * room.Y;  % Number of Gridpoints
 
 %% EM
-if isnumeric(variance)
-    em.var = variance;
-    em.var_fixed = true;
-else
-    em.var = 0.1;
-    em.var_fixed = false;
-end
+em.var = var_init;
+em.var_fixed = var_fixed;
 
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
@@ -151,6 +147,7 @@ log_estloc='';
 log_esterr='';
 
 %% Store new values
-save('config.mat')
+fn_cfg = sprintf('config_%s.mat', rand_string(5));
+save(fn_cfg);
 
 end
