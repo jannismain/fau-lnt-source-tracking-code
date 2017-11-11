@@ -9,7 +9,7 @@
 *.asv
 *.mat
 *.m~
-matlab/mainczjs/config.mat
+matlab/mainczjs/config*.mat
 
 # Matlab binary files (will keep them as long as they are small)
 # *.mexmaci64
@@ -58,6 +58,7 @@ ausarbeitung-encoding-backup.*
 # Other
 *.pdf
 /testing/
+/lntscripts/.ssh/
 
 # Evaluation Results
 matlab/mainczjs/evaluation/results
