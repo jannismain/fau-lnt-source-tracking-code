@@ -3,7 +3,7 @@ function [X, phi] = stft(fn_cfg, x, tbins)
 % parameters that allow for later DOA estimation
 load(fn_cfg)
 
-if nargin>2, em.T=tbins; fprintf("WARNING: Overring em.T with %d", tbins); end
+if nargin>2, em.T=tbins; fprintf('WARNING: Overring em.T with %d', tbins); end
 
 %% START
 try, fprintf('\n<stft.m> (t = %2.4f)\n', toc); end
