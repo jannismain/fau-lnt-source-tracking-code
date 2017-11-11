@@ -1,4 +1,4 @@
-function [ psi_ret, iter, var_ret] = em_algorithm(phi, iterations, conv_threshold, return_all_psi)
+function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)
 %EM_ALGORITHM Uses the em-algorithm to find parameters of a gaussian mixture model based
 %on phi
 %   Detailed explanation goes here
@@ -7,10 +7,10 @@ function [ psi_ret, iter, var_ret] = em_algorithm(phi, iterations, conv_threshol
 %   conv_threshold: em-iterations stop early, when change in psi is lower than conv_threshold (provide -1 to prevent early stopping)
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
-load('config.mat');
-if nargin>1, em.iterations = iterations; fprintf('WARNING: Overriding EM-Iterations (%d)!\n', iterations); end
-if nargin>2, em.conv_threshold = conv_threshold; fprintf('WARNING: Overriding EM convergence threshold (%d)!\n', conv_threshold); end
-if nargin<4, return_all_psi = false; end
+load(fn_cfg);
+if nargin>2, em.iterations = iterations; fprintf('WARNING: Overriding EM-Iterations (%d)!\n', iterations); end
+if nargin>3, em.conv_threshold = conv_threshold; fprintf('WARNING: Overriding EM convergence threshold (%d)!\n', conv_threshold); end
+if nargin<5, return_all_psi = false; end
 
 freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
 phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
@@ -109,4 +109,5 @@ else  % return_all_psi == true
     psi_ret(:, :,size(psi, 2)) = 0;
 end
 psi_ret(iter+1:em.iterations,:,:) = [];  % remove zero rows, so size(psi, 1) gives actual em-iterations
+var_ret(iter+1:em.iterations) = [];  % remove zero rows, so size(psi, 1) gives actual em-iterations
 end

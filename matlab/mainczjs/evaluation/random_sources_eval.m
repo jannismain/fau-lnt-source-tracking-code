@@ -59,8 +59,8 @@ tic;
 %% trials
 for trial=1:trials
     fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
-    evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr);');
-    load('config.mat');
+    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr);');
+    load(fn_conf);
     if guess_randomly
         [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
         loc_est_assorted(trial, :, :) = random_estimate(:, 1:2);
@@ -83,7 +83,7 @@ for trial=1:trials
     S_reshaped = reshape(S(:, 1:2)', 1, size(S, 1)*2);
     results(trial, :) = [S_reshaped loc_est_reshaped est_err(trial, :)];
 
-    if ~guess_randomly  % save raw data (fig, config.mat)
+    if ~guess_randomly  % save raw data (fig, config_xxx.mat)
         fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
         psi_plot = zeros(em.Y,em.X);
         psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
@@ -91,15 +91,16 @@ for trial=1:trials
         saveas(fig, strcat('raw', filesep, fname_trial, 'fig.fig'), 'fig');
         % matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
         close(fig);
-        movefile('config.mat', strcat('raw', filesep, fname_trial, 'config.mat'));
-        %% save log
-        logfile = fopen(strcat('raw', filesep, fname_trial, 'log.txt'), 'w');
-        fprintf(logfile, log_sim);
-        fprintf(logfile, log_stft);
-        fprintf(logfile, log_em);
-        fprintf(logfile, log_estloc);
-        fprintf(logfile, log_esterr);
-        fclose(logfile);
+        movefile(fn_conf, strcat('raw', filesep, fname_trial, 'config.mat'));
+        if LOGGING
+            logfile = fopen(strcat('raw', filesep, fname_trial, 'log.txt'), 'w');
+            fprintf(logfile, log_conf);
+            fprintf(logfile, log_sim);
+            fprintf(logfile, log_stft);
+            fprintf(logfile, log_em);
+            fprintf(logfile, log_estloc);
+            fprintf(logfile, log_esterr);
+            fclose(logfile);
     end
 end
 

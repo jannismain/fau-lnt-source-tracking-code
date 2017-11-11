@@ -1,18 +1,19 @@
-function [X, phi] = stft(x, tbins)
+function [X, phi] = stft(fn_cfg, x, tbins)
 % STFT calculates the short-time fourier transformation of y using specific
 % parameters that allow for later DOA estimation
-load('config.mat')
+load(fn_cfg)
 
-if nargin<2, tbins=em.T; end
+if nargin>2, em.T=tbins; fprintf("WARNING: Overring em.T with %d", tbins); end
 
 %% START
-fprintf('\n<stft.m> (t = %2.4f)\n', toc);
+try, fprintf('\n<stft.m> (t = %2.4f)\n', toc); end
+
 m = 'Calculate STFT of received signal...'; counter = next_step(m, counter);
 
     TEMP = specgram(x(:,1,1),fft_bins,fs,fft_window,fft_overlap_samples);  % to find out stft output dimensions
-    if tbins~=size(TEMP, 2), tbins=size(TEMP, 2); end
-    X = zeros(fft_bins_net, size(TEMP, 2), 2, n_receiver_pairs);  % TODO: Find out how to calculate 296
-    phi = zeros(em.K,tbins,n_receiver_pairs);
+    if em.T~=size(TEMP, 2), em.T=size(TEMP, 2); end
+    X = zeros(fft_bins_net, em.T, 2, n_receiver_pairs);
+    phi = zeros(em.K,em.T,n_receiver_pairs);
     %% actual stft calculation
     for mic_pair = 1:n_receiver_pairs
         for mic = 1:2

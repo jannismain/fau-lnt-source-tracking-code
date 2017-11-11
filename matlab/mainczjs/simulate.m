@@ -1,4 +1,4 @@
-function [x] = simulate(ROOM, R, sources)
+function [x] = simulate(fn_cfg, ROOM, R, sources)
 % SIMULATE Simulates a room with two audio sources and receivers and
 % generates the received signal at both receivers
 %
@@ -10,7 +10,7 @@ function [x] = simulate(ROOM, R, sources)
 
 %% START
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
-load('config.mat')
+load(fn_cfg)
 
 %% Calculate RIRs
 m = sprintf('Calculate RIR for each Source-Receiver combination... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NODEF>

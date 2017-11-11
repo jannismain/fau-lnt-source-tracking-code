@@ -1,6 +1,6 @@
 tic;
-config_update(2, true, 10);
-load('config.mat');
+fn_cfg = config_update(2, true, 10);
+load(fn_cfg);
 
 PATH_SRC = '/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/';
 PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/plots/tikz-data/');
