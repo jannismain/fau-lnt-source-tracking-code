@@ -141,6 +141,7 @@ elimination_radius = 0;
 
 %% Logging
 LOGGING = false;
+LOGGING_FIG = true;
 log_sim='';
 log_stft='';
 log_em='';

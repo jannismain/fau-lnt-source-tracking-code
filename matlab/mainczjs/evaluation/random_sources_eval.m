@@ -94,10 +94,12 @@ for trial=1:trials
         fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
         psi_plot = zeros(em.Y,em.X);
         psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
-        fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
-        saveas(fig, strcat('raw', filesep, fname_trial, 'fig.fig'), 'fig');
+        if LOGGING_FIG
+            fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
+            saveas(fig, strcat('raw', filesep, fname_trial, '.fig'), 'fig');
+            close(fig);
+        end
         % matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
-        close(fig);
         movefile(fn_conf, strcat('raw', filesep, fname_trial, 'config.mat'));
         if LOGGING
             logfile = fopen(strcat('raw', filesep, fname_trial, 'log.txt'), 'w');
