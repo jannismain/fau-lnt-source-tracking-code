@@ -110,6 +110,7 @@ for trial=1:trials
             fprintf(logfile, log_estloc);
             fprintf(logfile, log_esterr);
             fclose(logfile);
+        end
     end
 end
 
