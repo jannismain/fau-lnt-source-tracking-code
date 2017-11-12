@@ -14,11 +14,11 @@ em_iterations=10;
 em_conv_threshold=-1;
 guess_randomly=false;
 reflect_order=3;
-trials=[100];
+trials=[50];
 var_init = [1];
-var_fixed = true;
+var_fixed = [true];
 for i=1:length(var_init)
     for sources = 2:7
-        random_sources_eval(description,sources,trials(i),md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed, '/HOMES/mainczyk/thesis/src/');
+        random_sources_eval(description,sources,trials(i),md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed(i), '/HOMES/mainczyk/thesis/src/');
     end
 end
