@@ -1,6 +1,7 @@
 % REMOTE SERVER MATLAB CONFIG - DO NOT TOUCH
 cd('../../.')
 addpath_recurse  % ensure all folders are added to path
+rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
 description='var-fixed';  % test fixed variance with different values
