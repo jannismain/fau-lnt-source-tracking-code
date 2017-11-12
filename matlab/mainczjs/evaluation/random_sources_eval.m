@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed)
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -28,17 +28,23 @@ if nargin < 11, guess_randomly = false; end
 if nargin < 12, reflect_order = 3; end
 if nargin < 13, var_init = 0.1; end
 if nargin < 14, var_fixed = false; end
+if nargin < 15, results_dir = false; end
 
 
 %% initialisation
 cprintf('-comment', '                            E V A L U A T I O N                            \n');
 
 % change path to results dir
-PATH_SRC = [getuserdir filesep 'Dropbox' filesep '01. STUDIUM' filesep '10. Masterarbeit' filesep 'src' filesep];
+if ~results_dir
+    PATH_SRC = [getuserdir filesep 'thesis' filesep 'src' filesep];
+else
+    PATH_SRC = results_dir
+end
 PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'results', filesep);
 PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
 PATH_LATEX_ABS = [PATH_SRC 'latex' filesep 'data' filesep 'plots' filesep 'static' filesep 'tikz-data' filesep];
 PATH_LATEX_RESULTS = [PATH_SRC 'latex' filesep 'data' filesep];
+
 oldpath = pwd;
 % [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists
 [~, ~] = mkdir(PATH_MATLAB_RESULTS);

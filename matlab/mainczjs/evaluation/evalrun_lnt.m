@@ -1,6 +1,6 @@
 % REMOTE SERVER MATLAB CONFIG - DO NOT TOUCH
 cd('../../.')
-addpath_recurse
+addpath_recurse  % ensure all folders are added to path
 
 % EVALUATION ROUTINE:
 description='var-fixed';  % test fixed variance with different values
@@ -18,6 +18,6 @@ var_init = [0.1 0.5 2];
 var_fixed = true;
 for i=1:length(var_init)
     for sources = 2:7
-        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed);
+        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed, '/HOMES/mainczyk/thesis/src');
     end
 end
