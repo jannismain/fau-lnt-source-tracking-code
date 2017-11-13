@@ -109,7 +109,7 @@ def is_matched(x):
         elif abs(el) >= 0.1:
             ret.append(0)
         elif el == np.NaN:
-            ret.append(np.Nan)
+            ret.append(None)
         else:
             ret.append(1)
     return ret
@@ -267,7 +267,7 @@ def calculate_helpers(df: pd.DataFrame):
     ).rename(
         columns={"x{}".format(i): "x{}matched".format(i)
                  for i in range(8)})
-    df_helpers = df_helpers.apply(is_matched, axis=1, raw=True)
+    df_helpers = df_helpers.apply(is_matched, axis=1, raw=False)
     df_helpers["total-matched"] = df_helpers.sum(axis=1)
     df_helpers["percent-matched"] = df_helpers["total-matched"] / df[
         "n-sources"].values
