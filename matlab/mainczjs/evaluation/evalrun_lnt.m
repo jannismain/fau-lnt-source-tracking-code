@@ -4,7 +4,7 @@ addpath_recurse  % ensure all folders are added to path
 rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
-description='T60';  % test fixed variance with different values
+description='em-iterations';  % test fixed variance with different values
 md = 5;
 wd = 12;
 rand_samples = true;
