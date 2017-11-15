@@ -5,6 +5,7 @@ rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
 description='worst-case';
+trials=20;
 md = 5;
 wd = 12;
 rand_samples = true;
@@ -14,9 +15,8 @@ em_iterations=5;
 em_conv_threshold=-1;
 guess_randomly=false;
 reflect_order=-1;
-trials=10;
 var_init = 0.1;
 var_fixed = false;
 for sources = 2:7
-    random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed, '/HOMES/mainczyk/thesis/src/');
+    random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
 end
