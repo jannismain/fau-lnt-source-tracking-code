@@ -15,22 +15,39 @@
 %     end
 % end
 
-description='var-fixed';  % test fixed variance with different values
-trials=50;
+% description='var-fixed';  % test fixed variance with different values
+% trials=50;
+% md = 5;
+% wd = 12;
+% rand_samples = true;
+% T60=0.3;
+% SNR=0;
+% em_iterations=10;
+% em_conv_threshold=-1;
+% guess_randomly=false;
+% reflect_order=3;
+% var_init = [0.5 3 1 2 5];
+% var_fixed = false;
+% for i=1:length(var_init)
+%     for sources = 2:7
+%         random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed);
+%     end
+% end
+
+% EVALUATION ROUTINE:
+description='noise';  % test fixed variance with different values
 md = 5;
 wd = 12;
 rand_samples = true;
 T60=0.3;
 SNR=0;
-em_iterations=10;
+em_iterations=5;
 em_conv_threshold=-1;
 guess_randomly=false;
 reflect_order=3;
-var_init = [0.5 3 1 2 5];
+trials=100;
+var_init = 0.1;
 var_fixed = false;
-for i=1:length(var_init)
-    for sources = 2:7
-        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init(i),var_fixed);
-    end
+for sources = 2:4
+    random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed);
 end
-    
