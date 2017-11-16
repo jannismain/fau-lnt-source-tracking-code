@@ -2,20 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="79a702fc-1671-4895-b894-111ef0e9c29a" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../latex/chapters/3algorithms/index.tex" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../latex/chapters/4implementation/index.tex" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../latex/chapters/5results/index.tex" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../latex/chapters/6conclusion/index.tex" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/2theory/index.tex" afterPath="$PROJECT_DIR$/../latex/chapters/2theory/index.tex" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../matlab/other/ANF-Generator" afterPath="$PROJECT_DIR$/../matlab/other/ANF-Generator" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../matlab/other/INF-Generator" afterPath="$PROJECT_DIR$/../matlab/other/INF-Generator" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/2theory/em.tex" afterPath="$PROJECT_DIR$/../latex/chapters/2theory/em.tex" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/2theory/simulation.tex" afterPath="$PROJECT_DIR$/../latex/chapters/2theory/simulation.tex" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/4implementation/setup.tex" afterPath="$PROJECT_DIR$/../latex/chapters/4implementation/setup.tex" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/5results/location_estimation.tex" afterPath="$PROJECT_DIR$/../latex/chapters/5results/location_estimation.tex" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/chapters/6conclusion/critical_review.tex" afterPath="$PROJECT_DIR$/../latex/chapters/6conclusion/critical_review.tex" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/helpers/testbed.tex" afterPath="$PROJECT_DIR$/../latex/helpers/testbed.tex" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/structure/integration.tex" afterPath="$PROJECT_DIR$/../latex/structure/integration.tex" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../latex/structure/packages.tex" afterPath="$PROJECT_DIR$/../latex/structure/packages.tex" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis-mean-err.ipynb" afterPath="$PROJECT_DIR$/analysis-mean-err.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis-mean-err.py" afterPath="$PROJECT_DIR$/analysis-mean-err.py" />
     </list>
@@ -53,9 +44,11 @@
       <file leaf-file-name="analysis-mean-err.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/analysis-mean-err.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2087">
-              <caret line="277" column="43" lean-forward="true" selection-start-line="277" selection-start-column="43" selection-end-line="277" selection-end-column="43" />
-              <folding />
+            <state relative-caret-position="756">
+              <caret line="277" column="43" lean-forward="false" selection-start-line="277" selection-start-column="43" selection-end-line="277" selection-end-column="43" />
+              <folding>
+                <marker date="1510650770161" expanded="true" signature="9514:9630" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -63,7 +56,7 @@
       <file leaf-file-name="shape_base.py" pinned="false" current-in-tab="false">
         <entry file="file:///usr/local/lib/python3.6/site-packages/numpy/lib/shape_base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
+            <state relative-caret-position="1080">
               <caret line="138" column="0" lean-forward="false" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
               <folding />
             </state>
@@ -73,7 +66,7 @@
       <file leaf-file-name="frame.py" pinned="false" current-in-tab="false">
         <entry file="file:///usr/local/lib/python3.6/site-packages/pandas/core/frame.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
+            <state relative-caret-position="53360">
               <caret line="4254" column="0" lean-forward="false" selection-start-line="4254" selection-start-column="0" selection-end-line="4254" selection-end-column="0" />
               <folding />
             </state>
@@ -99,8 +92,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="54" />
-    <option name="y" value="54" />
+    <option name="x" value="53" />
+    <option name="y" value="47" />
     <option name="width" value="2448" />
     <option name="height" value="1361" />
   </component>
@@ -141,7 +134,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.chrisrm.idea.config" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -356,7 +349,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="54" y="54" width="2448" height="1361" extended-state="0" />
+    <frame x="53" y="47" width="2448" height="1361" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16762178" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -403,6 +397,24 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1510650770161" expanded="true" signature="9514:9630" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.6/site-packages/numpy/lib/shape_base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1080">
+          <caret line="138" column="0" lean-forward="false" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.6/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85080">
+          <caret line="4254" column="0" lean-forward="false" selection-start-line="4254" selection-start-column="0" selection-end-line="4254" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -411,13 +423,25 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1510650770161" expanded="true" signature="9514:9630" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis-mean-err.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1510650770161" expanded="true" signature="9514:9630" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file:///usr/local/lib/python3.6/site-packages/numpy/lib/shape_base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
+        <state relative-caret-position="1080">
           <caret line="138" column="0" lean-forward="false" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
           <folding />
         </state>
@@ -425,7 +449,7 @@
     </entry>
     <entry file="file:///usr/local/lib/python3.6/site-packages/pandas/core/frame.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
+        <state relative-caret-position="53360">
           <caret line="4254" column="0" lean-forward="false" selection-start-line="4254" selection-start-column="0" selection-end-line="4254" selection-end-column="0" />
           <folding />
         </state>
@@ -433,9 +457,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/analysis-mean-err.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2087">
-          <caret line="277" column="43" lean-forward="true" selection-start-line="277" selection-start-column="43" selection-end-line="277" selection-end-column="43" />
-          <folding />
+        <state relative-caret-position="756">
+          <caret line="277" column="43" lean-forward="false" selection-start-line="277" selection-start-column="43" selection-end-line="277" selection-end-column="43" />
+          <folding>
+            <marker date="1510650770161" expanded="true" signature="9514:9630" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -18,5 +18,5 @@ reflect_order=-1;
 var_init = 0.1;
 var_fixed = false;
 for sources = 2:7
-    random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
+    random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
 end
