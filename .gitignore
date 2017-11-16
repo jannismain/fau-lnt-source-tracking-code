@@ -74,5 +74,8 @@ latex/data/tables/
 *tikz.tex
 *fig.fig
 
+# Python files
+__pycache__/
+
 # Ulysses files
 *.Ulysses*
