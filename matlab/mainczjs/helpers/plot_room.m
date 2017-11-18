@@ -1,4 +1,4 @@
-function [fig, ax_s, ax_r] = plot_room(ROOM, R, S, subplots, height, width, fig)
+function [fig, ax_s, ax_r] = plot_room(ROOM, R, S, subplots, height, width, fig, varargin)
 %PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources
 
 if nargin<4, subplots=2; end

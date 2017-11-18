@@ -90,6 +90,7 @@ end
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
 
 sources.signal_length = 3;  % length of source signals [s]
+sources.wall_distance = distance_wall;  % enforced distance from outer wall
 
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;

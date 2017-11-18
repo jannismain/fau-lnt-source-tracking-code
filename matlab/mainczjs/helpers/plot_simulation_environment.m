@@ -2,30 +2,68 @@ tic;
 fn_cfg = config_update(2, true, 10);
 load(fn_cfg);
 
-PATH_SRC = '/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/';
-PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/plots/tikz-data/');
-PATH_TIKZ_OUTPUT = strcat(PATH_SRC, 'latex/plots/simulation-environment.tex');
+PATH_SRC = [filesep 'Users' filesep 'jannismainczyk' filesep 'thesis' filesep 'src' filesep];
+PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/data/plots/setup/tikz-data/');
+PATH_TIKZ_OUTPUT = strcat(PATH_SRC, 'latex/data/plots/setup/simulation-environment.tex');
+PATH_PDF_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.pdf');
+PATH_PNG_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.png');
+PATH_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup');
 
-[fig, ax_s, ax_r] = plot_room(ROOM, R, S, 1, 800, 800);
+
+fig = figure('Units', 'centimeters', 'InnerPosition', [0 0 12 12]);
+[fig, ax_s, ax_r] = plot_room(ROOM, R, S, 1, 800, 800, fig);
 hold on
-[X,Y] = meshgrid(0:0.1:5.9,0:0.1:5.9);
-Z = ones(60,60);
-plot3(X,Y,Z, 'w.', 'MarkerSize', 1)
+
+% plot grid across whole room
+step = room.grid_resolution;
+[Xall,Yall] = meshgrid(step:step:room.dimensions(1)-step,step:step:room.dimensions(2)-step);
+Zall = ones(length(Xall), length(Yall));
+axd1 = plot3(Xall,Yall,Zall, 'k.', 'MarkerSize', 1);
+
+% plot grid of possible source locations
+xyMin = sources.wall_distance/10;
+xMax = room.dimensions(1)-sources.wall_distance/10;
+yMax = room.dimensions(2)-sources.wall_distance/10;
+[X,Y] = meshgrid(xyMin:step:xMax,xyMin:step:yMax);
+Z = ones(length(X), length(Y));
+axd2 = plot3(X,Y,Z, 'w.', 'MarkerSize', 1);
 legend off;
-% alpha 0.3
-% surf(peaks(30))
+grid off;
 
-% plot3(10,10,10,'r*')
-% hold off
-
+% export to tikz
 matlab2tikz(PATH_TIKZ_OUTPUT,...
            'figurehandle', fig,...
            'imagesAsPng', true,...
            'checkForUpdates', false,...
            'externalData', false,...
-           'relativeDataPath', 'plots/tikz-data/',...
+           'relativeDataPath', 'data/plots/setup/tikz-data/',...
            'dataPath', PATH_LATEX_ABS,...
            'noSize', false,...
            'width', '0.5\textwidth',...
            'height', '0.5\textwidth',...
            'showInfo', false);
+
+% resize elements for image output
+for i=1:length(axd1)
+    axd1(i).MarkerSize = 2;
+end
+for i=1:length(axd2)
+    axd2(i).MarkerSize = 2;
+end
+for i=1:length(ax_s)
+    ax_s(i).MarkerSize = 6;
+end
+for i=1:length(ax_r)
+    ax_r(i).MarkerSize = 6;
+end
+% fig.Units = 'centimeters';
+% fig.InnerPosition = [0,0,12,12];
+% export as pdf
+print(fig, '-dpdf', PATH_PDF_OUTPUT, '-bestfit');
+%export as png
+% print(fig, '-dpng', PATH_PNG_OUTPUT);
+%export as png
+saveas(fig, [PATH_OUTPUT '.png']);
+saveas(fig, [PATH_OUTPUT '.jpg']);
+
+delete(fn_cfg);
