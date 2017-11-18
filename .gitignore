@@ -56,23 +56,27 @@ matlab/mainczjs/config*.mat
 ausarbeitung-encoding-backup.*
 
 # Other
-*.pdf
+#*.pdf
 /testing/
 /lntscripts/.ssh/
 
 # Evaluation Results
 matlab/mainczjs/evaluation/results
-latex/data/plots/static/
-latex/data/plots/
-latex/data/tables/
+#latex/data/plots/static/
+#latex/data/plots/
+#latex/data/tables/
+latex/proofing
+outline
+**mcode_demo**
+**main.pdf
 
 # Jupyter Notebook temp
 *checkpoint.ipynb
 
 # matlab figures output
-*.eps
-*tikz.tex
-*fig.fig
+#*.eps
+#*tikz.tex
+#*fig.fig
 
 # Python files
 __pycache__/
