@@ -28,8 +28,8 @@ def float_fmt(f: float):
 pd.set_option('display.precision', 2,
               'display.width', 300,
               'display.chop_threshold', 0.0001,
-              'display.expand_frame_repr', False,
-              'display.max_rows', 20,
+              'display.expand_frame_repr', True,
+              'display.max_rows', 55,
               'max_colwidth', 20,
               'display.float_format', float_fmt)
 
