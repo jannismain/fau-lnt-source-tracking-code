@@ -94,8 +94,10 @@ sources.wall_distance = distance_wall;  % enforced distance from outer wall
 
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
-n_sources = size(S, 1);
-source_length = 3;  % length of source signals [s]
+n_sources = size(S, 1);  % REDUNDANT
+sources.n = size(S, 1);
+source_length = 3;  % REDUNDANT
+sources.length = 3;  % length of source signals [s]
 d_r = R(2, 1) - R(1, 1);
 % doa_wanted = doa_trig(S,R);
 
@@ -129,11 +131,15 @@ room.n_pos = room.X * room.Y;  % Number of Gridpoints
 em.var = var_init;
 em.var_fixed = var_fixed;
 
+em.S = sources.n;
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
-em.X = length(room.grid_x);
+em.X = length(room.grid_x);  % all possible gridpoints for X and Y
 em.Y = length(room.grid_y);
+em.Xnet = em.X-2*room.N_margin;  % all gridpoints used in estimation
+em.Ynet = em.Y-2*room.N_margin;
 em.P = em.X*em.Y; % Number of Gridpoints
+em.M = room.R_pairs;
 em.conv_threshold = em_conv_threshold;
 em.iterations = em_iterations;
 
@@ -141,6 +147,7 @@ em.iterations = em_iterations;
 elimination_radius = 0;
 
 %% Logging
+verbose = true;
 LOGGING = false;
 LOGGING_FIG = true;
 log_sim='';

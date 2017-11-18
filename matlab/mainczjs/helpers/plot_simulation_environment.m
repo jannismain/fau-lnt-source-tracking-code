@@ -2,12 +2,14 @@ tic;
 fn_cfg = config_update(2, true, 10);
 load(fn_cfg);
 
-PATH_SRC = [filesep 'Users' filesep 'jannismainczyk' filesep 'thesis' filesep 'src' filesep];
-PATH_LATEX_ABS = strcat(PATH_SRC, 'latex/data/plots/setup/tikz-data/');
-PATH_TIKZ_OUTPUT = strcat(PATH_SRC, 'latex/data/plots/setup/simulation-environment.tex');
-PATH_PDF_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.pdf');
-PATH_PNG_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.png');
-PATH_OUTPUT = strcat(PATH_SRC, 'latex', filesep, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup');
+EXPORT = false;
+
+PATH_SRC = [filesep 'Users' filesep 'jannismainczyk' filesep 'thesis' filesep 'latex' filesep];
+PATH_LATEX_ABS = strcat(PATH_SRC, 'data/plots/setup/tikz-data/');
+PATH_TIKZ_OUTPUT = strcat(PATH_SRC, 'data/plots/setup/setup.tex');
+PATH_PDF_OUTPUT = strcat(PATH_SRC, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.pdf');
+PATH_PNG_OUTPUT = strcat(PATH_SRC, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup.png');
+PATH_OUTPUT = strcat(PATH_SRC, 'data', filesep, 'plots', filesep, 'setup', filesep, 'setup');
 
 
 fig = figure('Units', 'centimeters', 'InnerPosition', [0 0 12 12]);
@@ -30,40 +32,39 @@ axd2 = plot3(X,Y,Z, 'w.', 'MarkerSize', 1);
 legend off;
 grid off;
 
-% export to tikz
-matlab2tikz(PATH_TIKZ_OUTPUT,...
-           'figurehandle', fig,...
-           'imagesAsPng', true,...
-           'checkForUpdates', false,...
-           'externalData', false,...
-           'relativeDataPath', 'data/plots/setup/tikz-data/',...
-           'dataPath', PATH_LATEX_ABS,...
-           'noSize', false,...
-           'width', '0.5\textwidth',...
-           'height', '0.5\textwidth',...
-           'showInfo', false);
+if EXPORT
+    % export to tikz
+    matlab2tikz(PATH_TIKZ_OUTPUT,...
+               'figurehandle', fig,...
+               'imagesAsPng', true,...
+               'checkForUpdates', false,...
+               'externalData', false,...
+               'relativeDataPath', 'data/plots/setup/tikz-data/',...
+               'dataPath', PATH_LATEX_ABS,...
+               'noSize', false,...
+               'width', '0.5\textwidth',...
+               'height', '0.5\textwidth',...
+               'showInfo', false);
 
-% resize elements for image output
-for i=1:length(axd1)
-    axd1(i).MarkerSize = 2;
+    % resize elements for non-tikz output
+    for i=1:length(axd1)
+        axd1(i).MarkerSize = 2;
+    end
+    for i=1:length(axd2)
+        axd2(i).MarkerSize = 2;
+    end
+    for i=1:length(ax_s)
+        ax_s(i).MarkerSize = 6;
+    end
+    for i=1:length(ax_r)
+        ax_r(i).MarkerSize = 6;
+    end
+
+    % export as pdf
+    print(fig, '-dpdf', PATH_PDF_OUTPUT, '-bestfit');
+    %export as png/jpeg
+    saveas(fig, [PATH_OUTPUT '.png']);
+    saveas(fig, [PATH_OUTPUT '.jpg']);
 end
-for i=1:length(axd2)
-    axd2(i).MarkerSize = 2;
-end
-for i=1:length(ax_s)
-    ax_s(i).MarkerSize = 6;
-end
-for i=1:length(ax_r)
-    ax_r(i).MarkerSize = 6;
-end
-% fig.Units = 'centimeters';
-% fig.InnerPosition = [0,0,12,12];
-% export as pdf
-print(fig, '-dpdf', PATH_PDF_OUTPUT, '-bestfit');
-%export as png
-% print(fig, '-dpng', PATH_PNG_OUTPUT);
-%export as png
-saveas(fig, [PATH_OUTPUT '.png']);
-saveas(fig, [PATH_OUTPUT '.jpg']);
 
 delete(fn_cfg);
