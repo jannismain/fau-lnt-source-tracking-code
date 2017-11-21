@@ -1,7 +1,6 @@
 # App Configuration Files
-.texpadtmp
 .vscode
-python/.idea
+**/.idea/**
 
 # macOS-specific files
 .DS_Store
@@ -15,47 +14,6 @@ matlab/mainczjs/config*.mat
 # Matlab binary files (will keep them as long as they are small)
 # *.mexmaci64
 
-# LaTeX build files (taken from https://gist.github.com/kogakure/149016)
-*.aux
-*.glo
-*.idx
-*.log
-*.toc
-*.ist
-*.acn
-*.acr
-*.alg
-*.bbl
-*.blg
-*.dvi
-*.glg
-*.gls
-*.ilg
-*.ind
-*.lof
-*.lot
-*.maf
-*.mtc
-*.mtc1
-*.out
-*.synctex.gz
-*.ps
-*.fls
-*.fdb_latexmk
-*.run.xml
-*.bcf
-*.tpbuild
-
-# LyX source files
-*.lyx
-
-# BibTeX Temp Files
-*.bib.bak
-*.bib.sav
-
-# Project-specific files
-ausarbeitung-encoding-backup.*
-
 # Other
 #*.pdf
 /testing/
@@ -66,22 +24,13 @@ matlab/mainczjs/evaluation/results
 #latex/data/plots/static/
 #latex/data/plots/
 #latex/data/tables/
-latex/proofing
+
 outline
 **mcode_demo**
-**main.pdf
 
 # Jupyter Notebook temp
 *checkpoint.ipynb
 **/.ipynb_checkpoints/**
 
-# matlab figures output
-#*.eps
-#*tikz.tex
-#*fig.fig
-
 # Python files
 __pycache__/
-
-# Ulysses files
-*.Ulysses*
