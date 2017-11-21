@@ -36,11 +36,11 @@ cprintf('-comment', '                            E V A L U A T I O N            
 
 % change path to results dir
 if ~results_dir
-    PATH_SRC = [getuserdir filesep 'thesis' filesep 'src' filesep];
+    PATH_SRC = [getuserdir filesep 'thesis' filesep];
 else
     PATH_SRC = results_dir
 end
-PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'results', filesep);
+PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'src', filesep, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'results', filesep);
 PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
 PATH_LATEX_ABS = [PATH_SRC 'latex' filesep 'data' filesep 'plots' filesep 'static' filesep 'tikz-data' filesep];
 PATH_LATEX_RESULTS = [PATH_SRC 'latex' filesep 'data' filesep];
