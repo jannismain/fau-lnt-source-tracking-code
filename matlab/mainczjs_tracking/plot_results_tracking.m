@@ -1,7 +1,4 @@
 function [] = plot_results_tracking( loc_est, sources, room )
-%PLOT_RESULTS_TRACKING Summary of this function goes here
-%   Detailed explanation goes here
-% load('config.mat');
 
 % Create Figure in the middle of the screen with a reasonable size
 scr_size = get(0,'ScreenSize');
@@ -13,7 +10,6 @@ fig = figure('Name','Location Estimate Result',...
               'Color','white',...
               'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)]);%,...
               %'Visible','off');  TODO: Comment this back in for trial runs!
-    
 % plot sources
 plot_trajectory(sources.trajectories, 'o', fig)
 

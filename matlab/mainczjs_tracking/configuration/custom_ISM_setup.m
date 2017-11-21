@@ -53,7 +53,7 @@ SetupStruc.src_traj = current_trajectory;
 SetupStruc.T60 = T60;                 % reverberation time T60, or define a T20 field instead!
 % SetupStruc.T20 = 0.15;                % reverberation time T20, or define a T60 field instead!
 
-SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights for the resulting alpha coefficients.
+% SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights for the resulting alpha coefficients.
 % simulates a carpeted floor, and sound-absorbing material on the ceiling and the second x-dimension wall.
 
 

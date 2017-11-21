@@ -1,4 +1,4 @@
-function config_update = config_update_tracking(n_sources, T60, reflect_order, SNR, samples, source_length, freq_range, sidx)
+function config_update = config_update_tracking(n_sources, T60, reflect_order, SNR, samples, source_length, freq_range, sidx, sim_method)
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
@@ -6,8 +6,9 @@ if nargin < 3, reflect_order = -1; fprintf("WARNING: Using default for rir-refle
 if nargin < 4, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
 if nargin < 5, samples = 20; fprintf("WARNING: Using default for samples (20)\n"); end
 if nargin < 6, source_length = 3; fprintf("WARNING: Using default for source_length (3s)\n"); end
-if nargin < 7 || isempty(freq_range), freq_range = 40:65; fprintf("WARNING: Using default for freq_range (40Hz-65Hz)\n"); end
+if nargin < 7 || isempty(freq_range), freq_range = 40:65; fprintf("WARNING: Using default for freq_range (bins 40-65)\n"); end
 if nargin < 8, sidx = false; fprintf("WARNING: Using default for source_length (3s)\n"); end
+if nargin < 9, sim_method = 'fastISM'; fprintf("WARNING: Using default simulation method (fastISM)\n"); end
 
 try
     fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
@@ -24,7 +25,7 @@ counter = 1;
 fs = 16000;                         % Sample frequency (samples/s)
 room.c = 343;                       % Sound velocity (m/s)
 rir.t_reverb = T60;                 % Reverberationtime (s)
-rir.length = 10*1024;               % Number of samples
+rir.length = 1*1024;               % Number of samples
 mics.type = 'omnidirectional';      % Type of microphone
 rir.reflect_order = reflect_order;  % −1 equals maximum reflection order!
 room.dimension = 3;                 % Room dimension
@@ -43,7 +44,7 @@ RminX = mics.distance_wall;
 RminY = mics.distance_wall;
 RmaxX = room.dimensions(1)-mics.distance_wall;
 RmaxY = room.dimensions(2)-mics.distance_wall;
-R    = [2.1, RminY, 1.0;  % bottom       
+R    = [2.1, RminY, 1.0;  % bottom
         2.3, RminY, 1.0;
         2.7, RminY, 1.0;
         2.9, RminY, 1.0;
@@ -69,7 +70,7 @@ R    = [2.1, RminY, 1.0;  % bottom
         RminX, 3.9, 1.0];
 room.R = R;
 room.R_pairs = size(R, 1)/2;
- 
+
 % Source position(s) [ x y ] (m)
 S    =              [4 2 1;
                      2 4 1;
@@ -88,6 +89,7 @@ else
 end
 room.S = S;
 sources.positions = S;
+sources.p = S;
 
 for n=1:7
     sources.samples(n, :) = strcat(int2str(n),'.WAV');
@@ -106,7 +108,7 @@ current_trajectory = squeeze(sources.trajectories(1, :, :));
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
 n_sources = size(S, 1);
-source_length = 3;  % length of source signals [s]
+sources.n = size(S, 1);
 d_r = R(2, 1) - R(1, 1);
 
 %% STFT
@@ -140,7 +142,14 @@ em.K = length(fft_freq_range);
 em.T = floor((source_length*fs-fft_window_samples)/fft_step_samples)+1;
 em.X = length(room.grid_x);
 em.Y = length(room.grid_y);
-em.P = em.X*em.Y; % Number of Gridpoints
+em.Xnet = length(room.grid_x)-2*room.N_margin;
+em.Ynet = length(room.grid_y)-2*room.N_margin;
+em.X_idxmax = em.X - room.N_margin;
+em.Y_idxmax = em.Y - room.N_margin;
+em.P = room.n_pos; % Number of Gridpoints
+em.M = n_receiver_pairs;
+em.gamma = 0.1;
+em.var = 0.9;
 % em.conv_threshold = em_conv_threshold;
 % em.iterations = em_iterations;
 
@@ -153,6 +162,11 @@ log_stft="";
 log_em="";
 log_estloc="";
 log_esterr="";
+
+c.lmsred = [204/255, 53/255, 56/255];
+c.darkgray = [169/255,169/255,169/255];
+
+method = sim_method;
 
 %% Store new values
 save('config.mat')
