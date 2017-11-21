@@ -1,6 +1,7 @@
 # App Configuration Files
 .texpadtmp
 .vscode
+python/.idea
 
 # macOS-specific files
 .DS_Store
