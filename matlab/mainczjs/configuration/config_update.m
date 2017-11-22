@@ -1,4 +1,4 @@
-function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
+function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed, psi_prior)
 
 if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = true; end
@@ -12,6 +12,7 @@ if nargin < 9, reflect_order = -1; fprintf('WARNING: Using default for rir-refle
 if nargin < 10, SNR = 0; fprintf('WARNING: Using default for SNR (0)\n'); end
 if nargin < 11, var_init = 0.1; end
 if nargin < 12, var_fixed = false; end
+if nargin < 13, psi_prior = 'equal'; end
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
@@ -73,10 +74,19 @@ room.R_pairs = size(R, 1)/2;
 
 % Source position(s) [ x y ] (m)
 if random_sources == false
-    S    = [4 2];
+    S    = [4 2 1;
+            2 4 1];
     S = S(1:n_sources,:);
 else
     S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
+end
+for s=1:n_sources
+    if s<n_sources
+        fprintf('%s S%d = %1.1fm x %1.1fm, ', FORMAT_PREFIX, s, S(s, 1), S(s, 2));
+        if mod(s,4)==0, fprintf('\n');end
+    else
+        fprintf('%s S%d = %1.1fm x %1.1fm\n', FORMAT_PREFIX, s, S(s, 1), S(s, 2));
+    end
 end
 room.S = S;
 sources.positions = S;
@@ -132,8 +142,15 @@ em.var_fixed = var_fixed;
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
 em.X = length(room.grid_x);
+em.Xnet = em.X-2*room.N_margin;
+em.X_idxMax = em.X-room.N_margin;
 em.Y = length(room.grid_y);
+em.Ynet = em.Y-2*room.N_margin;
+em.Y_idxMax = em.Y-room.N_margin;
 em.P = em.X*em.Y; % Number of Gridpoints
+em.M = size(R, 1)/2;
+em.S = n_sources;
+em.prior = psi_prior;
 em.conv_threshold = em_conv_threshold;
 em.iterations = em_iterations;
 
