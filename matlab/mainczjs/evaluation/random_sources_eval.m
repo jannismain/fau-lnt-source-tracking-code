@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir)
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, prior)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -29,6 +29,7 @@ if nargin < 12, reflect_order = 3; end
 if nargin < 13, var_init = 0.1; end
 if nargin < 14, var_fixed = false; end
 if nargin < 15, results_dir = false; end
+if nargin < 16, prior = 'equal'; end
 
 
 %% initialisation
@@ -66,17 +67,12 @@ tic;
 %% trials
 for trial=1:trials
     fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
-    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed);');
+    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed, prior);');
     load(fn_conf);
-    if guess_randomly
-        [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
-        loc_est_assorted(trial, :, :) = random_estimate(:, 1:2);
-    else
-        [log_sim, x] = evalc('simulate(fn_conf, ROOM, R, sources);');
-        [log_stft, X, phi] = evalc('stft(fn_conf, x);');
-        [log_em, psi, real_iterations] = evalc('em_algorithm(fn_conf, phi);');
-        [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
-    end
+    [log_sim, x] = evalc('simulate(fn_conf, ROOM, R, sources);');
+    [log_stft, X, phi] = evalc('stft(fn_conf, x);');
+    [log_em, psi, real_iterations] = evalc('em_algorithm(fn_conf, phi);');
+    [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
     fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
 %     if mean(est_err(trial, :))>mean(mean(est_err)*2)
