@@ -54,22 +54,38 @@ end
 
 %% Estimate Location (GMM+EM-Algorithmus)
 [psi, iterations, variance] = em_algorithm(fn_cfg, phi, em_iterations, em_conv_threshold, get_em_history, verbose);
-% loc_est = estimate_location(squeeze(psi(size(psi, 1), :, :)), n_sources, 0, 5, room);
-% [loc_est_sorted, est_err] = estimation_error(S, loc_est);
+
+psi_mixed = squeeze(sum(psi(end,:,:,:),2));
+loc_est = estimate_location(psi_mixed, n_sources, 0, md, room);
+[loc_est_sorted, est_err] = estimation_error(S, loc_est);
 
 %% Plotting results
-figure; 
-for i=1:iterations
+figure;
+rows = iterations+2;
+psi_plot = zeros(iterations+1,em.S,em.Y,em.X);
+psi_plot(:,:,(room.N_margin+1):(em.Y_idxMax),(room.N_margin+1):(em.X_idxMax)) = psi;
+for r=1:rows
     for s=1:em.S
-        psi_plot = zeros(em.S,em.Y,em.X);
-        psi_plot(:,(room.N_margin+1):(em.Y_idxMax),(room.N_margin+1):(em.X_idxMax)) = psi;
-        subplot_tight(iterations,em.S,iterations*s); hold on
-        axis([0,room.dimensions(1),0,room.dimensions(2)]);
-        surf(room.grid_x,room.grid_y,squeeze(psi_plot(s,:,:)))
-        view([-10 35]);
-        shading interp
+        subplot_tight(rows,em.S,((r-1)*em.S)+s); hold on
+        if r<rows  % print psi
+            axis([0,room.dimensions(1),0,room.dimensions(2)]);
+            surf(room.grid_x,room.grid_y,squeeze(psi_plot(r,s,:,:)))
+            if r<rows-1
+                view([-45 45]);
+            else
+                view([0 90]);
+            end
+            shading interp
+        else  % print variance in last row
+            plot(linspace(0,iterations,iterations+1), variance(:,s), '-x')
+            axis([0,iterations,0,1.2])
+            xticks(linspace(0,iterations,iterations+1))
+        end 
     end
 end
+
+psi_plot_mixed = squeeze(sum(psi_plot(end,:,:,:),2));
+plot_results(psi_plot_mixed,loc_est_sorted,room);
 save(fn_cfg);  % save all temp results to config
 
 %% End

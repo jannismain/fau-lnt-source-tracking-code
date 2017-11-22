@@ -176,6 +176,28 @@ switch eval
                 random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,variance(i));
             end
         end
+    
+    case 'psi_s'
+        description='psi_s';  % test fixed variance with different values
+        md = 5;
+        wd = 12;
+        rand_samples = true;
+        T60=0.3;
+        SNR=0;
+        em_iterations=5;
+        em_conv_threshold=-1;
+        guess_randomly=false;
+        reflect_order=3;
+        trials=200;
+        var_init = 0.1;
+        var_fixed = false;
+        results_dir=false;
+        prior=["equal","rand","hh","hv"];
+        for p=1:length(prior)
+            for sources = 2:7
+                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,results_dir,prior(p));
+            end
+        end
 
     otherwise
         cprintf('*err', 'This evaluation is not yet defined! Please check the spelling of "%s" or define "%s" as new evaluation!\n', eval, eval);

@@ -15,7 +15,7 @@ if nargin>2, em.iterations = iterations; fprintf('WARNING: Overriding EM-Iterati
 if nargin>3, em.conv_threshold = conv_threshold; fprintf('WARNING: Overriding EM convergence threshold (%d)!\n', conv_threshold); end
 if nargin<5, return_all_psi = false; end
 if nargin<6, verbose = false; end
-if nargin>6, fprintf('WARNING: Overriding prior from config (%d, was: %d)!\n', prior, em.prior); em.prior = prior; end
+if nargin>6, fprintf('WARNING: Overriding prior from config (%s, was: %s)!\n', prior, em.prior); em.prior = prior; end
 
 if ~(exist('ang_dist.mat', 'file') == 2)
     % FREQ_MAT
@@ -90,6 +90,8 @@ switch em.prior
         psi = psi_half_half(em.S, em.Xnet, em.Ynet, true, 'vert');
     case 'hh'  % half-half horizontal
         psi = psi_half_half(em.S, em.Xnet, em.Ynet, true, 'horz');
+    case 'quart'  % quarter initialisation
+        psi = psi_quart(em.S, em.Xnet, em.Ynet, true);
 end
 
 if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "psi"); disp(size(psi)); end
@@ -115,16 +117,16 @@ for iter = 1:em.iterations
 
 %% Expectation       
     prob = permute(psi,[1,4,5,2,3,6]) .* prod( 1./(variance*pi) .* exp(-(ang_dist./variance)),6);
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "prob"); disp(size(prob)); end
+    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "prob"); disp(size(prob)); end
     
     mu = prob./sum(sum(sum(prob,5),4),1);
     mu(isnan(mu)) = 0;
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "mu"); disp(size(mu)); end
+    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "mu"); disp(size(mu)); end
 
 %% Maximization
     psi = squeeze(sum(sum(mu,3),2)/(em.T*em.K));
     psi(psi<=0) = eps;  % reset negative values to the smallest possible positive value
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "maxim. psi"); disp(size(psi)); end
+    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "maxim. psi"); disp(size(psi)); end
     
     if ~em.var_fixed
         var_denominator = squeeze(sum(sum(sum(sum(sum(mu.*ang_dist,6),5),4),3),2));
