@@ -20,7 +20,7 @@ var_init = 0.1;
 var_fixed = false;
 prior=[string('equal'), string('rand'), string('hh'), string('quart')]; %#ok<STRQUOT> string creation with "..." is not allowed on LNT Matlab.
 for p=1:length(prior)
-    if strcmp(prior(p), string('equal')), minS = 6; else, minS = 2; end
+    if strcmp(prior(p), string('equal')), minS = 7; else, minS = 2; end
     for sources = minS:7
         random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,dir,prior(p));
     end
