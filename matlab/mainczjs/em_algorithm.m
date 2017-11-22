@@ -19,23 +19,23 @@ if nargin>6, fprintf('WARNING: Overriding prior from config (%s, was: %s)!\n', p
 
 if ~(exist('ang_dist.mat', 'file') == 2)
     % FREQ_MAT
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "fft_freq_range"); disp(size(fft_freq_range)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'fft_freq_range'); disp(size(fft_freq_range)); end
     freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "new freq mat"); disp(size(freq_mat)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'new freq mat'); disp(size(freq_mat)); end
 
     % PHI_MAT
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "phi"); disp(size(phi)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'phi'); disp(size(phi)); end
     %% extend phi_mat to sixth dimension for S and reshape into form!
     % phi_mat = phi;
     % for i=1:em.S-1
     %     phi_mat = cat(4,phi_mat, phi);
     % end
     % phi_mat = reshape(phi_mat,em.K,em.T,1,1,em.M, em.S);
-    % if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "phi mat"); display(size(phi_mat)); end
+    % if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'phi mat'); display(size(phi_mat)); end
     phi_mat = reshape(phi,em.K,em.T,1,1,em.M);
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "phi mat"); disp(size(phi_mat)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'phi mat'); disp(size(phi_mat)); end
     phi_mat = repmat(phi_mat,1,1,em.Ynet,em.Xnet,1, 1);
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "repmat phi mat"); disp(size(phi_mat)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'repmat phi mat'); disp(size(phi_mat)); end
 
     m = 'Compute distances...'; counter = next_step(m, counter);
     norm_differences = zeros(em.Ynet,em.Xnet,em.M);
@@ -46,26 +46,26 @@ if ~(exist('ang_dist.mat', 'file') == 2)
             end
         end
     end
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "norm_diff"); disp(size(norm_differences)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'norm_diff'); disp(size(norm_differences)); end
     norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "new norm_diff"); disp(size(norm_differences)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'new norm_diff'); disp(size(norm_differences)); end
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
 
     %% Phi Tilde
     m = 'Compute phi tilde...'; counter = next_step(m, counter);
     phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); % K/T/Y/X
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "phi tilde mat"); disp(size(phi_tilde_mat)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'phi tilde mat'); disp(size(phi_tilde_mat)); end
     clear norm_differences;
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
 
     %% Angular Distances
     m = 'Compute angular distances...'; counter = next_step(m, counter);
     ang_dist = abs(phi_mat-phi_tilde_mat).^2;  % slower by about 1 sec on MBP
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "ang_dist"); disp(size(ang_dist)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'ang_dist'); disp(size(ang_dist)); end
 
     m = 'Add additional dimension em.S to arg_dist...'; counter = next_step(m, counter);
     ang_dist = repmat(permute(ang_dist, [6,1,2,3,4,5]), em.S, 1);
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "ext. ang_dist"); disp(size(ang_dist)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'ext. ang_dist'); disp(size(ang_dist)); end
 
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
     clear phi_mat; clear phi_tilde_mat;
@@ -74,7 +74,7 @@ if ~(exist('ang_dist.mat', 'file') == 2)
 else
     m = 'Load ang_dist from disk...'; counter = next_step(m, counter);
     load('ang_dist.mat')
-    if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "ang_dist"); disp(size(ang_dist)); end
+    if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'ang_dist'); disp(size(ang_dist)); end
     fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
 end
 
@@ -94,7 +94,7 @@ switch em.prior
         psi = psi_quart(em.S, em.Xnet, em.Ynet, true);
 end
 
-if verbose, fprintf("%s %15s: ", FORMAT_PREFIX, "psi"); disp(size(psi)); end
+if verbose, fprintf('%s %15s: ', FORMAT_PREFIX, 'psi'); disp(size(psi)); end
 % TODO: Ausweiten auf gesamten Bereich (em.X instead of em.Xnet), auswerten ob Sources auch außerhalb erkannt werden.
 psi_old = zeros(size(psi));
 
@@ -115,19 +115,19 @@ for iter = 1:em.iterations
 
     psi_old = psi;
 
-%% Expectation       
+%% Expectation
     prob = permute(psi,[1,4,5,2,3,6]) .* prod( 1./(variance*pi) .* exp(-(ang_dist./variance)),6);
-    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "prob"); disp(size(prob)); end
-    
+    if verbose&&iter==1, fprintf('%s %15s: ', FORMAT_PREFIX, 'prob'); disp(size(prob)); end
+
     mu = prob./sum(sum(sum(prob,5),4),1);
     mu(isnan(mu)) = 0;
-    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "mu"); disp(size(mu)); end
+    if verbose&&iter==1, fprintf('%s %15s: ', FORMAT_PREFIX, 'mu'); disp(size(mu)); end
 
 %% Maximization
     psi = squeeze(sum(sum(mu,3),2)/(em.T*em.K));
     psi(psi<=0) = eps;  % reset negative values to the smallest possible positive value
-    if verbose&&iter==1, fprintf("%s %15s: ", FORMAT_PREFIX, "maxim. psi"); disp(size(psi)); end
-    
+    if verbose&&iter==1, fprintf('%s %15s: ', FORMAT_PREFIX, 'maxim. psi'); disp(size(psi)); end
+
     if ~em.var_fixed
         var_denominator = squeeze(sum(sum(sum(sum(sum(mu.*ang_dist,6),5),4),3),2));
         var_numerator = em.M.*squeeze(sum(sum(sum(sum(mu,5),4),3),2));
@@ -159,7 +159,7 @@ end
 % end
 % below is only necessary, when convergence threshold is set
 if conv_threshold > 0
-    fprintf("You should probably add code to remove zero lines from return values, so the number of iterations is correct in subsequential functions!")
+    fprintf('You should probably add code to remove zero lines from return values, so the number of iterations is correct in subsequential functions!')
     % psi_ret(iter+1:em.iterations,:,:) = [];  % remove zero rows, so size(psi, 1) gives actual em-iterations
     % var_ret(iter+1:em.iterations) = [];  % remove zero rows, so size(psi, 1) gives actual em-iterations
 end
