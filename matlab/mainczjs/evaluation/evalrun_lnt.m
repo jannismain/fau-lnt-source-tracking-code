@@ -18,10 +18,9 @@ reflect_order=3;
 trials=25;
 var_init = 0.1;
 var_fixed = false;
-results_dir=false;
 prior=[string('equal'), string('rand'), string('hh'), string('quart')];
 for p=1:length(prior)
     for sources = 2:7
-        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,results_dir,prior(p));
+        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,dir,prior(p));
     end
 end
