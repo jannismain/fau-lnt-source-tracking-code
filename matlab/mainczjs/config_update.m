@@ -1,7 +1,10 @@
-function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed, psi_prior)
+function fn_cfg = config_update(n_sources, src_cfg, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed, psi_prior)
+%CONFIG_UPDATE
+%   ARG: n_sources: number of sources (int; default: 2)
+%   ARG: src_cfg:   sources configuration (str; 'rnd', 'left', 'right', ...)
 
 if nargin < 1, n_sources = 2; end
-if nargin < 2, random_sources = true; end
+if nargin < 2, sources = 'rnd'; end
 if nargin < 3, min_distance = 5; end
 if nargin < 4, distance_wall = 12; end
 if nargin < 5, randomize_samples = true; end
@@ -45,39 +48,52 @@ RminX = mics.distance_wall;
 RminY = mics.distance_wall;
 RmaxX = room.dimensions(1)-mics.distance_wall;
 RmaxY = room.dimensions(2)-mics.distance_wall;
-R    = [2.1, RminY, 1.0;  % bottom
-        2.3, RminY, 1.0;
-        2.7, RminY, 1.0;
-        2.9, RminY, 1.0;
-        3.7, RminY, 1.0;
-        3.9, RminY, 1.0;
-        RmaxX, 2.2, 1.0;  % right
+% Microphone layout used in Schwart2014
+R    = [1.8, RminY, 1.0;  % bottom
+        2.0, RminY, 1.0;
+        2.4, RminY, 1.0;
+        2.6, RminY, 1.0;
+        3.6, RminY, 1.0;
+        3.8, RminY, 1.0;
+        RmaxX, 1.8, 1.0;  % right
+        RmaxX, 2.0, 1.0;
         RmaxX, 2.4, 1.0;
-        RmaxX, 2.8, 1.0;
-        RmaxX, 3.0, 1.0;
+        RmaxX, 2.6, 1.0;
+        RmaxX, 3.6, 1.0;
         RmaxX, 3.8, 1.0;
-        RmaxX, 4.0, 1.0;
-        2.2, RmaxY, 1.0;  % top
+        1.8, RmaxY, 1.0;  % top
+        2.0, RmaxY, 1.0;
         2.4, RmaxY, 1.0;
-        3.0, RmaxY, 1.0;
-        3.2, RmaxY, 1.0;
+        2.6, RmaxY, 1.0;
+        3.6, RmaxY, 1.0;
         3.8, RmaxY, 1.0;
-        4.0, RmaxY, 1.0;
-        RminX, 2.1, 1.0;  % left
-        RminX, 2.3, 1.0;
-        RminX, 2.9, 1.0;
-        RminX, 3.1, 1.0;
-        RminX, 3.7, 1.0;
-        RminX, 3.9, 1.0];
+        RminX, 1.8, 1.0;  % left
+        RminX, 2.0, 1.0;
+        RminX, 2.4, 1.0;
+        RminX, 2.6, 1.0;
+        RminX, 3.6, 1.0;
+        RminX, 3.8, 1.0];
 room.R = R;
 room.R_pairs = size(R, 1)/2;
 
 % Source position(s) [ x y ] (m)
-if random_sources == false
+if strcmp(src_cfg,'left')
+    S    = [2 2 1;
+            2 4 1];
+    n_sources = 2;
+elseif strcmp(src_cfg, 'right')
+    S    = [4 2 1;
+            4 4 1];
+    n_sources = 2;
+elseif strcmp(src_cfg, 'schwartz2014')
+    S    = [2.6 2.3 1;
+            3.4 2.3 1];
+    n_sources = 2;
+elseif strcmp(src_cfg, 'leftright')
     S    = [4 2 1;
             2 4 1];
-    S = S(1:n_sources,:);
-else
+    n_sources = 2;
+elseif strcmp(src_cfg, 'rnd')
     S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
 end
 for s=1:n_sources
@@ -122,7 +138,8 @@ fft_bins = 2^(ceil(log(fft_window_samples)/log(2)));  % 512 fft bins for STFT
 fft_bins_net = fft_bins/2+1;
 fft_trunc = 500;
 
-fft_freq_range = 40:65;  % TODO: Find reason for this range
+fft_freq_range = 32:96;  % Schwartz2014
+% fft_freq_range = 40:65;  % chosen by bren
 freq = ((0:fft_bins/2)/fft_bins*fs).'; % frequency vector [Hz]
 
 %% GMM
@@ -141,12 +158,21 @@ em.var_fixed = var_fixed;
 
 em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
+
 em.X = length(room.grid_x);
-em.Xnet = em.X-2*room.N_margin;
 em.X_idxMax = em.X-room.N_margin;
 em.Y = length(room.grid_y);
-em.Ynet = em.Y-2*room.N_margin;
 em.Y_idxMax = em.Y-room.N_margin;
+
+clip_psi = false;
+if clip_psi  % psi estimates across "inner" gridpoints
+    em.Xnet = em.X-2*room.N_margin;
+    em.Ynet = em.Y-2*room.N_margin;
+else  % psi estimates across ALL gridpoints
+    em.Xnet = em.X;  
+    em.Ynet = em.Y;
+end
+
 em.P = em.X*em.Y; % Number of Gridpoints
 em.M = size(R, 1)/2;
 em.S = n_sources;
@@ -158,7 +184,7 @@ em.iterations = em_iterations;
 elimination_radius = 0;
 
 %% Logging
-LOGGING = false;
+LOGGING = true;
 LOGGING_FIG = true;
 log_sim='';
 log_stft='';

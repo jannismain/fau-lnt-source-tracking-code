@@ -1,10 +1,8 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, prior)
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, prior, sources)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
 %
-% TODO: Find out what happens, when sources are known a-priori but wrong (3
-% instead of 2 for example)
 % NOTES:
 %   - evalc() is used to supress output from these functions.
 %
@@ -18,11 +16,11 @@ if nargin < 1,  description = 'no-name-specified'; end
 if nargin < 2,  n_sources = 2; end
 if nargin < 3,  trials = 10; end
 if nargin < 4,  min_distance = 5; end
-if nargin < 5,  distance_wall = 15; end
-if nargin < 6,  randomize_samples = False; end
-if nargin < 7,  T60 = 0; end
+if nargin < 5,  distance_wall = 12; end
+if nargin < 6,  randomize_samples = false; end
+if nargin < 7,  T60 = 0.3; end
 if nargin < 8,  snr = 0; end
-if nargin < 9,  em_iterations = 10; end
+if nargin < 9,  em_iterations = 5; end
 if nargin < 10, em_conv_threshold = -1; end
 if nargin < 11, guess_randomly = false; end
 if nargin < 12, reflect_order = 3; end
@@ -30,6 +28,7 @@ if nargin < 13, var_init = 0.1; end
 if nargin < 14, var_fixed = false; end
 if nargin < 15, results_dir = false; end
 if nargin < 16, prior = 'equal'; end
+if nargin < 17, sources='leftright'; end
 
 
 %% initialisation
@@ -41,13 +40,11 @@ if ~results_dir
 else
     PATH_SRC = results_dir;
 end
-PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'results', filesep);
-PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
-% PATH_LATEX_ABS = [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep 'plots' filesep 'static' filesep 'tikz-data' filesep];
-% PATH_LATEX_RESULTS = [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep];
+PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'psi_s', filesep);
+PATH_MATLAB_RESULTS = PATH_MATLAB_RESULTS_ROOT;
+PATH_LATEX_RESULTS = [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep 'plots' filesep 'psi_s' filesep];
 
 oldpath = pwd;
-% [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists
 [~, ~] = mkdir(PATH_MATLAB_RESULTS);
 cd(PATH_MATLAB_RESULTS);
 [~, ~] = mkdir('raw');
@@ -55,6 +52,7 @@ cd(PATH_MATLAB_RESULTS);
 % init filename
 time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS.FFF');
 fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_var-fixed=%d_var-val=%0.1f_prior=%s_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order, var_fixed, var_init,prior);
+
 % init empty matrices
 est_err = zeros(trials, n_sources);
 loc_est = zeros(trials, n_sources, 2);
@@ -66,39 +64,36 @@ tic;
 
 %% trials
 for trial=1:trials
-    fprintf('[Trial %3d/%3d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
-    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed, prior);');
+    fprintf('[Trial %3d/%3d] s=%d, source-cfg=%s, T60=%0.1f, prior=%s:', trial, trials, n_sources, sources, T60, prior);
+    [log_conf, fn_conf] = evalc('config_update(n_sources, sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed, prior);');
     load(fn_conf);
     [log_sim, x] = evalc('simulate(fn_conf, ROOM, R, sources);');
     [log_stft, X, phi] = evalc('stft(fn_conf, x);');
-    [log_em , psi, real_iterations] = evalc('em_algorithm(fn_conf, phi, em.iterations, em_conv_threshold, true, false, prior);');
+    [log_em , psi, iterations, variance] = evalc('em_algorithm(fn_conf, phi, em.iterations, em_conv_threshold, true, false, prior);');
+    
     psi_mixed = squeeze(sum(psi(end,:,:,:),2));
     [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi_mixed, n_sources, 0, min_distance, room);');
     [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
     fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
-%     if mean(est_err(trial, :))>mean(mean(est_err)*2)
-%         for s=1:n_sources
-%             fprintf('%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n', FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
-%         end
-%     end
 
     %% archive results
     loc_est_reshaped = reshape(squeeze(loc_est(trial,:,:))',1,size(loc_est, 2)*size(loc_est, 3));
     S_reshaped = reshape(S(:, 1:2)', 1, size(S, 1)*2);
     results(trial, :) = [S_reshaped loc_est_reshaped est_err(trial, :)];
 
-    fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
+    fname_trial = sprintf('%st%d_of_t%d_', fname_base, trial, trials);
+    
     psi_plot = zeros(em.Y,em.X);
     psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi_mixed;
     if LOGGING_FIG
-        fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
-        saveas(fig, strcat('raw', filesep, fname_trial, '.fig'), 'fig');
-        close(fig);
+        fig1 = plot_overview(psi,variance,iterations,em,room, 'all', strcat(PATH_LATEX_RESULTS , 'single', filesep, 'overview'), strcat(PATH_MATLAB_RESULTS, fname_trial, 'config.mat'));
+        fig2 = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room, 'all', strcat(PATH_LATEX_RESULTS , fname_trial, 'results'));
+        close all;
     end
-    % matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
-    movefile(fn_conf, strcat('raw', filesep, fname_trial, 'config.mat'));
+    
+    movefile(fn_conf, strcat(PATH_MATLAB_RESULTS, fname_trial, 'config.mat'));
     if LOGGING
-        logfile = fopen(strcat('raw', filesep, fname_trial, 'log.txt'), 'w');
+        logfile = fopen(strcat(PATH_MATLAB_RESULTS, fname_trial, 'log.txt'), 'w');
         fprintf(logfile, log_conf);
         fprintf(logfile, log_sim);
         fprintf(logfile, log_stft);

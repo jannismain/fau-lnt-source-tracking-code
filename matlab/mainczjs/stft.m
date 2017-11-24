@@ -6,7 +6,7 @@ load(fn_cfg)
 if nargin>2, em.T=tbins; fprintf('WARNING: Overring em.T with %d', tbins); end
 
 %% START
-try, fprintf('\n<stft.m> (t = %2.4f)\n', toc); end
+fprintf('\n<stft.m> (t = %2.4f)\n', toc);
 
 m = 'Calculate STFT of received signal...'; counter = next_step(m, counter);
 

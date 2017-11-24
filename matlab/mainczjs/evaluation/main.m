@@ -1,7 +1,6 @@
-function main(eval, trials, varargin)
+function main(eval, varargin)
 
 clearvars('-except', 'eval', 'trials', 'varargin');
-if nargin < 2, trials=100; end
 
 switch eval
     case 'base'
@@ -15,187 +14,56 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=false;
         reflect_order=3;
-        for sources = 2:7
-            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
+        for src_cfg = 2:7
+            random_sources_eval(description,src_cfg,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
         end
-
-    case 'T60'
-        description='T60';
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=[0.3 0.9];
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        for i=1:length(T60)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
-            end
-        end
-
-    case 'em-iterations'
-        description='em-iterations';
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=0.6;
-        SNR=0;
-        if ~(isempty(varargin))
-            fprintf('WARN: User provided non-default evaluation parameter em_iterations = ');
-            print_array(varargin{1}, '0.1f');
-            em_iterations = varargin{1};
-        else
-            em_iterations=[1 5 10 20];
-        end
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        reflect_order=3;
-        for em=1:length(em_iterations)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly, reflect_order);
-            end
-        end
-
-    case 'guessing'
-        description='guessing';
-        trials=500;
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=0.0;
-        SNR=0;
-        em_iterations=0;
-        em_conv_threshold=-1;
-        guess_randomly=true;
-        reflect_order=-1;
-        for sources = 2:7
-            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
-        end
-
-    case 'em-single'
-        sources=4;
-        md = 5;
-        wd = 12;
-        rand_sources = true;
-        T60=0.0;
-        em_iterations=50;
-        em_conv_threshold=-1;
-        for i=1:5
-            est_err(i, :) = single_example_eval(sources,rand_sources, md, wd, T60, em_iterations, em_conv_threshold);
-        end
-
-    case 'min-distance'
-        description='min-distance';  % use only single quotes, double quotes will raise error in mkdir()
-        md = [1 3 5 10];
-        wd = 12;
-        rand_samples = true;
-        T60=0.6;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        for i=1:length(md)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
-            end
-        end
-
-    case 'reflect-order'
-        description='reflect-order';
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=0.0;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        if ~(isempty(varargin))
-            fprintf('WARN: User provided non-default evaluation parameter reflect_order = ');
-            print_array(varargin{1}, '0.1f');
-            reflect_order = varargin{1};
-        else
-            reflect_order=[-1 3 1];
-        end
-        for i=1:length(reflect_order)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));
-            end
-        end
-
-    case 'noise'
-        description='noise';
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=0.6;
-        SNR=[15 30];
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        reflect_order=-1;
-        for i=1:length(SNR)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR(i),em_iterations, em_conv_threshold, guess_randomly, reflect_order);
-            end
-        end
-
-    case 'wd'
-        description='wd';  % perfect conditions, increased wd, trying to get 100% success rate!
-        md = 5;
-        wd = [12, 13, 15];
-        rand_samples = true;
-        T60=0.0;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        reflect_order=0;
-        for i=1:length(wd)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd(i),rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
-            end
-        end
-
-    case 'var'
-        description='var';  % test fixed variance with different values
-        md = 5;
-        wd = 12;
-        rand_samples = true;
-        T60=0.3;
-        SNR=0;
-        em_iterations=5;
-        em_conv_threshold=-1;
-        guess_randomly=false;
-        reflect_order=3;
-        variance=[0.1 0.5 1];
-        for i=1:length(variance)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,variance(i));
-            end
-        end
+        
+        
+        
     
-    case 'psi_s'
-        description='psi_s';  % test fixed variance with different values
+    case 'schwartz2014'
+        description='schwartz2014';
         md = 5;
         wd = 12;
-        rand_samples = true;
-        T60=0.3;
-        SNR=0;
-        em_iterations=5;
+        rand_samples = false;
+        T60=[0.4, 0.7];
+        SNR=30;
+        em_iterations=10;
         em_conv_threshold=-1;
-        guess_randomly=false;
-        reflect_order=3;
-        trials=200;
-        var_init = 0.1;
+        reflect_order=-1;
+        var_init = 1;
         var_fixed = false;
         results_dir=false;
-        prior=["equal","rand","hh","hv"];
-        for p=1:length(prior)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,var_init,var_fixed,results_dir,prior(p));
+        prior = 'schwartz2014';
+        n_sources = 2;
+        src_cfg = 'schwartz2014';
+        for t=1:length(T60)
+            single_eval(description,n_sources,md,wd,rand_samples,T60(t),SNR,em_iterations, em_conv_threshold,reflect_order,var_init,var_fixed,results_dir,prior,src_cfg);
+        end
+        
+    case 'psi_s_alt'
+        description='psi_s_alt';
+        md = 5;
+        wd = 12;
+        rand_samples = false;
+        T60=[0.4, 0.7];
+        SNR=30;
+        em_iterations=10;
+        em_conv_threshold=-1;
+        reflect_order=-1;
+        var_init = 1;
+        var_fixed = false;
+        results_dir=false;
+%         prior=["equal", "rand","hh","hv","quart"];
+        prior = [string('rand'), string('hv'), string('schwartz2014'), string('equal')];
+        src_cfg = [string('left'), string('leftright')];
+        for t=1:length(T60)
+            for scfg=1:length(src_cfg)
+                for p=1:length(prior)
+                    for s = 2:2
+                        single_eval(description,s,md,wd,rand_samples,T60(t),SNR,em_iterations, em_conv_threshold,reflect_order,var_init,var_fixed,results_dir,prior(p),src_cfg(scfg));
+                    end
+                end
             end
         end
 

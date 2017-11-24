@@ -8,7 +8,7 @@ if size(S, 1)==1, loc_est_assorted = loc_est_assorted; end
 if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch! (S is %dx%d, loc_est is %dx%d)', size(S), size(loc_est_assorted)); end
 
 % Assign estimation to appropiate source (min error for existing position and estimation)
-
+Sreal = S;
 diff = inf;
 est_err = ones(size(loc_est_assorted, 1), 1)*inf;
 loc_est = zeros(size(loc_est_assorted));
@@ -48,7 +48,12 @@ end
 
 %% final steps
 est_err(est_err<0.01)=0;  % removes errors due to floating point arithmetic
-% TODO: Refactor to reliably allow for more/less estimates than real sources!
+
+%% output
+for s=1:size(S, 1)
+    fprintf('    -> S%d = %1.1f / %1.1f, S%dest = %1.1f / %1.1f, err = %1.1fm\n', s, Sreal(s, 1), Sreal(s, 2), s, loc_est(s, 1), loc_est(s, 2), est_err(s));
+end
+fprintf('    -> Result: err-mean = %1.1fm\n', mean(est_err));
 
 end
 
