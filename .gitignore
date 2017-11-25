@@ -1,6 +1,5 @@
 # App Configuration Files
 .vscode
-**/.idea/**
 
 # macOS-specific files
 .DS_Store
@@ -21,16 +20,24 @@ matlab/mainczjs/config*.mat
 
 # Evaluation Results
 matlab/mainczjs/evaluation/results
-#latex/data/plots/static/
-#latex/data/plots/
-#latex/data/tables/
-
+#matlab/mainczjs/evaluation/schwartz2014
+matlab/mainczjs/evaluation/**/*.txt
+matlab/mainczjs/evaluation/**/*.tex
 outline
-**mcode_demo**
+**.fig
+**.png
 
 # Jupyter Notebook temp
 *checkpoint.ipynb
-**/.ipynb_checkpoints/**
+python/.ipynb_checkpoints
+
+# matlab figures output
+#*.eps
+#*tikz.tex
+#*fig.fig
 
 # Python files
 __pycache__/
+
+# Ulysses files
+*.Ulysses*
