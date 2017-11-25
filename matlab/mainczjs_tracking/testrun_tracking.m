@@ -16,7 +16,7 @@ cprintf('err', '--------------------- S T A R T ---------------------\n');
 
 %% SIMULATE
 x = simulate_tracking();
-[X, phi] = stft(x);
+[X, phi] = stft('config.mat', x);
 
 %% SOURCE TRACKING
 [psi, loc_est] = rem_tracking(phi);
