@@ -1,18 +1,18 @@
 fprintf('------------------------- T E S T R U N -------------------------\n'); tic;
-
+clear all;
 sources = 2;
 md = 5;
 wd = 12;
-rand_samples = 'left';
-T60=0.3;
-SNR=0;
-em_iterations=5;
+src_cfg = 'schwartz2014';
+rnd_samples = false;
+T60=0.7;
+SNR=30;
+em_iterations=10;
 em_conv_threshold=-1;
 guess_randomly=false;
 reflect_order=3;
 var_init=1;
 var_fixed = false;
-get_em_history = true;
 verbose=true;
 prior = 'schwartz2014';  % initial distribution for psi ('rand', 'hh', 'hv', 'equal', 'quart')
 
@@ -22,7 +22,7 @@ oldpath = pwd;
 cd(PATH);
 
 tic;
-fn_conf = config_update(sources, rand_samples, md,wd,rand_samples,T60,em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed, prior);
+fn_conf = config_update(sources, src_cfg, md,wd,rnd_samples,T60,em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed, prior);
 load(fn_conf);
 
 %% Simulate Environment
@@ -32,10 +32,10 @@ x = simulate(fn_cfg, ROOM, R, sources);
 [X, phi] = stft(fn_cfg, x);
 
 %% Estimate Location (GMM+EM-Algorithmus)
-[psi, iterations, variance] = em_algorithm(fn_cfg, phi, em_iterations, em_conv_threshold, get_em_history, verbose, prior);
+[psi, iterations, variance] = em_algorithm(fn_cfg, phi, em_iterations, em_conv_threshold, verbose, prior);
 
 %% Plotting results
-plot_overview(psi,variance,iterations,em,room,'all',PATH,'testrun_s=2_prior=schwartz2014_overview');
+plot_overview(psi,variance,iterations,em,room,'all',strcat(PATH_LATEX,'testrun_s=2_prior=schwartz2014_overview'), strcat(PATH,'testrun_s=2_prior=schwartz2014_overview'));
 
 psi_mixed = squeeze(sum(psi(end,:,:,:),2));
 loc_est = estimate_location(psi_mixed, n_sources, 0, md, room);
@@ -44,7 +44,7 @@ loc_est = estimate_location(psi_mixed, n_sources, 0, md, room);
 psi_plot = zeros(em.Y,em.X);
 psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi_mixed;
 
-fig = plot_results(psi_plot,loc_est_sorted,room);
+fig = plot_results(psi_plot,loc_est_sorted,room, 'all',strcat(PATH_LATEX,'testrun_s=2_prior=schwartz2014_overview'), strcat(PATH,'testrun_s=2_prior=schwartz2014_overview'));
 saveas(fig, strcat(PATH_LATEX,'results'))
 saveas(fig, strcat(PATH,'results.fig'))
 matlab2tikz('results.tex', 'figurehandle', fig, 'showInfo', false);

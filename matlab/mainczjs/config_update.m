@@ -93,6 +93,18 @@ elseif strcmp(src_cfg, 'leftright')
     S    = [4 2 1;
             2 4 1];
     n_sources = 2;
+elseif strcmp(src_cfg, 'quattro-good')
+    S    = [2.6 2.6 1;
+            3.4 2.6 1;
+            2.6 2.4 1;
+            3.4 3.4 1];
+    n_sources = 4;
+elseif strcmp(src_cfg, 'quattro-bad')
+    S    = [1.6 1.6 1;
+            2.4 1.6 1;
+            1.6 2.4 1;
+            2.4 2.4 1];
+    n_sources = 4;
 elseif strcmp(src_cfg, 'rnd')
     S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
 end
@@ -144,7 +156,6 @@ freq = ((0:fft_bins/2)/fft_bins*fs).'; % frequency vector [Hz]
 
 %% GMM
 room.grid_resolution = 0.1;
-room.N_margin = 1/room.grid_resolution;
 room.grid_x = (0:room.grid_resolution:room.dimensions(1));
 room.grid_y = (0:room.grid_resolution:room.dimensions(2));
 [room.pos_x, room.pos_y] = meshgrid(room.grid_x, room.grid_y);
@@ -160,18 +171,18 @@ em.K = length(fft_freq_range);
 em.T = 296;  % # of time bins TODO: calculate
 
 em.X = length(room.grid_x);
-em.X_idxMax = em.X-room.N_margin;
 em.Y = length(room.grid_y);
-em.Y_idxMax = em.Y-room.N_margin;
 
 clip_psi = false;
 if clip_psi  % psi estimates across "inner" gridpoints
-    em.Xnet = em.X-2*room.N_margin;
-    em.Ynet = em.Y-2*room.N_margin;
+    room.N_margin = 10;
 else  % psi estimates across ALL gridpoints
-    em.Xnet = em.X;  
-    em.Ynet = em.Y;
+    room.N_margin = 0;
 end
+em.X_idxMax = em.X-room.N_margin;
+em.Y_idxMax = em.Y-room.N_margin;
+em.Xnet = em.X-2*room.N_margin;
+em.Ynet = em.Y-2*room.N_margin;
 
 em.P = em.X*em.Y; % Number of Gridpoints
 em.M = size(R, 1)/2;

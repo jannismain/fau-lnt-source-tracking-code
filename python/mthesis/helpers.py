@@ -35,7 +35,7 @@ pd.set_option('display.precision', 2,
 
 # DATA EXPORT PATHS
 # ...data
-PATH_ROOT = '../matlab/mainczjs/evaluation/results/'
+PATH_ROOT = path.expanduser('~/thesis/src/matlab/mainczjs/evaluation/results/')
 NAME_DATA_FILES = '*results.txt'
 # ...LaTeX
 PATH_LATEX_PLOTS = '../latex/data/plots/'
@@ -43,8 +43,8 @@ PATH_LATEX_TABLES = '../latex/data/tables/'
 
 lms_red = (204/255, 53/255, 56/255)
 
-EVALUATIONS = ['base', 'em-iterations', 'min-distance', 'reflect-order', 'T60', 'noise', 'wd', 'var-fixed', 'worst-case']
-PARAMETERS = {'s':None, 'md':0.5, 'wd':1.2, 'T60':0.0, 'SNR':0, 'em':None, 'reflect-order':3, 'var-fixed':0, 'var-val':0.1}
+EVALUATIONS = ['base', 'em-iterations', 'min-distance', 'reflect-order', 'T60', 'noise', 'wd', 'var-fixed', 'worst-case', 'psi_s']
+PARAMETERS = {'s':None, 'md':0.5, 'wd':1.2, 'T60':0.0, 'SNR':0, 'em':None, 'reflect-order':3, 'var-fixed':0, 'var-val':0.1, 'prior':0}
 
 DICT_SUMMARY = {'x1':'count',  # sample size
                 'em':np.mean,  # em-iterations
@@ -54,6 +54,7 @@ DICT_SUMMARY = {'x1':'count',  # sample size
                 'reflect-order':np.mean,
                 'var-fixed':np.mean,
                 'var-val':np.mean,
+                'prior':np.mean,
                 'err-mean':np.mean,
                 'percent-matched':np.mean}
 
@@ -169,12 +170,13 @@ def style_boxplot(boxplots, axes=None, color=lms_red):
         for key, val in bp[0].lines.items():
             for item in val:
                 item.set_color(color)
-                item.set_linewidth(0.5)
+                item.set_linewidth(1)
                 if key=="fliers":
-                    item.set_markerfacecolor("lightgray")
+                    item.set_markerfacecolor("gray")
                     item.set_markeredgewidth(0)
                     item.set_markeredgecolor(color)
-                    item.set_markersize(7)
+                    item.set_markersize(8)
+                    item.set_marker('.')
                 if key=="medians":
                     pass
                 if key=="whiskers" or key=="caps":
@@ -191,14 +193,17 @@ def style_boxplot(boxplots, axes=None, color=lms_red):
         ax.set_ylabel("")
         ax.grid(axis="x")
         ax.set_xticklabels([2,3,4,5,6,7])
-        ax.set_ylim([0, 1.75])
-        ax.set_yticks(np.arange(0, 1.76, 0.25))
+        # ax.set_ylim([0, 2.75])
+        # ax.set_yticks(np.arange(0, 1.76, 0.25))
     fig.suptitle('')
 
 def load_all_data():
     dfs = []
     for desc in EVALUATIONS:
-        dfs.append(matlab2pandas(dirname=desc, save_to=path.join(PATH_ROOT, desc), summary=False))
+        try:
+            dfs.append(matlab2pandas(dirname=desc, save_to=path.join(PATH_ROOT, desc), summary=False))
+        except ValueError:
+            pass
     try:
         df = pd.concat(dfs)
     except ValueError:
@@ -237,7 +242,7 @@ def print_summary(df, verbose=True):
     print()  # empty line at the end
 
 def parse_parameters(fname):
-    ret = {'s':None, 'md':0.5, 'wd':1.2, 'T60':0.0, 'SNR':0, 'em':None, 'refl-ord':3, 'var-fixed':0, 'var-val':0.1}
+    ret = {'s':None, 'md':0.5, 'wd':1.2, 'T60':0.0, 'SNR':0, 'em':None, 'refl-ord':3, 'var-fixed':0, 'var-val':0.1, 'prior':0}
     done=False
     s=0
     while not done:
@@ -253,8 +258,8 @@ def parse_parameters(fname):
             ret[name]=value
     return ret
 
-def calculate_helpers(df: pd.DataFrame):
-    df_helpers = (df.loc[:, "x1":"x7":2]-df.loc[:, "x1est":"x7est":2].values).rename(columns={"x{}".format(i):"x{}matched".format(i) for i in range(8)})
+def calculate_helpers(df: pd.DataFrame, n: int):
+    df_helpers = (df.loc[:, "x1":"x{}".format(n):2]-df.loc[:, "x1est":"x{}est".format(n):2].values).rename(columns={"x{}".format(i):"x{}matched".format(i) for i in range(n+1)})
     df_helpers = df_helpers.apply(is_matched, axis=1, raw=False)
     df_helpers["total-matched"] = df_helpers.sum(axis=1)
     df_helpers["percent-matched"] = df_helpers["total-matched"] / df["n-sources"].values
@@ -278,14 +283,21 @@ def matlab2pandas(dirname=EVALUATIONS, filename=NAME_DATA_FILES, save_to=None, s
             n_sources = int(params["s"])
             # prepare DataFrame
             df = pd.DataFrame(list(csv.reader(open(f, 'r'), delimiter='\t')), dtype=float)
+            # print(n_sources, len(df.columns.values))
             df.drop(df.columns[[n_sources*4+n_sources]], axis=1, inplace=True) # drops empty column
             df.columns = get_col_names(n_sources)
             df.index = ["t{}".format(i+1) for i in range(len(df))]
             for key, value in params.items():
-                df[key] = np.float(value)
+                try:
+                    df[key] = np.float(value)
+                except ValueError:
+                    pass
             df["description"] = dirname
             dfs.append(df)
-        df = pd.concat(dfs)
+        try:
+            df = pd.concat(dfs)
+        except ValueError:
+            df = dfs[0]
 
         # prep data for analysis
         df.rename(columns={'s':'n-sources', 'refl-ord':'reflect-order'}, inplace=True)
@@ -295,7 +307,7 @@ def matlab2pandas(dirname=EVALUATIONS, filename=NAME_DATA_FILES, save_to=None, s
         df["T60"].apply(round, 2)
         df["err-mean"]      = df.loc[:, "err1":_get_err_col_name(n_sources)[-1]].mean(axis=1)
         df["err-total"]     = df.loc[:, "err1":_get_err_col_name(n_sources)[-1]].sum(axis=1)
-        df_helpers = calculate_helpers(df)
+        df_helpers = calculate_helpers(df, n_sources)
         df = pd.concat([df,df_helpers], axis=1)
         if summary:
             print_summary(df)
@@ -304,3 +316,11 @@ def matlab2pandas(dirname=EVALUATIONS, filename=NAME_DATA_FILES, save_to=None, s
             df.to_pickle(save_to+".pkl")
         dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
+
+# Load Data
+# df = load_all_data()
+# dfs = []
+# for f in ['psi_s']:
+#     dfs.append(matlab2pandas(f))
+# df = pd.concat(dfs)
+# print_summary(df)

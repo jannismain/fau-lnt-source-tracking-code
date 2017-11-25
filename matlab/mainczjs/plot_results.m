@@ -1,5 +1,7 @@
-function [ fig ] = plot_results( psi, loc_est, room, archive, save_to)
+function [ fig ] = plot_results( psi, loc_est, room, archive, save_to, save_to_matlab)
 %PLOT_RESULTS Plots location estimation results
+
+if nargin<6, save_to_matlab = save_to; end
 
 if size(psi, 3)>1
     iterations = size(psi, 1);
@@ -58,7 +60,7 @@ if strcmp(archive, 'tex') || strcmp(archive, 'both') || strcmp(archive, 'all')
     matlab2tikz(strcat(save_to, '.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'dataPath', [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep 'plots' filesep 'tikz-data'], 'noSize', false, 'showInfo', false);
 end
 if strcmp(archive, 'fig') || strcmp(archive, 'both') || strcmp(archive, 'all')
-    saveas(fig, strcat(save_to, '.fig'), 'fig'); 
+    saveas(fig, strcat(save_to_matlab, '.fig'), 'fig'); 
 end
 if strcmp(archive, 'png') || strcmp(archive, 'all')
 %     saveas(fig, strcat(save_to, '.png'), 'png'); 

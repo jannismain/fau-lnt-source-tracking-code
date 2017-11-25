@@ -20,6 +20,8 @@ matlab/mainczjs/config*.mat
 
 # Evaluation Results
 matlab/mainczjs/evaluation/results
+#matlab/mainczjs/evaluation/schwartz2014
+matlab/mainczjs/evaluation/**/*.txt
 outline
 **.fig
 
