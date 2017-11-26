@@ -1,4 +1,4 @@
-function [x] = simulate_tracking()
+function [x, S_data] = simulate_tracking(force_rir)
 % SIMULATE Simulates a room with two audio sources and receivers and
 % generates the received signal at both receivers
 %
@@ -11,6 +11,8 @@ function [x] = simulate_tracking()
 %% START
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 load('config.mat')
+
+if nargin<1, force_rir=false; end
 
 %% Load source data...
 m = sprintf("Load source data... (t = %2.4f)", toc); counter = next_step(m, counter);
@@ -30,16 +32,16 @@ m = sprintf("Load source data... (t = %2.4f)", toc); counter = next_step(m, coun
 %% Calculate RIR-bank
 if strcmp(method, 'fastISM')
 m = sprintf("Calculate RIR for each Source-Receiver combination... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NODEF>
-    fn_rir = ["", ""];
+    fn_rir = [];
     for s = 1:n_sources
         config_shift_current_trajectory(s)
-        fn_path_rirs = [getuserdir 'thesis' filesep 'src' filesep 'matlab' filesep 'ress' filesep 'rir' filesep];
+        fn_path_rirs = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'ress' filesep 'rir' filesep];
         fn = sprintf('RIRs_[%d,%d]_to_[%d,%d]_T60=%0.1f_s=%d.mat', sources.positions(s, 1), sources.positions(s, 2), sources.positions(s, 1)+sources.movement(s, 1), sources.positions(s, 2)+sources.movement(s, 2),rir.t_reverb,samples);
-        fn_rir(s) = [fn_path_rirs fn];
-        if exist(fn,'file')~=2
-            fast_ISM_RIR_bank(custom_ISM_setup,fn);
+        fn_rir = [fn_rir; [fn_path_rirs, fn]];
+        if exist(fn_rir(s,:),'file')~=2 || force_rir
+            fast_ISM_RIR_bank(custom_ISM_setup,fn_rir(s,:));
         else
-            fprintf("%s Will use existing RIR-Bank: '%s' (t=%2.2f)\n", FORMAT_PREFIX, fn_rir(s), toc);
+            fprintf("%s Will use existing RIR-Bank: '%s' (t=%2.2f)\n", FORMAT_PREFIX, fn_rir(s,:), toc);
         end
     end
 end
@@ -49,7 +51,7 @@ m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counte
     for s=1:n_sources
         if strcmp(method, 'fastISM')
             %% Use fastISM by Lehmann
-            source_data = ISM_AudioData(fn_rir(s),S_data(:, s));
+            source_data = ISM_AudioData(fn_rir(s,:),S_data(:, s));
             if s==1
                 x = zeros(size(source_data, 1), n_sources,2, size(source_data, 2)/2);
             end
@@ -80,4 +82,5 @@ m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counte
     end
     m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NASGU>
     x = squeeze(sum(x, 2));
+    sound(x(:,1,1), 16000)
 end

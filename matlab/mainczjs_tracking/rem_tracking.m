@@ -32,7 +32,6 @@ for iter = 1:em.T
     %% Calculating Psi (Maximization)
     psi = squeeze(sum(mu,1)/(em.K));
     psi(psi<=0) = eps;
-    psi = psi_old + em.gamma*(psi - psi_old);
     
     %% Calculating Variance (Maximization)
     if strcmp(algorithm,'trem')
@@ -46,6 +45,7 @@ for iter = 1:em.T
         var_fact2 = (sum(sum(sum(mu.*sum(ang_dist(:,iter,:,:,:), 5)))))/(em.K*em.M*sum(sum(psi)));
         em.var = em.var*psi_ratio + em.gamma*(var_fact2-em.var*psi_ratio);
     end
+    psi = psi_old + em.gamma*(psi - psi_old);
 
 %     psi_plot = zeros(em.Y,em.X);
 %     psi_plot((room.N_margin+1):(em.Y_idxmax),(room.N_margin+1):(em.X_idxmax)) = psi;

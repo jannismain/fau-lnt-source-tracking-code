@@ -55,11 +55,3 @@ SetupStruc.T60 = T60;                 % reverberation time T60, or define a T20 
 
 % SetupStruc.abs_weights = [0.6  0.9  0.5  0.6  1.0  0.8];    % (optional) weights for the resulting alpha coefficients.
 % simulates a carpeted floor, and sound-absorbing material on the ceiling and the second x-dimension wall.
-
-
-% Uncomment the following for a 3D plot of the above setup:
-% figure;
-% plot3(SetupStruc.src_traj(:,1),SetupStruc.src_traj(:,2),SetupStruc.src_traj(:,3),'ro-','markersize',4); hold on;
-% plot3(SetupStruc.mic_pos(:,1),SetupStruc.mic_pos(:,2),SetupStruc.mic_pos(:,3),'ko','markerfacecolor',ones(1,3)*.6);
-% axis equal; axis([0 SetupStruc.room(1) 0 SetupStruc.room(2) 0 SetupStruc.room(3)]);
-% box on; xlabel('x-axis (m)'); ylabel('y-axis (m)'); zlabel('z-axis (m)');

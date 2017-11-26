@@ -1,18 +1,16 @@
-function config_update = config_update_tracking(n_sources, T60, reflect_order, SNR, samples, source_length, freq_range, sidx, sim_method)
+function config_update = config_update_tracking(src_cfg, T60, reflect_order, SNR, samples, source_length, freq_range, sim_method)
 
-if nargin < 1, n_sources = 2; end
+if nargin < 1, src_cfg = 'straight'; fprintf("WARNING: Using default movement (straight)\n"); end
 if nargin < 2, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
 if nargin < 3, reflect_order = -1; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
 if nargin < 4, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
-if nargin < 5, samples = 20; fprintf("WARNING: Using default for samples (20)\n"); end
+if nargin < 5, samples = 100; fprintf("WARNING: Using default for samples (20)\n"); end
 if nargin < 6, source_length = 3; fprintf("WARNING: Using default for source_length (3s)\n"); end
 if nargin < 7 || isempty(freq_range), freq_range = 40:65; fprintf("WARNING: Using default for freq_range (bins 40-65)\n"); end
-if nargin < 8, sidx = false; fprintf("WARNING: Using default for source_length (3s)\n"); end
-if nargin < 9, sim_method = 'fastISM'; fprintf("WARNING: Using default simulation method (fastISM)\n"); end
+if nargin < 8, sim_method = 'fastISM'; fprintf("WARNING: Using default simulation method (fastISM)\n"); end
 
-try
-    fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
-end
+
+fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 
 %% Plot
 PLOT_BORDER = .06;
@@ -71,22 +69,36 @@ R    = [2.1, RminY, 1.0;  % bottom
 room.R = R;
 room.R_pairs = size(R, 1)/2;
 
-% Source position(s) [ x y ] (m)
-S    =              [4 2 1;
-                     2 4 1;
-                     1 1 1;
-                     5 1 1];
-% Source Movement
-sources.movement = [ 0  2 0;
-                     0 -2 0;
-                     4  4 0;
-                    -4  4 0];
-if sidx
-    S = S(sidx(1):sidx(2),:);
-    sources.movement = sources.movement(sidx(1):sidx(2),:);
-else
-    S = S(1:n_sources,:);
+% Set Source Positions and Trajectories
+switch src_cfg
+    case 'parallel'
+        S =     [4  2 1;
+                 2  4 1];
+        Smov = [0  2 0;
+                 0 -2 0];
+    case 'crossing'
+        S =  [2 2 1;
+              4 2 1];
+        Smov = [ 2 2 0;
+                -2 2 0];
+    case 'arc'
+        S = [3 2 1;
+             3 4 1];
+        Smov = [0  2 0;
+                0 -2 0];
 end
+sources.cfg = src_cfg;
+sources.trajectories = zeros(size(S, 1), samples, size(S, 2));
+for s=1:size(S, 1)
+    if strcmp(src_cfg, 'arc')
+        sources.trajectories(s,:,:) = get_trajectory_arc(squeeze(S(s,:)), squeeze(S(s,:)+Smov(s,:)),1,samples,false);
+    else
+        sources.trajectories(s,:,:) = get_trajectory_from_source(squeeze(S(s,:)),squeeze(Smov(s,:)), samples);
+    end
+end
+
+sources.movement = Smov;
+sources.trajectory_samples = samples;
 room.S = S;
 sources.positions = S;
 sources.p = S;
@@ -97,12 +109,6 @@ end
 
 sources.signal_length = source_length;  % length of source signals [s]
 
-
-sources.trajectory_samples = samples;
-sources.trajectories = zeros(size(S, 1), sources.trajectory_samples, size(S, 2));
-for s=1:size(S, 1)
-    sources.trajectories(s, :, :) = get_trajectory_from_source(squeeze(S(s,:)),squeeze(sources.movement(s,:)), sources.trajectory_samples);
-end
 current_trajectory = squeeze(sources.trajectories(1, :, :));
 
 n_receivers = size(R, 1);
@@ -167,6 +173,7 @@ c.lmsred = [204/255, 53/255, 56/255];
 c.darkgray = [169/255,169/255,169/255];
 
 method = sim_method;
+PATH_LATEX = [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep 'plots' filesep 'tracking' filesep];
 
 %% Store new values
 save('config.mat')
