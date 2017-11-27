@@ -4,9 +4,9 @@ addpath_recurse  % ensure all folders are added to path
 rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
-description='md';
-trials=25;
-md = [1 3 10];
+description='min-distance';
+trials=[25 25 50];
+md = [3 5 10];
 wd = 12;
 rand_samples = true;
 T60=0.3;
@@ -19,6 +19,6 @@ var_init = 0.1;
 var_fixed = false;
 for sources = 2:7
     for i=1:length(md)
-        random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
+        random_sources_eval(description,sources,trials(i),md(i),wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
     end
 end
