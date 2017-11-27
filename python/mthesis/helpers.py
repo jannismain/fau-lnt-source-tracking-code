@@ -11,6 +11,17 @@ from matplotlib.patches import Patch, Rectangle  # for custom legend items
 from matplotlib.pyplot import *
 from matplotlib2tikz import save as _tikz_save
 
+# DISPLAY CONFIGURATION
+BP_OFFSETS = [0,0,0,0.15,0.20, 0.25, 0.35]
+YAXIS_LIM = 2.5
+boxplot_args = {'notch':False,'return_type':'both','widths':0.08,'showmeans':True}
+DEFAULT_LINE_PLOT_ARGS = {'kind':'line',
+                          'marker':'o',
+                          'markersize':6,
+                          'color':colors}
+matplotlib.style.use('default')
+
+
 def float_fmt(f: float):
     if f%1==0:
         f = Decimal(f)
@@ -38,10 +49,11 @@ pd.set_option('display.precision', 2,
 PATH_ROOT = '../matlab/mainczjs/evaluation/results/'
 NAME_DATA_FILES = '*results.txt'
 # ...LaTeX
-PATH_LATEX_PLOTS = '../latex/data/plots/'
-PATH_LATEX_TABLES = '../latex/data/tables/'
+PATH_LATEX_PLOTS = '../../latex/data/plots/'
+PATH_LATEX_TABLES = '../../latex/data/tables/'
 
 lms_red = (204/255, 53/255, 56/255)
+colors = ['k',lms_red,'orange','xkcd:azure','xkcd:indigo','xkcd:magenta']
 
 EVALUATIONS = ['base', 'em-iterations', 'min-distance', 'reflect-order', 'T60', 'noise', 'wd', 'var-fixed', 'worst-case']
 PARAMETERS = {'s':None, 'md':0.5, 'wd':1.2, 'T60':0.0, 'SNR':0, 'em':None, 'reflect-order':3, 'var-fixed':0, 'var-val':0.1}
@@ -57,15 +69,6 @@ DICT_SUMMARY = {'x1':'count',  # sample size
                 'err-mean':np.mean,
                 'percent-matched':np.mean}
 
-colors = [lms_red, 'k', 'darkgray', 'orange', 'lightgray', 'lightblue', "blue", "yellow", "magenta", "green"]
-
-WHISKER_PROPS = {'linestyle': 'solid', 'linewidth': 0.5, 'color': '#777777'}
-BP_OFFSETS = [0,0,0,0.15,0.25, 0.35, 0.40]
-
-DEFAULT_LINE_PLOT_ARGS = {'kind':'line',
-                          'marker':'o',
-                          'markersize':6,
-                          'color':colors}
 
 def _get_trial_index(t):
     return ["t{}".format(i+1) for i in range(t)]
@@ -159,40 +162,53 @@ def scatter_plot(df, xaxis='n-sources', yaxis='err-mean'):
 #     if EXPORT_LATEX:
 #         tikz_save(PATH_SCATTER_PLOT)
 
-def style_boxplot(boxplots, axes=None, color=lms_red):
+def style_boxplot(boxplots, axes, idx, elements):
     # parse arguments
-    if not type(boxplots)==type([]): boxplots=[boxplots]
+    if not type(boxplots) == type([]): boxplots = [boxplots]
     if not axes: axes = [boxplots[0][0].ax]
-
+    offset = BP_OFFSETS[elements]
+    offset_table = np.linspace(-offset, offset, elements)
+    c = colors[idx]
     fig = axes[0].get_figure()
     for bp in boxplots:
         for key, val in bp[0].lines.items():
             for item in val:
-                item.set_color(color)
+                item.set_color(c)
                 item.set_linewidth(0.5)
-                if key=="fliers":
-                    item.set_markerfacecolor("lightgray")
-                    item.set_markeredgewidth(0)
-                    item.set_markeredgecolor(color)
-                    item.set_markersize(7)
-                if key=="medians":
+                if key == "fliers":
+                    item.set_markerfacecolor(c)
+                    item.set_markeredgewidth(0.1)
+                    item.set_markeredgecolor(c)
+                    item.set_markersize(3)
+                    item.set_alpha(0.2)
+                if key == "medians":
                     pass
-                if key=="whiskers" or key=="caps":
-                    item.set_color("gray")
-                if key=="means":
+                if key == "means":
                     item.set_marker('x')
-                    item.set_markerfacecolor(color)
-                    item.set_markeredgecolor(color)
+                    item.set_markerfacecolor(colors[idx])
+                    item.set_markeredgecolor(colors[idx])
+        boxlines = bp["err-mean"][1]
+        for el in boxlines:
+            if not el == 'fliers':
+                setp(boxlines[el], color=colors[idx], linewidth=1)  # this styles elements not in box
+            for el2 in boxlines[el]:
+                line = el2
+                setp(line, xdata=getp(line, 'xdata') + offset_table[idx])
     for ax in axes:
-        ax.set_title("")
-#             ax.set_xlabel("number of sources")
-#             ax.set_ylabel("mean localisation error (m)")
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.grid(axis="x")
-        ax.set_xticklabels([2,3,4,5,6,7])
-        ax.set_ylim([0, 1.75])
-        ax.set_yticks(np.arange(0, 1.76, 0.25))
+        # ax.set_title("Mean Localisation Error across Number of Sources")
+        ax.set_xlabel("number of sources")
+        ax.set_ylabel("mean localisation error")
+        ax.xaxis.grid(False);
+        ax.yaxis.grid(True)
+        ax.set_xticklabels([2, 3, 4, 5, 6, 7])
+        ax.set_ylim([0, YAXIS_LIM])
+        ax.set_yticks(np.arange(0, YAXIS_LIM + 0.01, 0.50))
+        #         ax.set_yticks(np.arange(0, YAXIS_LIM+0.01, 0.1), minor=True)
+        #         ax.grid(which='both')
+        #         ax.yaxis.grid(which='minor', alpha=0.3, linewidth=0.5)
+        #         ax.yaxis.grid(which='major', alpha=1)
+        ax.tick_params(axis='both', which='both', length=0)  # disable all ticks
+
     fig.suptitle('')
 
 def load_all_data():
