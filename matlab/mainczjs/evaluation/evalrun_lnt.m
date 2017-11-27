@@ -5,7 +5,7 @@ rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
 description='min-distance';
-trials=[25 25 50];
+trials=[25 50 25];
 md = [3 5 10];
 wd = 12;
 rand_samples = true;
