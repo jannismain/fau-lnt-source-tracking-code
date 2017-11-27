@@ -24,14 +24,18 @@ switch eval
         md = 5;
         wd = 12;
         rand_samples = true;
-        T60=[0.3 0.9];
+        T60=[0.0 0.3 0.9];
         SNR=0;
         em_iterations=5;
         em_conv_threshold=-1;
         guess_randomly=false;
+        trials=[150,150,150];
+        r=-1;
+        var_init=0.1;
+        var_fixed=false;
         for i=1:length(T60)
             for sources = 2:7
-                random_sources_eval(description,sources,trials,md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly);
+                random_sources_eval(description,sources,trials(i),md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly, r,var_init, var_fixed);
             end
         end
 
