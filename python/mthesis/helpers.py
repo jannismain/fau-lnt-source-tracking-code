@@ -49,8 +49,9 @@ pd.set_option('display.precision', 2,
 PATH_ROOT = '../matlab/mainczjs/evaluation/results/'
 NAME_DATA_FILES = '*results.txt'
 # ...LaTeX
-PATH_LATEX_PLOTS = '../../latex/data/plots/'
-PATH_LATEX_TABLES = '../../latex/data/tables/'
+PATH_LATEX = path.expanduser('~/latex/data/')
+PATH_LATEX_PLOTS = path.join(PATH_LATEX, 'plots/')
+PATH_LATEX_TABLES = path.join(PATH_LATEX, 'tables/')
 
 lms_red = (204/255, 53/255, 56/255)
 colors = ['k',lms_red,'orange','xkcd:azure','xkcd:indigo','xkcd:magenta']
@@ -162,41 +163,39 @@ def scatter_plot(df, xaxis='n-sources', yaxis='err-mean'):
 #     if EXPORT_LATEX:
 #         tikz_save(PATH_SCATTER_PLOT)
 
-def style_boxplot(boxplots, axes, idx, elements):
+def style_boxplot(boxplots, axes, idx, elements, c=None):
     # parse arguments
     if not type(boxplots) == type([]): boxplots = [boxplots]
     if not axes: axes = [boxplots[0][0].ax]
     offset = BP_OFFSETS[elements]
     offset_table = np.linspace(-offset, offset, elements)
-    c = colors[idx]
+    if not c:
+        c = colors[idx]
     fig = axes[0].get_figure()
     for bp in boxplots:
         for key, val in bp[0].lines.items():
             for item in val:
                 item.set_color(c)
-                item.set_linewidth(0.5)
+                item.set_linewidth(1)
                 if key == "fliers":
                     item.set_markerfacecolor(c)
                     item.set_markeredgewidth(0.1)
                     item.set_markeredgecolor(c)
                     item.set_markersize(3)
                     item.set_alpha(0.2)
-                if key == "medians":
-                    pass
                 if key == "means":
                     item.set_marker('x')
-                    item.set_markerfacecolor(colors[idx])
-                    item.set_markeredgecolor(colors[idx])
+                    item.set_markerfacecolor(c)
+                    item.set_markeredgecolor(c)
         boxlines = bp["err-mean"][1]
         for el in boxlines:
-            if not el == 'fliers':
-                setp(boxlines[el], color=colors[idx], linewidth=1)  # this styles elements not in box
-            for el2 in boxlines[el]:
-                line = el2
+            # if not el == 'fliers':
+            #     setp(boxlines[el], color=c, linewidth=1)  # this styles elements not in box
+            for line in boxlines[el]:
                 setp(line, xdata=getp(line, 'xdata') + offset_table[idx])
     for ax in axes:
-        # ax.set_title("Mean Localisation Error across Number of Sources")
-        ax.set_xlabel("number of sources")
+        ax.set_title('')
+        ax.set_xlabel("number of sources ($S$)")
         ax.set_ylabel("mean localisation error")
         ax.xaxis.grid(False);
         ax.yaxis.grid(True)
@@ -208,7 +207,6 @@ def style_boxplot(boxplots, axes, idx, elements):
         #         ax.yaxis.grid(which='minor', alpha=0.3, linewidth=0.5)
         #         ax.yaxis.grid(which='major', alpha=1)
         ax.tick_params(axis='both', which='both', length=0)  # disable all ticks
-
     fig.suptitle('')
 
 def load_all_data():
