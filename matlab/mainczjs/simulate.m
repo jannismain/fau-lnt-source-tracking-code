@@ -1,4 +1,4 @@
-function [x] = simulate(fn_cfg, ROOM, R, sources)
+function [x] = simulate(fn_cfg, ROOM, R, sources, mix)
 % SIMULATE Simulates a room with two audio sources and receivers and
 % generates the received signal at both receivers
 %
@@ -11,6 +11,7 @@ function [x] = simulate(fn_cfg, ROOM, R, sources)
 %% START
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
 load(fn_cfg)
+if nargin<5, mix=true;end
 
 %% Calculate RIRs
 m = sprintf('Calculate RIR for each Source-Receiver combination... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NODEF>
@@ -69,8 +70,11 @@ m = sprintf('Convolute source data with room impulse response... (t = %2.4f)', t
     %          Better: Directly multiply signal in STFT-domain (without fftfilt)
     %          May bring additional work (e.g. reshaping to specified size)
 
-%% $x = \sum(Y)$
-m = sprintf('Mixing Signals... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
-    x = squeeze(sum(Y, 2));
-
+if mix
+    %% $x = \sum(Y)$
+    m = sprintf('Mixing Signals... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
+        x = squeeze(sum(Y, 2));
+else
+    x = Y;
+end
 end
