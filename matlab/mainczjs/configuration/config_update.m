@@ -73,18 +73,33 @@ room.R_pairs = size(R, 1)/2;
 
 % Source position(s) [ x y ] (m)
 if random_sources == false
-    S    = [4 2];
+    S    = [3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            5 5 1];
+%     S    = [1.5 4.6 1;
+%             1.2 2.0 1;
+%             4 4.5 1];
     S = S(1:n_sources,:);
 else
     S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
 end
 room.S = S;
 sources.positions = S;
-for n=1:7
-%     if n>9  % this is necessary when more than 9 sources need to be supported!
-%         fname = split('A,B,C,D,E,F,G,H,I,J,K,L',',');
-%         fname = fname(n-9);
-    sources.samples(n, :) = strcat(int2str(n),'.WAV');
+for n=1:20
+    if n>9  % this is necessary when more than 9 sources need to be supported!
+        fname = 'ABCDEFGHIJKLMNOPQRST';
+        n_str = fname(n-9);
+    else
+        n_str = int2str(n);
+    end
+    sources.samples(n, :) = strcat(n_str,'.WAV');
+end
+if n_sources>8
+    fprintf("WARN: only 7 audio samples available!");
 end
 
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
