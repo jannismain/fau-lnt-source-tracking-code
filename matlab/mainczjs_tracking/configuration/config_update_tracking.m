@@ -1,6 +1,10 @@
 function config_update = config_update_tracking(src_cfg, T60, reflect_order, SNR, samples, source_length, freq_range, sim_method)
+%% CONFIG_UPDATE_TRACKING Provides necessary parameters for source tracking algorithm
+% ARGS:
+%       src_cfg = 'parallel' | 'crossing' | 'arc'
 
-if nargin < 1, src_cfg = 'straight'; fprintf("WARNING: Using default movement (straight)\n"); end
+
+if nargin < 1, src_cfg = 'parallel'; fprintf("WARNING: Using default movement (parallel)\n"); end
 if nargin < 2, T60 = 0.3; fprintf("WARNING: Using default for T60 (0.3)\n"); end
 if nargin < 3, reflect_order = -1; fprintf("WARNING: Using default for rir-reflect_order (3)\n"); end
 if nargin < 4, SNR = 0; fprintf("WARNING: Using default for SNR (0)\n"); end
@@ -173,7 +177,7 @@ c.lmsred = [204/255, 53/255, 56/255];
 c.darkgray = [169/255,169/255,169/255];
 
 method = sim_method;
-PATH_LATEX = [getuserdir filesep 'thesis' filesep 'latex' filesep 'data' filesep 'plots' filesep 'tracking' filesep];
+PATH_LATEX = [getuserdir filesep 'latex' filesep 'plots' filesep 'tracking' filesep];
 
 %% Store new values
 save('config.mat')

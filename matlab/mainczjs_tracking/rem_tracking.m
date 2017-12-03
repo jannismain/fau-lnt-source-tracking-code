@@ -1,4 +1,4 @@
-function [ psi, loc_est, var_history, psi_history, loc_est_history ] = rem_tracking( ang_dist, algorithm, var_init )
+function [ psi, loc_est, var_history, psi_history ] = rem_tracking( ang_dist, algorithm, var_init )
 %REM_TRACKING Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -34,12 +34,12 @@ for iter = 1:em.T
     psi(psi<=0) = eps;
     
     %% Calculating Variance (Maximization)
-    if strcmp(algorithm,'trem')
+    if strcmpi(algorithm,'trem')
         sum_psi_old = sum(sum(psi_old));
         var_fact1 = 1/(em.K*sum_psi_old);
         var_fact2 = sum(sum(sum(mu.*((1/em.M)*sum(ang_dist(:,iter,:,:,:), 5)-em.var))));
         em.var = em.var + em.gamma*var_fact1*var_fact2;
-    elseif strcmp(algorithm,'crem')
+    elseif strcmpi(algorithm,'crem')
         if iter==1, psi_old = psi; end
         psi_ratio = sum(sum(psi_old))/sum(sum(psi));
         var_fact2 = (sum(sum(sum(mu.*sum(ang_dist(:,iter,:,:,:), 5)))))/(em.K*em.M*sum(sum(psi)));
