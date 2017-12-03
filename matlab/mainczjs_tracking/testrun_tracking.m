@@ -30,14 +30,17 @@ ang_dist = rem_init(phi);
 [psi_crem, loc_est_crem, var_hist(1,1,:), psi_history_crem] = rem_tracking(ang_dist, 'crem', 1);
 [psi_trem, loc_est_trem, var_hist(2,1,:), psi_history_trem] = rem_tracking(ang_dist, 'trem', 1);
 % [loc_est_sorted, est_err] = assign_estimates_tracking(sources, loc_est);
-% analyse_em_steps_tracking(psi_history, var_history, room, sources);
+% analyse_em_steps_tracking(psi_crem, squeeze(var_hist(1,:,:)), room, sources);
+
+% plot variance
+plot_variance(var_hist, {'CREM','TREM'}, c);
 
 plot_loc_est_history_c(loc_est_crem, sources)
-% plot variance
-% plot_variance(var_hist, {'CREM','TREM'}, c);
+plot_loc_est_history_c(loc_est_trem, sources)
 
 %% PLOTTING
 plot_results_tracking(loc_est_crem, sources, room, 'CREM')
+plot_results_tracking(loc_est_trem, sources, room, 'TREM')
 fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
 cd(oldpath)
 if clean, rmdir(PATH_SRC); end

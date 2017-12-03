@@ -1,4 +1,4 @@
-function analyse_em_steps(psi, var, room, sources)
+function analyse_em_steps_tracking(psi, var, room, sources)
 %PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations
 %
 %   PARAMETERS:
