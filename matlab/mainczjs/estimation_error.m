@@ -13,7 +13,7 @@ diff = inf;
 est_err = ones(size(loc_est_assorted, 1), 1)*inf;
 loc_est = zeros(size(loc_est_assorted));
 
-%% assign perfect matches
+% assign perfect matches
 for s=1:size(S, 1)
     for s2=1:size(loc_est_assorted, 1)
         if s2<s, continue; end  % check each pair only once
