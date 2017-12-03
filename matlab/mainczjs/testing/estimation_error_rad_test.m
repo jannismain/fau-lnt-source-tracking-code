@@ -1,10 +1,10 @@
-%% Test 0: Constructed Example with S=2
+%% Test 0: 
 S =                [1.5 4.6;
                     1.2 2.0];
 loc_est_assorted = [3.9 1.7;
                     3.0 4.0];
 tic;
-[loc_est,est_err] = estimation_error(S, loc_est_assorted);
+[~,est_err] = estimation_error_rad(S, loc_est_assorted);
 assert(round(est_err(1), 2)==1.62)
 assert(round(est_err(2), 2)==2.72)
 %% Test 1: S(1) not in S_est
@@ -17,8 +17,7 @@ loc_est_assorted = [3.9 1.7;
                     1.8 4.4;
                     1.1 3.9];
 tic;
-[loc_est,est_err] = estimation_error(S, loc_est_assorted)
-[loc_est_min,est_err_min] = estimation_error_min(S, loc_est_assorted)
+[~,est_err] = estimation_error_rad(S, loc_est_assorted);
 % Print Results
 % for s=1:size(S, 1)
 %     fprintf("  -> Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f], err=%0.2f\n", s, S(s,1:2), loc_est(s, :), est_err(s));
@@ -28,7 +27,6 @@ assert(round(est_err(1), 2)==2.63)
 assert(est_err(2)==0)
 assert(est_err(3)==0)
 assert(est_err(4)==0)
-assert(sum(est_err==est_err_min)==4)
 
 %% Test 2: S_est(1) not in S
 S =                [1.1 3.9;
@@ -40,7 +38,7 @@ loc_est_assorted = [3.9 4.0;
                     1.8 4.4;
                     1.1 3.9];
 tic;
-[~,est_err] = estimation_error(S, loc_est_assorted);
+[~,est_err] = estimation_error_rad(S, loc_est_assorted);
 assert(est_err(1)==0)
 assert(est_err(2)==0)
 assert(round(est_err(3), 2)==2.30)
@@ -56,7 +54,7 @@ loc_est_assorted = [3.9 4.0;
                     1.8 4.4;
                     1.1 3.9];
 tic;
-[~,est_err] = estimation_error(S, loc_est_assorted);
+[~,est_err] = estimation_error_rad(S, loc_est_assorted);
 assert(est_err(1)==0)
 assert(est_err(2)==0)
 assert(round(est_err(3), 2)==0.58)
@@ -72,7 +70,7 @@ loc_est_assorted = [2.8 4.0;
                     2.0 4.4;
                     1.1 4.0];
 tic;
-[~,est_err] = estimation_error(S, loc_est_assorted);
+[~,est_err] = estimation_error_rad(S, loc_est_assorted);
 assert(round(est_err(1), 2)==0.10)
 assert(round(est_err(2), 2)==0.20)
 assert(round(est_err(3), 2)==0.14)
@@ -90,7 +88,7 @@ S_est =            [2.8 4.0;
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~,est_err] = estimation_error(S, S_est_perm);
+    [~,est_err] = estimation_error_rad(S, S_est_perm);
     assert(round(mean(est_err), 2)==0.16);
 end
 
@@ -106,7 +104,7 @@ S_est =            [2.8 4.0;
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~,est_err] = estimation_error(S, S_est_perm);
+    [~,est_err] = estimation_error_rad(S, S_est_perm);
     assert(round(mean(est_err), 2)==0.23);
 end
 
@@ -121,7 +119,7 @@ mean_err = zeros(10, 1);
 for n=1:10
     tic;
     S_est_perm = S_est(randperm(length(S_est)),:);
-    [~,est_err] = estimation_error(S, S_est_perm);
+    [~,est_err] = estimation_error_rad(S, S_est_perm);
     mean_err(n) = mean(est_err);
 end
 assert(min(mean_err)==max(mean_err));
@@ -135,7 +133,7 @@ for m=1:50
         all_perm_S = perms(1:size(S,1));
         loc_err = zeros(size(all_perm_S,1), n);
         for i=1:size(all_perm_S, 1)
-            [~, loc_err(i,:)] = estimation_error(S,S_est(all_perm_S(i,:),:));
+            [~, loc_err(i,:)] = estimation_error_rad(S,S_est(all_perm_S(i,:),:));
         end
         mean_err = mean(loc_err, 2);
         assert(round(min(mean_err),2)==round(max(mean_err),2));
@@ -151,14 +149,14 @@ for m=1:50
         all_perm_S = perms(1:size(S,1));
         loc_err = zeros(size(all_perm_S,1), n);
         for i=1:size(all_perm_S, 1)
-            [~, loc_err(i,:)] = estimation_error(S(all_perm_S(i,:),:),S_est);
+            [~, loc_err(i,:)] = estimation_error_rad(S(all_perm_S(i,:),:),S_est);
         end
         mean_err = mean(loc_err, 2);
         assert(round(min(mean_err),2)==round(max(mean_err),2));
     end
 end
 
-%% Test 10: Constructed Example with S=4
+%% Test 9: Constructed, S=4
 S =     [4.7 1.2;
          1.5 2.9;
          1.7 4.5;
@@ -167,5 +165,5 @@ S_est = [1.5,2.9;
          2.3,2.7;
          2.2,4.9;
          1.1,3.9];
-[loc_est,est_err] = estimation_error(S, S_est);
+[loc_est,est_err] = estimation_error_rad(S, S_est);
 assert(round(mean(est_err), 2)==1.29);

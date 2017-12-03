@@ -63,7 +63,25 @@ switch eval
         end
 
     case 'guessing'
-        description='guessing';
+        description='_guessing';
+        trials=2000;
+        md = 5;
+        wd = 12;
+        rand_samples = true;
+        T60=0.0;
+        SNR=0;
+        em_iterations=0;
+        em_conv_threshold=-1;
+        guess_randomly=true;
+        reflect_order=3;
+        var_init=0.1;
+        var_fixed=false;
+        for sources = 2:7
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
+        end
+        
+    case 'guessing_alt_err'
+        description='guessing_alt_err';
         trials=500;
         md = 5;
         wd = 12;
@@ -74,8 +92,11 @@ switch eval
         em_conv_threshold=-1;
         guess_randomly=true;
         reflect_order=-1;
-        for sources = 2:7
-            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
+        var_init=0.1;
+        var_fixed=false;
+        alt_err = true;
+        for sources = 8:9
+            random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, false, alt_err);
         end
 
     case 'em-single'

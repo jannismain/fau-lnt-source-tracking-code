@@ -1,4 +1,4 @@
-function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir)
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomize_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)
 % Evaluates the localisation algorithm using random source locations
 % TODO: Also use different flavors of estimation algorithm (variance fixed
 % or calculated, sources known a priori vs. sources unknown)
@@ -29,6 +29,7 @@ if nargin < 12, reflect_order = 3; end
 if nargin < 13, var_init = 0.1; end
 if nargin < 14, var_fixed = false; end
 if nargin < 15, results_dir = false; end
+if nargin < 16, alt_err = false; end
 
 
 %% initialisation
@@ -38,7 +39,7 @@ cprintf('-comment', '                            E V A L U A T I O N            
 if ~results_dir
     PATH_SRC = [getuserdir filesep 'thesis' filesep];
 else
-    PATH_SRC = results_dir
+    PATH_SRC = results_dir;
 end
 PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'src', filesep, 'matlab', filesep, 'mainczjs', filesep, 'evaluation', filesep, 'results', filesep);
 PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
@@ -77,7 +78,11 @@ for trial=1:trials
         [log_em, psi, real_iterations] = evalc('em_algorithm(fn_conf, phi);');
         [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
     end
-    [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
+    if alt_err
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error_min(S, squeeze(loc_est_assorted(trial, :, :)));');
+    else
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
+    end
     fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
 %     if mean(est_err(trial, :))>mean(mean(est_err)*2)
 %         for s=1:n_sources
@@ -111,6 +116,8 @@ for trial=1:trials
             fprintf(logfile, log_esterr);
             fclose(logfile);
         end
+    else
+        delete(fn_conf);
     end
 end
 

@@ -1,10 +1,13 @@
-function [fig, ax_s, ax_r] = plot_room(ROOM, R, S, subplots, height, width, fig, varargin)
+function [fig, ax_s, ax_r, ax_bg] = plot_room(ROOM, R, S, subplots, add_legend, fig, varargin)
 %PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources
 
 if nargin<4, subplots=2; end
-if nargin<5, width=subplots*800; height=800; end
-if nargin<7, fig_supplied=false;else,fig_supplied=true;end
+if nargin<5, add_legend=true; end
+if nargin<6, fig_supplied=false;else,fig_supplied=true;end
 
+
+width=subplots*800;
+height=800;
 %CONSTANTS
 ROOM_FIXPOINT = 0;
 ROOM_BORDER = 0;
@@ -41,15 +44,30 @@ end
 
 % plot receivers and sources
 hold on;
+legend_elements = [];
+legend_elements_desc = [];
+
 ax_bg = surf(linspace(0,ROOM(1),ROOM(1)),linspace(0,ROOM(2), ROOM(2)), zeros(ROOM(1), ROOM(2)));
+legend_elements = [legend_elements ax_bg];
+legend_elements_desc = [legend_elements_desc string('room')];
+
 colormap([61/255 38/255 168/255]);
-ax_r = plot(R(:, 1), R(:, 2),'O','MarkerSize', 8, 'Linewidth',1,'Color','g');    
+if ~isempty(R)
+    ax_r = plot(R(:, 1), R(:, 2),'O','MarkerSize', 8, 'Linewidth',1,'Color','g');   
+    legend_elements = [legend_elements ax_r];
+    legend_elements_desc = [legend_elements_desc string('receiver')];
+else
+    ax_r = [];
+end
 ax_s = plot(S(:, 1), S(:, 2),'x','MarkerSize', 12, 'Linewidth',1,'Color','r');
+legend_elements_desc = [legend_elements_desc string('source')];
+legend_elements = [legend_elements ax_s];
 hold off;
 shading interp;
 % legend show;
-
-legend([ax_bg, ax_s, ax_r], 'room', 'source', 'receiver');
+if add_legend
+    legend(legend_elements, legend_elements_desc(:));
+end
 % legend('Location','NorthEastOutside')
 
 axis([-ROOM_BORDER,ROOM_WIDTH+ROOM_BORDER,-ROOM_BORDER,ROOM_HEIGHT+ROOM_BORDER]);

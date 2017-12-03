@@ -1,5 +1,5 @@
 %% setting parameters
-n_sources = 2;
+src_config = 'parallel';
 T60=0.4;
 SNR=30;
 % reflect_order=;
@@ -13,7 +13,7 @@ method='fastISM';
 % change into working directory, so temporary files are in one (and only one) place
 cd([getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'mainczjs_tracking' filesep 'evaluation' filesep 'results']) 
 tic;
-config_update_tracking(n_sources,T60,reflect_order,SNR,samples,source_length,freq_range,sidx,method);
+config_update_tracking(src_config,T60,reflect_order,SNR,samples,source_length,freq_range,method);
 load('config.mat');
 cprintf('err', '--------------------- S T A R T ---------------------\n');
 
@@ -23,7 +23,7 @@ cprintf('err', '--------------------- S T A R T ---------------------\n');
 ang_dist = rem_init(phi);
 
 %% SOURCE TRACKING
-init_vars = [.1, .5, 2];
+init_vars = [.1, .5, 1, 2, 5];
 var_hist = zeros(2,length(init_vars),em.T+1);
 for v=1:length(init_vars)
     [psi_crem, loc_est_crem, var_hist(1,v,:), psi_history_crem] = rem_tracking(ang_dist, 'crem', init_vars(v));

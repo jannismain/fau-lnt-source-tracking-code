@@ -12,7 +12,7 @@ from matplotlib.pyplot import *
 from matplotlib2tikz import save as _tikz_save
 
 # DISPLAY CONFIGURATION
-BP_OFFSETS = [0,0,0,0.15,0.20, 0.25, 0.35]
+BP_OFFSETS = [0,0,0.1,0.15,0.20, 0.25, 0.35]
 YAXIS_LIM = 2.5
 boxplot_args = {'notch':False,'return_type':'both','widths':0.08,'showmeans':True}
 DEFAULT_LINE_PLOT_ARGS = {'kind':'line',
@@ -46,11 +46,11 @@ pd.set_option('display.precision', 2,
 
 # DATA EXPORT PATHS
 # ...data
-PATH_ROOT = '../matlab/mainczjs/evaluation/results/'
+PATH_ROOT = '/Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/results/'
 NAME_DATA_FILES = '*results.txt'
 # ...LaTeX
-PATH_LATEX_PLOTS = '../../latex/data/plots/'
-PATH_LATEX_TABLES = '../../latex/data/tables/'
+PATH_LATEX_PLOTS = '/Users/jannismainczyk/latex/data/plots/'
+PATH_LATEX_TABLES = '/Users/jannismainczyk/latex/data/tables/'
 
 lms_red = (204/255, 53/255, 56/255)
 colors = ['k',lms_red,'orange','xkcd:azure','xkcd:indigo','xkcd:magenta']

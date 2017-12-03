@@ -1,5 +1,5 @@
 tic;
-fn_cfg = config_update(2, true, 10);
+[~, fn_cfg] = evalc('config_update(2, false);');
 load(fn_cfg);
 
 EXPORT = false;
@@ -13,7 +13,7 @@ PATH_OUTPUT = strcat(PATH_SRC, 'data', filesep, 'plots', filesep, 'setup', files
 
 
 fig = figure('Units', 'centimeters', 'InnerPosition', [0 0 12 12]);
-[fig, ax_s, ax_r] = plot_room(ROOM, R, S, 1, 800, 800, fig);
+[fig, ax_s, ax_r] = plot_room(ROOM, R, S, 1, false, fig);
 hold on
 
 % plot grid across whole room
@@ -29,8 +29,19 @@ yMax = room.dimensions(2)-sources.wall_distance/10;
 [X,Y] = meshgrid(xyMin:step:xMax,xyMin:step:yMax);
 Z = ones(length(X), length(Y));
 axd2 = plot3(X,Y,Z, 'w.', 'MarkerSize', 1);
-legend off;
 grid off;
+
+% move sources and receivers to front (uistack() does not work, as gridpoints have ZData of 1, others 0)
+set(ax_s, 'ZData', 2*ones(size(S, 1),1));
+set(ax_r, 'ZData', 2*ones(size(R, 1),1));
+% if ~isempty(R)
+%     ax_r = plot(R(:, 1), R(:, 2),'O','MarkerSize', 8, 'Linewidth',1,'Color','g');   
+%     legend_elements = [legend_elements ax_r];
+%     legend_elements_desc = [legend_elements_desc string('receiver')];
+% else
+%     ax_r = [];
+% end
+% ax_s = plot(S(:, 1), S(:, 2),'x','MarkerSize', 12, 'Linewidth',1,'Color','r');
 
 if EXPORT
     % export to tikz
@@ -65,6 +76,7 @@ if EXPORT
     %export as png/jpeg
     saveas(fig, [PATH_OUTPUT '.png']);
     saveas(fig, [PATH_OUTPUT '.jpg']);
+    
 end
 
 delete(fn_cfg);
