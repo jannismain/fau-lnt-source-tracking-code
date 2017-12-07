@@ -13,7 +13,6 @@ from matplotlib2tikz import save as _tikz_save
 
 # DISPLAY CONFIGURATION
 BP_OFFSETS = [0,0,0.1,0.15,0.20, 0.25, 0.35]
-YAXIS_LIM = 2.5
 boxplot_args = {'notch':False,'return_type':'both','widths':0.08,'showmeans':True}
 DEFAULT_LINE_PLOT_ARGS = {'kind':'line',
                           'marker':'o',
@@ -49,7 +48,7 @@ pd.set_option('display.precision', 2,
 PATH_ROOT = '/Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/results/'
 NAME_DATA_FILES = '*results.txt'
 # ...LaTeX
-PATH_LATEX_PLOTS = '/Users/jannismainczyk/latex/data/plots/'
+PATH_LATEX_PLOTS = '/Users/jannismainczyk/latex/plots/boxplots/'
 PATH_LATEX_TABLES = '/Users/jannismainczyk/latex/data/tables/'
 
 lms_red = (204/255, 53/255, 56/255)
@@ -68,6 +67,11 @@ DICT_SUMMARY = {'x1':'count',  # sample size
                 'var-val':np.mean,
                 'err-mean':np.mean,
                 'percent-matched':np.mean}
+
+# Boxplot constants
+YAXIS_LABELS = {'err-mean': 'mean localisation error', 'percent-matched': '''% matched'''}
+YAXIS_LIM = {'err-mean': 2.5, 'percent-matched': 1}
+YAXIS_STEPS = {'err-mean': 0.5, 'percent-matched': 0.2}
 
 
 def _get_trial_index(t):
@@ -159,10 +163,8 @@ def scatter_plot(df, xaxis='n-sources', yaxis='err-mean'):
     plt.xlabel("number of sources")
     plt.ylabel("mean localisation error (m)")
     l = plt.legend()
-#     if EXPORT_LATEX:
-#         tikz_save(PATH_SCATTER_PLOT)
 
-def style_boxplot(boxplots, axes, idx, elements):
+def style_boxplot(boxplots, axes, idx, elements, measure="err-mean"):
     # parse arguments
     if not type(boxplots) == type([]): boxplots = [boxplots]
     if not axes: axes = [boxplots[0][0].ax]
@@ -187,7 +189,7 @@ def style_boxplot(boxplots, axes, idx, elements):
                     item.set_marker('x')
                     item.set_markerfacecolor(colors[idx])
                     item.set_markeredgecolor(colors[idx])
-        boxlines = bp["err-mean"][1]
+        boxlines = bp[0][1]
         for el in boxlines:
             if not el == 'fliers':
                 setp(boxlines[el], color=colors[idx], linewidth=1)  # this styles elements not in box
@@ -195,18 +197,13 @@ def style_boxplot(boxplots, axes, idx, elements):
                 line = el2
                 setp(line, xdata=getp(line, 'xdata') + offset_table[idx])
     for ax in axes:
-        # ax.set_title("Mean Localisation Error across Number of Sources")
         ax.set_xlabel("number of sources")
-        ax.set_ylabel("mean localisation error")
+        ax.set_ylabel(YAXIS_LABELS[measure])
         ax.xaxis.grid(False);
         ax.yaxis.grid(True)
         ax.set_xticklabels([2, 3, 4, 5, 6, 7])
-        ax.set_ylim([0, YAXIS_LIM])
-        ax.set_yticks(np.arange(0, YAXIS_LIM + 0.01, 0.50))
-        #         ax.set_yticks(np.arange(0, YAXIS_LIM+0.01, 0.1), minor=True)
-        #         ax.grid(which='both')
-        #         ax.yaxis.grid(which='minor', alpha=0.3, linewidth=0.5)
-        #         ax.yaxis.grid(which='major', alpha=1)
+        ax.set_ylim([0, YAXIS_LIM[measure]])
+        ax.set_yticks(np.arange(0, YAXIS_LIM[measure] + 0.01, YAXIS_STEPS[measure]))
         ax.tick_params(axis='both', which='both', length=0)  # disable all ticks
 
     fig.suptitle('')
