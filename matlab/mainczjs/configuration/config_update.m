@@ -104,15 +104,15 @@ end
 
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
 
-sources.signal_length = 3;  % length of source signals [s]
+sources.signal_length = 5;  % length of source signals [s]
 sources.wall_distance = distance_wall;  % enforced distance from outer wall
 
 n_receivers = size(R, 1);
 n_receiver_pairs = n_receivers/2;
 n_sources = size(S, 1);  % REDUNDANT
 sources.n = size(S, 1);
-source_length = 3;  % REDUNDANT
-sources.length = 3;  % length of source signals [s]
+source_length = sources.signal_length;  % REDUNDANT
+sources.length = sources.signal_length;  % length of source signals [s]
 d_r = R(2, 1) - R(1, 1);
 % doa_wanted = doa_trig(S,R);
 

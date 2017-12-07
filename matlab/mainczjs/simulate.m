@@ -47,7 +47,12 @@ m = sprintf('Load source data... (t = %2.4f)', toc); counter = next_step(m, coun
                 temp = awgn(temp, SNR, 'measured');
             end
         end
-        S_data(1:source_length*fs, s) = temp(1:source_length*fs);
+        
+        if length(temp)>source_length*fs
+            S_data(1:source_length*fs, s) = temp(1:source_length*fs);
+        else
+            S_data(1:length(temp), s) = temp;
+        end
     end
 %     sound(S_data(:, 1), fs)
 
