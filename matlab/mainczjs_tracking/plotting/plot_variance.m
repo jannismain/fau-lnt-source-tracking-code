@@ -7,7 +7,7 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
 %      variance(1, E, :) = rem_tracking(...,'crem');
 %      variance(2, E, :) = rem_tracking(...,'trem');
 %      plot_variance(variance, {'CREM', 'TREM'});
-    
+
 % Parse input arguments, set default values if missing
     if nargin<2, legend_labels = {'CREM', 'TREM'}; end
     if nargin<3
@@ -17,7 +17,7 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
     if nargin<4, archive=false; end
     if nargin<5, save_to=[getuserdir filesep 'latex' filesep 'plots' filesep 'tracking' filesep 'variance' filesep]; [~,~]=mkdir(save_to);end
     %else, if ~strcmp(save_to(end), filesep), save_to = strcat(save_to, filesep); end; end
-    
+
     E = size(variance, 2);
     T = size(variance, 3);
     xvalues = linspace(1,T,T);
@@ -30,7 +30,7 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
     ylabel(sprintf("\\sigma^2")) % y-axis label
     ylim([0 1.5])
     yticks(linspace(0,1.5,7))
-    
+
     xlabel('t') % x-axis label
     xlim([0,T])
     xticks(linspace(0,T,6))
@@ -49,5 +49,6 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
                     'interpretTickLabelsAsTex',true,...
                     'extraColors', {{'lms_red',c.lmsred}, {'darkgray',c.darkgray}});
         saveas(fig, char(strcat(save_to, 'var.png')));
+        close gcf; clear fig;
     end
 end
