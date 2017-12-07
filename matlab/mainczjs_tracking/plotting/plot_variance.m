@@ -23,16 +23,21 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
     xvalues = linspace(1,T,T);
     fig = figure('Name','Variance'); hold on; box on; grid on;
     for e=1:E  % plotting the different evaluations in a loop allows us to create a correct legend
-        plot(xvalues, squeeze(variance(1,e,:))', 'Color', c.lmsred, 'LineWidth', 1);
-        plot(xvalues, squeeze(variance(2,e,:))', 'Color', c.darkgray, 'LineWidth', 1);
+        plot(xvalues, squeeze(variance(2,e,:))', 'Color', c.darkgray, 'LineWidth', 2);
+        plot(xvalues, squeeze(variance(1,e,:))', 'Color', c.lmsred, 'LineWidth', 2);
     end
 
-    xlabel('t') % x-axis label
     ylabel(sprintf("\\sigma^2")) % y-axis label
+    ylim([0 1.5])
+    yticks(linspace(0,1.5,7))
+    
+    xlabel('t') % x-axis label
     xlim([0,T])
-    legend(legend_labels{:},'Location','NorthEast')
+    xticks(linspace(0,T,6))
+    xticklabels(linspace(0,5,6))
+    legend(legend_labels{:})
     if archive
-        matlab2tikz(char(strcat(save_to, 'variance-comparison.tikz')),...
+        matlab2tikz(char(strcat(save_to, 'var.tikz')),...
                     'figurehandle', fig,...
                     'imagesAsPng', true,...
                     'checkForUpdates', false,...
@@ -43,5 +48,6 @@ function plot_variance(variance, legend_labels, c, archive, save_to)
                     'showInfo', false,...
                     'interpretTickLabelsAsTex',true,...
                     'extraColors', {{'lms_red',c.lmsred}, {'darkgray',c.darkgray}});
+        saveas(fig, char(strcat(save_to, 'var.png')));
     end
 end

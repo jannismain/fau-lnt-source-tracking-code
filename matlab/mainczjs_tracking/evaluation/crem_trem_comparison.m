@@ -11,17 +11,17 @@ method='fastISM';
 
 % variable parameters
 src_config = [string('parallel'), string('crossing'), string('arc')];
-T60=[0.4, 0.7];
+T60_list=[0.4, 0.7];
 
-for t=1:length(T60)
-for s=1:length(src_config)
+for t=1:length(T60_list)
+for scfg=1:length(src_config)
     %% INIT TRIAL
-    PATH_LATEX_TRIAL = [PATH_LATEX sprintf("%s_T60=%0.1f",src_config(s),T60(t)) filesep];
-    PATH_MATLAB_TRIAL = [PATH_MATLAB src_config(s) filesep];
+    PATH_LATEX_TRIAL = char([PATH_LATEX char(src_config(scfg)) filesep]); [~,~] = mkdir(PATH_LATEX_TRIAL);
+    PATH_MATLAB_TRIAL = char(strcat(PATH_MATLAB, src_config(scfg), filesep)); [~,~] = mkdir(PATH_MATLAB_TRIAL);
     cd(PATH_MATLAB_TRIAL);
 
     tic;
-    config_update_tracking(src_config(s),T60,-1,SNR,samples,source_length,freq_range,method);
+    config_update_tracking(src_config(scfg),T60_list(t),-1,SNR,samples,source_length,freq_range,method);
     load('config.mat');
 
     %% SIMULATE
@@ -30,7 +30,7 @@ for s=1:length(src_config)
     ang_dist = rem_init(phi);
 
     %% SOURCE TRACKING
-    init_vars = [.1, .5, 1, 2, 5];
+    init_vars = [1];
     var_hist = zeros(2,length(init_vars),em.T+1);
     for v=1:length(init_vars)
         [psi_crem, loc_est_crem, var_hist(1,v,:), psi_history_crem] = rem_tracking(ang_dist, 'crem', init_vars(v));
@@ -40,19 +40,20 @@ for s=1:length(src_config)
     % analyse_em_steps_tracking(psi_history, var_history, room, sources);
 
     %% PLOTTING
-    plot_variance(var_hist, {'CREM','TREM'}, c, true, parallel);
+    plot_variance(var_hist, {'CREM','TREM'}, c, true, strcat(PATH_LATEX_TRIAL, sprintf('results-T60=%0.1f-crem-', T60_list(t))));
 
-    % scr_size = get(0,'ScreenSize');  % [1, 1, 2560, 1440] on 2k resolution screen
-    % offset = 100;
-    % fig_size = [(scr_size(3)-2*offset)/4 scr_size(4)-2*offset];  % width x height
-    % fig_xpos = ceil(scr_size(3)/4);
-    % fig_ypos = ceil((scr_size(4)-2*offset-fig_size(2))/2); % center the figure on the screen vertically
-    % % 'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)]);
+%     scr_size = get(0,'ScreenSize');  % [1, 1, 2560, 1440] on 2k resolution screen
+%     offset = 100;
+%     fig_size = [(scr_size(3)-2*offset)/4 scr_size(4)-2*offset];  % width x height
+%     fig_xpos = ceil(scr_size(3)/4);
+%     fig_ypos = ceil((scr_size(4)-2*offset-fig_size(2))/2); % center the figure on the screen vertically
+    % 'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)]);
     % 
-    % fig_crem = figure('Name', 'Estimated Coordinates over Time (CREM)', 'Position', [offset,offset,fig_size(1),fig_size(2)]);
-    % plot_loc_est_history_c(loc_est_crem, sources, fig_crem)
-    % fig_trem = figure('Name', 'Estimated Coordinates over Time (TREM)', 'Position', [fig_xpos+offset,offset,fig_size(1), fig_size(2)]);
-    % plot_loc_est_history_c(loc_est_trem, sources, fig_trem)
+%     fig_crem = figure('Name', 'Estimated Coordinates over Time (CREM)', 'Position', [offset,offset,fig_size(1),fig_size(2)]);
+%     fig_trem = figure('Name', 'Estimated Coordinates over Time (TREM)', 'Position', [fig_xpos+offset,offset,fig_size(1), fig_size(2)]);
+    
+    plot_loc_est_history_c(loc_est_crem, sources, char(sprintf('T60=%0.1f-crem', T60_list(t))))
+    plot_loc_est_history_c(loc_est_trem, sources, char(sprintf('T60=%0.1f-trem', T60_list(t))))
     % 
     % fig_results_crem = figure('Name', 'Tracking Results (CREM)', 'Position', [2*fig_xpos+offset,offset,fig_size(1),fig_size(2)/2-50]);
     % plot_results_tracking(loc_est_crem, sources, room, 'CREM', fig_results_crem)
