@@ -56,10 +56,12 @@ for scfg=1:length(src_config)
     plot_loc_est_history_c(loc_est_trem, sources, char(sprintf('T60=%0.1f-trem', T60_list(t))))
     % 
     % fig_results_crem = figure('Name', 'Tracking Results (CREM)', 'Position', [2*fig_xpos+offset,offset,fig_size(1),fig_size(2)/2-50]);
-    % plot_results_tracking(loc_est_crem, sources, room, 'CREM', fig_results_crem)
     % fig_results_trem = figure('Name', 'Tracking Results (TREM)', 'Position', [2*fig_xpos+offset,offset+fig_size(2)/2+50,fig_size(1),fig_size(2)/2-50]);
-    % plot_results_tracking(loc_est_trem, sources, room, 'TREM', fig_results_trem)
-    % fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
+    plot_results_tracking(loc_est_crem, sources, room, 'CREM', fig_results_crem)
+    plot_results_tracking(loc_est_trem, sources, room, 'TREM', fig_results_trem)
+    
+    
+    fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
 
 end
 end

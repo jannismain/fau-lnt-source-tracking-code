@@ -1,5 +1,5 @@
 %% setting parameters
-src_cfg = 'arc';
+src_cfg = 'crossing';
 T60=0.4;
 SNR=30;
 % reflect_order=5;
@@ -7,7 +7,7 @@ samples=500;
 source_length = 5; % seconds
 freq_range=[];
 sim_method = 'fastISM';
-clean = true;
+clean = false;
 
 % change into working directory, so temporary files are in one (and only one) place
 oldpath = pwd;
@@ -33,14 +33,15 @@ ang_dist = rem_init(phi);
 % analyse_em_steps_tracking(psi_crem, squeeze(var_hist(1,:,:)), room, sources);
 
 % plot variance
-plot_variance(var_hist, {'CREM','TREM'}, c);
+% plot_variance(var_hist, {'CREM','TREM'}, c);
 
-plot_loc_est_history_c(loc_est_crem, sources)
-plot_loc_est_history_c(loc_est_trem, sources)
+% plot_loc_est_history_c(loc_est_crem, sources)
+% plot_loc_est_history_c(loc_est_trem, sources)
 
 %% PLOTTING
-plot_results_tracking(loc_est_crem, sources, room, 'CREM')
-plot_results_tracking(loc_est_trem, sources, room, 'TREM')
+plot_results_tracking(loc_est_crem, sources, room, true, sprintf('results-T60=%0.1f-crem-', T60))
+plot_results_tracking(loc_est_trem, sources, room, true, sprintf('results-T60=%0.1f-trem-', T60))
+
 fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
 cd(oldpath)
 if clean, rmdir(PATH_SRC); end
