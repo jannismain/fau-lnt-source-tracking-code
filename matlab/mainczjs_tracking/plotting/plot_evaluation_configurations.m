@@ -4,13 +4,13 @@ PATH_SRC = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep '
 [~,~] = mkdir(PATH_SRC); cd(PATH_SRC);
 
 fig = figure('Name', 'Tracking Evaluation Scenarios');
-color = [c.lmsred; c.darkgray];
 
 scenarios = [string('arc'), string('parallel'), string('crossing')];
 for i=1:length(scenarios)
     tic;
     config_update_tracking(scenarios(i));
     load('config.mat');
+    color = [c.lmsred; c.darkgray];
     
     subplot(1,length(scenarios),i); hold on;
     % plot room in blue
@@ -19,6 +19,7 @@ for i=1:length(scenarios)
     shading interp;
     
     ax = plot(sources.trajectories(:,:,1)', sources.trajectories(:,:,2)','-', 'LineWidth', 2);
+    line2arrow(ax)
     for a=1:length(ax)
         set(ax(a),'color',color(a,:));
     end
