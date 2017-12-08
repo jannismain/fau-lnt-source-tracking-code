@@ -82,5 +82,5 @@ m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counte
     end
     m = sprintf("Mixing Signals... (t = %2.4f)", toc); counter = next_step(m, counter); %#ok<*NASGU>
     x = squeeze(sum(x, 2));
-    sound(x(:,1,1), 16000)
+%     sound(x(:,1,1), 16000)
 end
