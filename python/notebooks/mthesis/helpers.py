@@ -69,7 +69,7 @@ DICT_SUMMARY = {'x1':'count',  # sample size
                 'percent-matched':np.mean}
 
 # Boxplot constants
-YAXIS_LABELS = {'err-mean': 'mean localisation error', 'percent-matched': '''% matched'''}
+YAXIS_LABELS = {'err-mean': 'MAE', 'percent-matched': '''% matched'''}
 YAXIS_LIM = {'err-mean': 2.5, 'percent-matched': 1}
 YAXIS_STEPS = {'err-mean': 0.5, 'percent-matched': 0.2}
 
@@ -171,7 +171,6 @@ def style_boxplot(boxplots, axes, idx, elements, measure="err-mean"):
     offset = BP_OFFSETS[elements]
     offset_table = np.linspace(-offset, offset, elements)
     c = colors[idx]
-    fig = axes[0].get_figure()
     for bp in boxplots:
         for key, val in bp[0].lines.items():
             for item in val:
@@ -196,8 +195,10 @@ def style_boxplot(boxplots, axes, idx, elements, measure="err-mean"):
             for el2 in boxlines[el]:
                 line = el2
                 setp(line, xdata=getp(line, 'xdata') + offset_table[idx])
+    axes[0].get_figure().suptitle('')
     for ax in axes:
-        ax.set_xlabel("number of sources")
+        ax.set_title('')
+        ax.set_xlabel("$S$")
         ax.set_ylabel(YAXIS_LABELS[measure])
         ax.xaxis.grid(False);
         ax.yaxis.grid(True)
@@ -205,8 +206,6 @@ def style_boxplot(boxplots, axes, idx, elements, measure="err-mean"):
         ax.set_ylim([0, YAXIS_LIM[measure]])
         ax.set_yticks(np.arange(0, YAXIS_LIM[measure] + 0.01, YAXIS_STEPS[measure]))
         ax.tick_params(axis='both', which='both', length=0)  # disable all ticks
-
-    fig.suptitle('')
 
 def load_all_data():
     dfs = []
