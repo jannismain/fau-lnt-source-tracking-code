@@ -113,17 +113,22 @@ switch eval
 
     case 'min-distance'
         description='min-distance';  % use only single quotes, double quotes will raise error in mkdir()
-        md = [1 3 5 10];
+        md = [3 5 10];
         wd = 12;
         rand_samples = true;
-        T60=0.6;
+        T60=0.3;
         SNR=0;
         em_iterations=5;
         em_conv_threshold=-1;
+        sources_trial = [6 6 5];
+        trials = [100 200 100];
         guess_randomly=false;
+        r=3;
+        var_init=0.1;
+        var_fixed=false;
         for i=1:length(md)
-            for sources = 2:7
-                random_sources_eval(description,sources,trials,md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly);
+            for sources = sources_trial(i):7
+                random_sources_eval(description,sources,trials(i),md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, r,var_init, var_fixed);
             end
         end
 

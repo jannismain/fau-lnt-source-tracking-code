@@ -89,7 +89,7 @@ else
 end
 room.S = S;
 sources.positions = S;
-for n=1:20
+for n=1:7
     if n>9  % this is necessary when more than 9 sources need to be supported!
         fname = 'ABCDEFGHIJKLMNOPQRST';
         n_str = fname(n-9);
@@ -104,7 +104,7 @@ end
 
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
 
-sources.signal_length = 5;  % length of source signals [s]
+sources.signal_length = 3;  % length of source signals [s]
 sources.wall_distance = distance_wall;  % enforced distance from outer wall
 
 n_receivers = size(R, 1);
