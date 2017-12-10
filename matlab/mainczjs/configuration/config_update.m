@@ -99,7 +99,7 @@ for n=1:7
     sources.samples(n, :) = strcat(n_str,'.WAV');
 end
 if n_sources>8
-    fprintf("WARN: only 7 audio samples available!");
+    fprintf('WARN: only 7 audio samples available!');
 end
 
 if randomize_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
