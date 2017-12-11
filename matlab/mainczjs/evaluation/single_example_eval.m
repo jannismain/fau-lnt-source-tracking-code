@@ -1,11 +1,11 @@
 function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
 
-if nargin < 1, n_sources = 7; end
+if nargin < 1, n_sources = 2; end
 if nargin < 2, random_sources = true; end
 if nargin < 3, min_distance = 5; end
 if nargin < 4, distance_wall = 12; end
 if nargin < 5, randomize_samples = true; end
-if nargin < 6, T60 = 0.6; fprintf('WARNING: Using default for T60 (0.3)\n'); end
+if nargin < 6, T60 = 0.6; fprintf('WARNING: Using default for T60 (0.6)\n'); end
 if nargin < 7, em_iterations = 6; fprintf('WARNING: Using default for em_iterations (10)\n'); end
 if nargin < 8, em_conv_threshold = -1; fprintf('WARNING: Using default for em_conv_threshold (-1)\n'); end
 if nargin < 9, reflect_order = -1; fprintf('WARNING: Using default for rir-reflect_order (3)\n'); end
