@@ -25,8 +25,12 @@ counter = 1;
 % Simulation
 fs = 16000;                         % Sample frequency (samples/s)
 room.c = 343;                       % Sound velocity (m/s)
-rir.t_reverb = T60;                 % Reverberationtime (s)
-rir.length = fs*T60;               % Number of samples
+rir.t_reverb = T60;                % Reverberationtime (s)
+if T60>0.3
+    rir.length = fs*T60;           % Number of samples
+else
+    rir.length = fs*0.5;
+end
 mics.type = 'omnidirectional';      % Type of microphone
 rir.reflect_order = reflect_order;  % −1 equals maximum reflection order!
 room.dimension = 3;                 % Room dimension
