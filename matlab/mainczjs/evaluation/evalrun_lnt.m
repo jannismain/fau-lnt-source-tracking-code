@@ -17,6 +17,23 @@ guess_randomly=false;
 reflect_order=-1;
 var_init = 0.1;
 var_fixed = false;
-for sources = 7:7
-        random_sources_eval(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init,var_fixed,'/HOMES/mainczyk/thesis/src/');
+
+
+description='var-fixed';  % test fixed variance with different values
+md = 5;
+wd = 12;
+rand_samples = true;
+trials = [20 15 10 10 15 10];
+T60=0.3;
+SNR=0;
+em_iterations=10;
+em_conv_threshold=-1;
+guess_randomly=false;
+reflect_order=3;
+var_init=[0.1 0.5 1 2 3 5];
+var_fixed=false;
+for i=1:length(var_init)
+    for sources = 2:7
+            random_sources_eval(description,sources,trials(i),md,wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init(i),var_fixed,'/HOMES/mainczyk/thesis/src/');
+    end
 end
