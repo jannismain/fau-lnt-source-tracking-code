@@ -5,7 +5,7 @@ rand('state',sum(100*clock));
 
 % EVALUATION ROUTINE:
 description='T60';
-trials=15;
+trials=10;
 md = 5;
 wd = 12;
 rand_samples = true;
