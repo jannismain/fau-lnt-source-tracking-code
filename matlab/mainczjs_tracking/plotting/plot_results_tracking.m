@@ -2,11 +2,7 @@ function [] = plot_results_tracking( loc_est, sources, room, archive, fname)
 
 if nargin<4, archive=false; end
 if nargin<5, fname='results'; end
-% Create Figure in the middle of the screen with a reasonable size
-%     scr_size = get(0,'ScreenSize');
-%     fig_size = [750 600];  % width x height
-%     fig_xpos = ceil((scr_size(3)-fig_size(1))/2); % center the figure on the screen horizontally
-%     fig_ypos = ceil((scr_size(4)-fig_size(2))/2); % center the figure on the screen vertically
+
 fig = figure('Name',sprintf('Location Estimate Result (%s)', fname),...
               'NumberTitle','off',...
               'Color','white');%,...
@@ -14,7 +10,8 @@ fig = figure('Name',sprintf('Location Estimate Result (%s)', fname),...
                   %'Visible','off');  TODO: Comment this back in for trial runs!
 
 % plot sources
-plot_trajectory(sources.trajectories, 'o', fig)
+traj = sources.trajectories(:,1:25:end,:);
+plot_trajectory(traj, 'o', fig)
 
 % plot estimates
 plot_trajectory(loc_est, 'x', fig);
@@ -22,8 +19,8 @@ plot_trajectory(loc_est, 'x', fig);
 % plot room           
 ax = gca;
 ax.Color = 'white';
-ax.XLim = [1,room.dimensions(1)-1];
-ax.YLim = [1,room.dimensions(2)-1];
+ax.XLim = [room.N_margin/10,room.dimensions(1)-room.N_margin/10];
+ax.YLim = [room.N_margin/10,room.dimensions(2)-room.N_margin/10];
 xlabel("x");
 ylabel("y");
 grid on
@@ -32,7 +29,6 @@ if archive
     fdir = [getuserdir filesep 'latex' filesep 'plots' filesep 'tracking' filesep char(sources.cfg) filesep];
     matlab2tikz(char(strcat(fdir, fname, 'room', '.tikz')),...
                     'figurehandle', fig,...
-                    'imagesAsPng', true,...
                     'checkForUpdates', false,...
                     'externalData', false,...
                     'parseStrings',false,...
@@ -40,8 +36,9 @@ if archive
                     'width', '\figurewidth',...
                     'noSize', false,...
                     'showInfo', false,...
-                    'interpretTickLabelsAsTex',true,...
-                    'extraColors', {{'lms_red',[0.8000,0.2078,0.2196]}});
+                    'maxChunkLength',500,...
+                    'floatFormat','%.6f',...
+                    'interpretTickLabelsAsTex',true);
     saveas(fig, char(strcat(fdir, fname, 'room', '.png')));
     close gcf; clear fig;
 end

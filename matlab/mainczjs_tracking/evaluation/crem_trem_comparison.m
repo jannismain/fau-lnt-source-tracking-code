@@ -8,10 +8,12 @@ samples=500;
 source_length = 5; % seconds
 freq_range=[];
 method='fastISM';
+gamma = 0.1;
 
 % variable parameters
-src_config = [string('parallel'), string('crossing'), string('arc')];
-T60_list=[0.4, 0.7];
+% src_config = [string('parallel'), string('crossing'), string('arc')];
+src_config = [string('parallel')];
+T60_list=[0.7];
 
 for t=1:length(T60_list)
 for scfg=1:length(src_config)
@@ -21,7 +23,7 @@ for scfg=1:length(src_config)
     cd(PATH_MATLAB_TRIAL);
 
     tic;
-    config_update_tracking(src_config(scfg),T60_list(t),-1,SNR,samples,source_length,freq_range,method);
+    config_update_tracking(src_config(scfg),T60_list(t),-1,SNR,samples,source_length,freq_range,method, gamma);
     load('config.mat');
 
     %% SIMULATE
@@ -40,7 +42,7 @@ for scfg=1:length(src_config)
     % analyse_em_steps_tracking(psi_history, var_history, room, sources);
 
     %% PLOTTING
-    plot_variance(var_hist, {'CREM','TREM'}, c, true, strcat(PATH_LATEX_TRIAL, sprintf('results-T60=%0.1f-crem-', T60_list(t))));
+%     plot_variance(var_hist, {'CREM','TREM'}, c, true, strcat(PATH_LATEX_TRIAL, sprintf('results-T60=%0.1f-crem-', T60_list(t))));
 
 %     scr_size = get(0,'ScreenSize');  % [1, 1, 2560, 1440] on 2k resolution screen
 %     offset = 100;
@@ -52,14 +54,11 @@ for scfg=1:length(src_config)
 %     fig_crem = figure('Name', 'Estimated Coordinates over Time (CREM)', 'Position', [offset,offset,fig_size(1),fig_size(2)]);
 %     fig_trem = figure('Name', 'Estimated Coordinates over Time (TREM)', 'Position', [fig_xpos+offset,offset,fig_size(1), fig_size(2)]);
     
-    plot_loc_est_history_c(loc_est_crem, sources, char(sprintf('T60=%0.1f-crem', T60_list(t))))
-    plot_loc_est_history_c(loc_est_trem, sources, char(sprintf('T60=%0.1f-trem', T60_list(t))))
+%     plot_loc_est_history_c(loc_est_crem, sources, char(sprintf('T60=%0.1f-crem-TEST', T60_list(t))))
+%     plot_loc_est_history_c(loc_est_trem, sources, char(sprintf('T60=%0.1f-trem-TEST', T60_list(t))))
     % 
-    % fig_results_crem = figure('Name', 'Tracking Results (CREM)', 'Position', [2*fig_xpos+offset,offset,fig_size(1),fig_size(2)/2-50]);
-    % fig_results_trem = figure('Name', 'Tracking Results (TREM)', 'Position', [2*fig_xpos+offset,offset+fig_size(2)/2+50,fig_size(1),fig_size(2)/2-50]);
-    plot_results_tracking(loc_est_crem, sources, room, 'CREM', fig_results_crem)
-    plot_results_tracking(loc_est_trem, sources, room, 'TREM', fig_results_trem)
-    
+    plot_results_tracking(loc_est_crem, sources, room, true, char(sprintf('T60=%0.1f-crem-room-K=%d-T=%d-gamma=%d-', T60_list(t), em.K, em.T, gamma*10)));
+    plot_results_tracking(loc_est_trem, sources, room, true, char(sprintf('T60=%0.1f-trem-room-K=%d-T=%d-gamma=%d-', T60_list(t), em.K, em.T, gamma*10)))
     
     fprintf(' done! (Elapsed Time = %s)\n', num2str(toc)');
 

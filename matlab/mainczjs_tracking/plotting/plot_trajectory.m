@@ -14,10 +14,7 @@ hold on;
 for s=1:size(traj, 1)
     % Define colormap
     colorCode = jet(size(traj,2));
-%     coloVev = repmat(colorCode,size(traj,2),1);
-    coloVev = colorCode; % not vectorized
-
-    ax = scatter(squeeze(traj(s,:,1)),squeeze(traj(s,:,2)),[],coloVev,m);
+    ax = scatter(squeeze(traj(s,:,1)),squeeze(traj(s,:,2)),64,colormap(colorCode),m);
     if m=='x'
         set(ax,'SizeData',256)
     end

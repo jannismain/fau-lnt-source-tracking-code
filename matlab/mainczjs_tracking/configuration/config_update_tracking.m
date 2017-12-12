@@ -1,4 +1,4 @@
-function config_update = config_update_tracking(src_cfg, T60, reflect_order, SNR, samples, source_length, freq_range, sim_method)
+function config_update = config_update_tracking(src_cfg, T60, reflect_order, SNR, samples, source_length, freq_range, sim_method, gamma)
 %% CONFIG_UPDATE_TRACKING Provides necessary parameters for source tracking algorithm
 % ARGS:
 %       src_cfg = 'parallel' | 'crossing' | 'arc'
@@ -12,6 +12,7 @@ if nargin < 5, samples = 100; fprintf("WARNING: Using default for samples (20)\n
 if nargin < 6, source_length = 3; fprintf("WARNING: Using default for source_length (3s)\n"); end
 if nargin < 7 || isempty(freq_range), freq_range = 40:65; fprintf("WARNING: Using default for freq_range (bins 40-65)\n"); end
 if nargin < 8, sim_method = 'fastISM'; fprintf("WARNING: Using default simulation method (fastISM)\n"); end
+if nargin < 8, gamma = 0.1; fprintf("WARNING: Using default em.gamma (0.1)\n"); end
 
 
 fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
@@ -27,7 +28,7 @@ counter = 1;
 fs = 16000;                         % Sample frequency (samples/s)
 room.c = 343;                       % Sound velocity (m/s)
 rir.t_reverb = T60;                 % Reverberationtime (s)
-rir.length = 1*1024;               % Number of samples
+rir.length = T60*fs;               % Number of samples
 mics.type = 'omnidirectional';      % Type of microphone
 rir.reflect_order = reflect_order;  % −1 equals maximum reflection order!
 room.dimension = 3;                 % Room dimension
@@ -139,7 +140,8 @@ freq = ((0:fft_bins/2)/fft_bins*fs).'; % frequency vector [Hz]
 
 %% GMM
 room.grid_resolution = 0.1;
-room.N_margin = 1/room.grid_resolution;
+% room.N_margin = 1/room.grid_resolution;
+room.N_margin = 0;
 room.grid_x = (0:room.grid_resolution:room.dimensions(1));
 room.grid_y = (0:room.grid_resolution:room.dimensions(2));
 [room.pos_x, room.pos_y] = meshgrid(room.grid_x, room.grid_y);
@@ -158,7 +160,7 @@ em.X_idxmax = em.X - room.N_margin;
 em.Y_idxmax = em.Y - room.N_margin;
 em.P = room.n_pos; % Number of Gridpoints
 em.M = n_receiver_pairs;
-em.gamma = 0.1;
+em.gamma = gamma;
 em.var = 0.9;
 % em.conv_threshold = em_conv_threshold;
 % em.iterations = em_iterations;
