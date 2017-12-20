@@ -6,11 +6,11 @@ wd = 12;
 rand_samples = true;
 T60=0.6;
 SNR=0;
-em_iterations=10;
-em_conv_threshold=0.0001;
+em_iterations=20;
+em_conv_threshold=-1;
 guess_randomly=false;
 reflect_order=3;
-var_init=10;
+var_init=1;
 var_fixed = false;
 get_em_history = false;
 

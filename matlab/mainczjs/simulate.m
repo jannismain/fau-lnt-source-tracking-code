@@ -54,7 +54,6 @@ m = sprintf('Load source data... (t = %2.4f)', toc); counter = next_step(m, coun
             S_data(1:length(temp), s) = temp;
         end
     end
-%     sound(S_data(:, 1), fs)
 
 %% Y x RIRs
 m = sprintf('Convolute source data with room impulse response... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
@@ -76,7 +75,6 @@ m = sprintf('Convolute source data with room impulse response... (t = %2.4f)', t
     %          May bring additional work (e.g. reshaping to specified size)
 
 if mix
-    %% $x = \sum(Y)$
     m = sprintf('Mixing Signals... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
         x = squeeze(sum(Y, 2));
 else
