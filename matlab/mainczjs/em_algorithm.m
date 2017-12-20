@@ -48,15 +48,9 @@ clear phi_mat; clear phi_tilde_mat; clear phi_diff;
 
 %% EM Algorithm
 m = 'EM-Iterations...'; counter = next_step(m, counter);
-% Assign equal prior probabilities to each cluster.
-% TODO: Initialisierung anders gestalten? Eventuell besseres Ergebnis?
 psi = ones(em.Y-2*room.N_margin,em.X-2*room.N_margin,1) * (1 /(em.X-2*room.N_margin)*(em.Y-2*room.N_margin));
-% N_margin: Berechnungen nur für Bereich innerhalb der Mikrofone. TODO:
-% Ausweiten auf gesamten Bereich, auswerten ob Sources auch außerhalb erkannt werden.
 psi_old = zeros(size(psi));
 
-% variance = 0.1;%10; % Use the overal variance of the dataset as the initial variance for each cluster.
-% 09.11.2017: implemented parameter to provide fixed variance
 variance = em.var;
 var_ret = zeros(em.iterations+1, 1);
 var_ret(1) = em.var;
@@ -66,25 +60,32 @@ if return_all_psi
 end
 for iter = 1:em.iterations
 
-    fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
-    fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
-
+%     fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
+%     fprintf('\x0394\x03C8 = %2.4f (t = %2.4f)\n', norm(psi(:)-psi_old(:)), toc);  % \x0394\x03C8 = Delta Psi
     psi_old = psi;
-
+%     fprintf('%s E-Step start (t = %2.4f)\n', FORMAT_PREFIX, toc);
 %% Expectation
+    e_start = toc;
     pdf = bsxfun(@times,reshape(psi,1,1,em.Y-2*room.N_margin,em.X-2*room.N_margin,1),prod((1 / (variance * pi))*exp(-ang_dist / (variance)),5));
-
     mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,em.T,1,1));
     mu(isnan(mu)) = 0;
 
 %% Maximization
+    m_start = toc;
     psi = squeeze(sum(sum(mu,2),1)/(em.T*em.K));
     psi(psi<=0) = eps;  % reset negative values to the smallest possible positive value
-    if ~em.var_fixed  %Try to use fixed variance to improve results?
+    m_var_start = toc;
+    if ~em.var_fixed
         var_denominator = squeeze(sum(sum(sum(sum(sum(bsxfun(@times,reshape(mu,size(mu,1),size(mu,2),size(mu,3),size(mu,4),1),ang_dist),5),4),3),2),1));
         var_numerator = room.R_pairs*squeeze(sum(sum(sum(sum(mu,4),3),2),1));
         variance = var_denominator./var_numerator;
     end
+    m_stop = toc;
+    em_duration = m_stop-e_start;
+    e_duration = m_start-e_start;
+    m_psi_duration = m_var_start-m_start;
+    m_var_duration = m_stop-m_var_start;
+    fprintf("%s Iteration took %2.4f (100), E took %2.4f (%2.2f), M-Psi took %2.4f (%2.2f), M-Var took %2.4f (%2.2f)\n", FORMAT_PREFIX, em_duration, e_duration, e_duration/em_duration, m_psi_duration, m_psi_duration/em_duration, m_var_duration, m_var_duration/em_duration);
     var_ret(iter+1)=variance;
     if return_all_psi
         psi_ret(iter, :, :) = psi;
