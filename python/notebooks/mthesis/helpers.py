@@ -266,7 +266,8 @@ def parse_parameters(fname):
     return ret
 
 def calculate_helpers(df: pd.DataFrame):
-    df_helpers = (df.loc[:, "x1":"x7":2]-df.loc[:, "x1est":"x7est":2].values).rename(columns={"x{}".format(i):"x{}matched".format(i) for i in range(8)})
+    n = max(df["n-sources"].values)
+    df_helpers = (df.loc[:, "x1":"x{}".format(n):2]-df.loc[:, "x1est":"x{}est".format(n):2].values).rename(columns={"x{}".format(i):"x{}matched".format(i) for i in range(8)})
     df_helpers = df_helpers.apply(is_matched, axis=1, raw=False)
     df_helpers["total-matched"] = df_helpers.sum(axis=1)
     df_helpers["percent-matched"] = df_helpers["total-matched"] / df["n-sources"].values
@@ -277,7 +278,7 @@ def matlab2pandas(dirname=EVALUATIONS, filename=NAME_DATA_FILES, save_to=None, s
     if type(dirname)!=list:
         dirnames = [dirname, ]
     else: dirnames = dirname
-
+    max_n_sources = 0
     for dirname in dirnames:
         files = glob.glob(path.join(PATH_ROOT,dirname,filename))
         dfs = []
@@ -288,6 +289,8 @@ def matlab2pandas(dirname=EVALUATIONS, filename=NAME_DATA_FILES, save_to=None, s
             fname = f.split(sep="/")[-1]
             params = parse_parameters(fname)
             n_sources = int(params["s"])
+            if n_sources > max_n_sources:
+                max_n_sources = n_sources
             # prepare DataFrame
             df = pd.DataFrame(list(csv.reader(open(f, 'r'), delimiter='\t')), dtype=float)
             df.drop(df.columns[[n_sources*4+n_sources]], axis=1, inplace=True) # drops empty column
