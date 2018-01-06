@@ -1,6 +1,6 @@
 %% setting parameters
 PATH_LATEX = [getuserdir filesep 'latex' filesep 'plots' filesep 'tracking' filesep];
-PATH_MATLAB = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'mainczjs_tracking' filesep 'evaluation' filesep 'results' filesep];
+PATH_MATLAB = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'tracking' filesep 'evaluation' filesep 'results' filesep];
 
 % static parameters
 SNR=30;

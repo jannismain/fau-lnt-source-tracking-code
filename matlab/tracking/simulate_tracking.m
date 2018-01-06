@@ -35,7 +35,7 @@ m = sprintf("Calculate RIR for each Source-Receiver combination... (t = %2.4f)",
     fn_rir = [];
     for s = 1:n_sources
         config_shift_current_trajectory(s)
-        fn_path_rirs = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'ress' filesep 'rir' filesep];
+        fn_path_rirs = [getuserdir filesep 'thesis' filesep 'src' filesep 'matlab' filesep 'resources' filesep 'rir' filesep];
         fn = sprintf('RIRs_[%d,%d]_to_[%d,%d]_T60=%0.1f_s=%d.mat', sources.positions(s, 1), sources.positions(s, 2), sources.positions(s, 1)+sources.movement(s, 1), sources.positions(s, 2)+sources.movement(s, 2),rir.t_reverb,samples);
         fn_rir = [fn_rir; [fn_path_rirs, fn]];
         if exist(fn_rir(s,:),'file')~=2 || force_rir
