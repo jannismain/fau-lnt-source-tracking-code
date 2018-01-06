@@ -47,9 +47,6 @@ pd.set_option('display.precision', 2,
 # ...data
 PATH_ROOT = '/Users/jannismainczyk/thesis/src/matlab/mainczjs/evaluation/results/'
 NAME_DATA_FILES = '*results.txt'
-# ...LaTeX
-PATH_LATEX_PLOTS = '/Users/jannismainczyk/latex/plots/boxplots/'
-PATH_LATEX_TABLES = '/Users/jannismainczyk/latex/data/tables/'
 
 lms_red = (204/255, 53/255, 56/255)
 colors = ['k',lms_red,'orange','xkcd:azure','xkcd:indigo','xkcd:magenta']
