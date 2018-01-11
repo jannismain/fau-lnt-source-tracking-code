@@ -1,0 +1,11 @@
+<productinfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="optional">
+    <?xml-stylesheet type="text/xsl"href="optional"?>
+     
+    <matlabrelease>R2017a</matlabrelease>
+    <name>SourceLocalisationAndTrackingToolbox</name>
+    <type>srcloctracktoolbox</type>
+    <icon></icon>
+    <help_location>docs</help_location>
+  
+</productinfo>

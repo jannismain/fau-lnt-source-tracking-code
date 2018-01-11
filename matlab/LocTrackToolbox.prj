@@ -1,0 +1,111 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration file="/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/matlab/Acoustic Source Localisation and Tracking Toolbox.prj" location="/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/matlab" name="Acoustic Source Localisation and Tracking Toolbox" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Acoustic Source Localisation and Tracking Toolbox</param.appname>
+    <param.authnamewatermark>Jannis Mainczyk</param.authnamewatermark>
+    <param.email>jmainczyk@gmail.com</param.email>
+    <param.company />
+    <param.summary>EM based Acoustic Source Localisation and Tracking Toolbox</param.summary>
+    <param.description />
+    <param.screenshot>/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/latex/plots/tikz-data/s=2-sloc=schwartz2014-prior=schwartz2014-results-1.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.output>${PROJECT_ROOT}/Acoustic Source Localisation and Tracking Toolbox.mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>5cacfd7d-4f3d-467c-b461-f5d478c670cd</param.guid>
+    <param.exclude.filters />
+    <param.examples />
+    <param.demosxml />
+    <param.apps />
+    <param.docs>${PROJECT_ROOT}/info.xml</param.docs>
+    <param.matlabpath.excludes />
+    <param.javaclasspath.excludes />
+    <unset>
+      <param.company />
+      <param.description />
+      <param.version />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.examples />
+      <param.demosxml />
+      <param.apps />
+      <param.matlabpath.excludes />
+      <param.javaclasspath.excludes />
+    </unset>
+    <fileset.rootdir>
+      <file>/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/matlab</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}/.DS_Store</file>
+      <file>${PROJECT_ROOT}/addpath_recurse.m</file>
+      <file>${PROJECT_ROOT}/docs</file>
+      <file>${PROJECT_ROOT}/info.xml</file>
+      <file>${PROJECT_ROOT}/localisation</file>
+      <file>${PROJECT_ROOT}/other</file>
+      <file>${PROJECT_ROOT}/resources</file>
+      <file>${PROJECT_ROOT}/tracking</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/matlab" name="Acoustic Source Localisation and Tracking Toolbox.mltbx" optional="false">/Users/jannismainczyk/Dropbox/01. STUDIUM/10. Masterarbeit/src/matlab/Acoustic Source Localisation and Tracking Toolbox.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2017a.app</root>
+      <toolboxes>
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabcoder" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="polyspacebugfinder" />
+      </toolboxes>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <polyspacebugfinder>
+          <enabled>true</enabled>
+        </polyspacebugfinder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.13.2</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
