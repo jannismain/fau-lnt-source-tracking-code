@@ -1,0 +1,7 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  config_update -> get_random_sources;
+
+  config_update [URL="config_update.html"];
+  get_random_sources [URL="get_random_sources.html"];
+}

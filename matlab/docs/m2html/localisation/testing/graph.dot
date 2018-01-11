@@ -1,0 +1,11 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  estimate_location_test [URL="estimate_location_test.html"];
+  estimation_error_min_test [URL="estimation_error_min_test.html"];
+  estimation_error_rad_test [URL="estimation_error_rad_test.html"];
+  estimation_error_test [URL="estimation_error_test.html"];
+  get_random_sources_test [URL="get_random_sources_test.html"];
+  get_trajectory_test [URL="get_trajectory_test.html"];
+  tests [URL="tests.html"];
+}

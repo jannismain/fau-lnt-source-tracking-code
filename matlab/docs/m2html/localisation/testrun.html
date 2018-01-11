@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of testrun</title>
+  <meta name="keywords" content="testrun">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; testrun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>testrun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/configuration/config_update.html" class="code" title="function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">config_update</a>	% CONFIG_UPDATE Creates config-file and returns its filename.</li><li><a href="em_algorithm.html" class="code" title="function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)">em_algorithm</a>	% EM_ALGORITHM Estimate parameters of GMM from PRPs</li><li><a href="estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>	% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</li><li><a href="estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>	ESTIMATION_ERROR Calculates the estimation error based on the true source positions</li><li><a href="../localisation/plotting/plot_results.html" class="code" title="function [ fig ] = plot_results( psi, loc_est, room)">plot_results</a>	PLOT_RESULTS Plots location estimation results</li><li><a href="simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>	SIMULATE Simulates received signals in a room with audio sources and receivers.</li><li><a href="stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>	STFT Calculate the short-time fourier transformation (STFT) using a certain parameter set.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 fprintf(<span class="string">'------------------------- T E S T R U N -------------------------\n'</span>);
+0002 <span class="comment">%% setting parameters</span>
+0003 sources = 5;
+0004 md = 5;
+0005 wd = 12;
+0006 rand_samples = true;
+0007 T60=0.6;
+0008 SNR=0;
+0009 em_iterations=20;
+0010 em_conv_threshold=-1;
+0011 guess_randomly=false;
+0012 reflect_order=3;
+0013 var_init=1;
+0014 var_fixed = false;
+0015 get_em_history = false;
+0016 
+0017 <span class="comment">%% init</span>
+0018 tic;
+0019 fn_conf = <a href="../localisation/configuration/config_update.html" class="code" title="function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">config_update</a>(sources, true, md,wd,rand_samples,T60,em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed);
+0020 load(fn_conf);
+0021 
+0022 <span class="comment">%% Simulate Environment</span>
+0023 x = <a href="simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>(fn_cfg, ROOM, R, sources);
+0024 
+0025 <span class="comment">%% Calculate STFT</span>
+0026 [X, phi] = <a href="stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>(fn_cfg, x);
+0027 
+0028 <span class="comment">%% Estimate Location (GMM+EM-Algorithmus)</span>
+0029 [psi, iterations, variance] = <a href="em_algorithm.html" class="code" title="function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)">em_algorithm</a>(fn_cfg, phi, em_iterations, em_conv_threshold, get_em_history);
+0030 loc_est = <a href="estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>(squeeze(psi(size(psi, 1), :, :)), n_sources, 0, 5, room);
+0031 [loc_est_sorted, est_err] = <a href="estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>(S, loc_est);
+0032 
+0033 <span class="comment">%% Plotting results</span>
+0034 <span class="keyword">if</span> get_em_history
+0035     loc_est = <a href="estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>(squeeze(psi(size(psi, 1), :, :)), n_sources, 0, 5, room);
+0036     [loc_est_sorted, est_err] = <a href="estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>(S, loc_est);
+0037     psi_plot = zeros(iterations,em.Y,em.X);
+0038     psi_plot(:,(room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+0039 <span class="keyword">else</span>
+0040     loc_est = <a href="estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>(psi, n_sources, 0, 5, room);
+0041     [loc_est_sorted, est_err] = <a href="estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>(S, loc_est);
+0042     psi_plot = zeros(em.Y,em.X);
+0043     psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+0044 <span class="keyword">end</span>
+0045 fig = <a href="../localisation/plotting/plot_results.html" class="code" title="function [ fig ] = plot_results( psi, loc_est, room)">plot_results</a>(psi_plot, loc_est, room);
+0046 <span class="comment">% saveas(fig, 'fig.fig', 'mfig');</span>
+0047 <span class="comment">% matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);</span>
+0048 close(fig);
+0049 
+0050 <span class="comment">%% End</span>
+0051 fprintf(<span class="string">'\n---------------------   E N D   ---------------------\n'</span>);</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

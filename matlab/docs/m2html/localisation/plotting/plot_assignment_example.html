@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_assignment_example</title>
+  <meta name="keywords" content="plot_assignment_example">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; plot_assignment_example.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plot_assignment_example
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 fdir = [getuserdir filesep <span class="string">'latex'</span> filesep <span class="string">'data'</span> filesep <span class="string">'plots'</span> filesep <span class="string">'reference'</span> filesep];
+0002 
+0003 
+0004 [~, ] = evalc(<span class="string">'plot_simulation_environment;'</span>);
+0005 EXPORT = true; <span class="comment">% this is here, because plot_sim... resets EXPORT to false</span>
+0006 hold on;
+0007 
+0008 
+0009 <span class="comment">% fname = 'assignment-clear';</span>
+0010 <span class="comment">% E = [2.5 3;</span>
+0011 <span class="comment">%      3.5 3.2];</span>
+0012 
+0013 fname = <span class="string">'assignment-debatable'</span>;
+0014 E = [1.3 4.2;
+0015      2.8 3];
+0016 
+0017 
+0018 <span class="comment">% fname = 'assignment-ambiguous';</span>
+0019 <span class="comment">% E = [3.0 1.7;</span>
+0020 <span class="comment">%      3.0 4.0];</span>
+0021 
+0022 fpath = strcat(fdir, fname);
+0023 [~, ~, est_err] = evalc(<span class="string">'estimation_error(S,E);'</span>);
+0024 [~, ~, est_err_min] = evalc(<span class="string">'estimation_error_min(S,E);'</span>);
+0025 [~, ~, est_err_rad] = evalc(<span class="string">'estimation_error_rad(S,E);'</span>);
+0026 fprintf(&quot;\nestimate-error result:     est-err1=<span class="comment">%0.1f, est-err2=%0.1f, mean-err=%0.2f\n&quot;, est_err(1), est_err(2), mean(est_err));</span>
+0027 fprintf(&quot;estimate-error-min result: est-err1=<span class="comment">%0.1f, est-err2=%0.1f, mean-err=%0.2f\n&quot;, est_err_min(1), est_err_min(2), mean(est_err_min));</span>
+0028 fprintf(&quot;estimate-error-rad result: est-err1=<span class="comment">%0.1f, est-err2=%0.1f, mean-err=%0.2f\n&quot;, est_err_rad(1), est_err_rad(2), mean(est_err_rad));</span>
+0029 fprintf(&quot;First Possibility:         est-err1=<span class="comment">%0.1f, est-err2=%0.1f, mean-err=%0.2f\n&quot;, norm(S(1,1:2)-E(1,:)), norm(S(2,1:2)-E(2,:)), (norm(S(1,1:2)-E(1,:))+norm(S(2,1:2)-E(2,:)))/2);</span>
+0030 fprintf(&quot;Second Possibility:        est-err1=<span class="comment">%0.1f, est-err2=%0.1f, mean-err=%0.2f\n&quot;, norm(S(2,1:2)-E(1,:)), norm(S(1,1:2)-E(2,:)), (norm(S(2,1:2)-E(1,:))+norm(S(1,1:2)-E(2,:)))/2);</span>
+0031 
+0032 ax_est = plot(squeeze(E(:,1)), squeeze(E(:,2)), <span class="string">'yx'</span>, <span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,1);
+0033 
+0034 <span class="keyword">if</span> EXPORT
+0035     <span class="comment">% export to tikz</span>
+0036     matlab2tikz([fpath <span class="string">'.tex'</span>],<span class="keyword">...</span>
+0037                <span class="string">'figurehandle'</span>, fig,<span class="keyword">...</span>
+0038                <span class="string">'imagesAsPng'</span>, true,<span class="keyword">...</span>
+0039                <span class="string">'checkForUpdates'</span>, false,<span class="keyword">...</span>
+0040                <span class="string">'externalData'</span>, false,<span class="keyword">...</span>
+0041                <span class="string">'relativeDataPath'</span>, <span class="string">'data/plots/setup/tikz-data/'</span>,<span class="keyword">...</span>
+0042                <span class="string">'dataPath'</span>, strcat(fdir, <span class="string">'tikz-data'</span>, filesep),<span class="keyword">...</span>
+0043                <span class="string">'noSize'</span>, false,<span class="keyword">...</span>
+0044                <span class="string">'width'</span>, <span class="string">'\figurewidth'</span>,<span class="keyword">...</span>
+0045                <span class="string">'height'</span>, <span class="string">'\figureheight'</span>,<span class="keyword">...</span>
+0046                <span class="string">'showInfo'</span>, false);
+0047 
+0048     <span class="comment">% resize elements for non-tikz output</span>
+0049     <span class="keyword">for</span> i=1:length(axd1)
+0050         axd1(i).MarkerSize = 1;
+0051     <span class="keyword">end</span>
+0052     <span class="keyword">for</span> i=1:length(axd2)
+0053         axd2(i).MarkerSize = 1;
+0054     <span class="keyword">end</span>
+0055     <span class="keyword">for</span> i=1:length(ax_s)
+0056         ax_s(i).MarkerSize = 6;
+0057     <span class="keyword">end</span>
+0058     <span class="keyword">for</span> i=1:length(ax_r)
+0059         ax_r(i).MarkerSize = 3;
+0060     <span class="keyword">end</span>
+0061     <span class="keyword">for</span> i=1:length(ax_est)
+0062         ax_est(i).MarkerSize = 6;
+0063     <span class="keyword">end</span>
+0064 
+0065     <span class="comment">% export as pdf</span>
+0066     print(fig, <span class="string">'-dpdf'</span>, [fpath <span class="string">'.pdf'</span>], <span class="string">'-bestfit'</span>);
+0067     <span class="comment">%export as png/jpeg</span>
+0068 <span class="comment">%     print(fig, '-dpng', [fpath '_PRINT.png']);</span>
+0069 <span class="comment">%     saveas(fig, [fpath '_SAVEAS.png']);</span>
+0070     saveas(fig, [fpath <span class="string">'.png'</span>]);
+0071     saveas(fig, [fpath <span class="string">'.jpg'</span>]);
+0072 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

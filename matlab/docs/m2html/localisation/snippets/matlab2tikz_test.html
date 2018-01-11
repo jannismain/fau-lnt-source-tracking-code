@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of matlab2tikz_test</title>
+  <meta name="keywords" content="matlab2tikz_test">
+  <meta name="description" content="% plot sine wave">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">snippets</a> &gt; matlab2tikz_test.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/snippets&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>matlab2tikz_test
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% plot sine wave</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% plot sine wave
+ x = linspace(0,4*pi,100);
+ plot(x, sin(x));
+ % control x-axis
+ xlim([0 2*pi])
+ xticks([0 0.5*pi pi 3/2*pi 2*pi])
+ xticklabels({'0','1/2 \pi', '\pi', '3/2 \pi', '2\pi'})
+ % control y-axis
+ ylim([-1.5 1.5])
+ yticks([-1 0 1])
+ % yticklabels({'min','y = 0','max'})
+ %export
+ % matlab2tikz('latex/plots/static/sin-tikz.tex', 'width', '0.5\textwidth', 'checkForUpdates', false);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="gaussian_plot.html" class="code" title="function f = gaussian_plot()">gaussian_plot</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% plot sine wave</span>
+0002 <span class="comment">% x = linspace(0,4*pi,100);</span>
+0003 <span class="comment">% plot(x, sin(x));</span>
+0004 <span class="comment">% % control x-axis</span>
+0005 <span class="comment">% xlim([0 2*pi])</span>
+0006 <span class="comment">% xticks([0 0.5*pi pi 3/2*pi 2*pi])</span>
+0007 <span class="comment">% xticklabels({'0','1/2 \pi', '\pi', '3/2 \pi', '2\pi'})</span>
+0008 <span class="comment">% % control y-axis</span>
+0009 <span class="comment">% ylim([-1.5 1.5])</span>
+0010 <span class="comment">% yticks([-1 0 1])</span>
+0011 <span class="comment">% % yticklabels({'min','y = 0','max'})</span>
+0012 <span class="comment">% %export</span>
+0013 <span class="comment">% % matlab2tikz('latex/plots/static/sin-tikz.tex', 'width', '0.5\textwidth', 'checkForUpdates', false);</span>
+0014 
+0015 
+0016 <span class="comment">%% plot cosine wave</span>
+0017 <span class="comment">% plot(x, cos(x));</span>
+0018 <span class="comment">% % control x-axis</span>
+0019 <span class="comment">% xlim([0 2*pi])</span>
+0020 <span class="comment">% xticks([0 0.5*pi pi 3/2*pi 2*pi])</span>
+0021 <span class="comment">% xticklabels({'0','1/2 \pi', '\pi', '3/2 \pi', '2\pi'})</span>
+0022 <span class="comment">% % control y-axis</span>
+0023 <span class="comment">% ylim([-1.5 1.5])</span>
+0024 <span class="comment">% yticks([-1 0 1])</span>
+0025 <span class="comment">% % yticklabels({'min','y = 0','max'})</span>
+0026 <span class="comment">% matlab2tikz('latex/plots/static/cos-tikz.tex', 'width', '0.5\textwidth', 'checkForUpdates', false);</span>
+0027 
+0028 <span class="comment">%% plot multiple 3d gaussian curves and export to tikz and eps</span>
+0029 fig = <a href="gaussian_plot.html" class="code" title="function f = gaussian_plot()">gaussian_plot</a>();
+0030 view([-45 45])
+0031 axis tight;
+0032 cleanfigure();
+0033 matlab2tikz(<span class="string">'testing/gaussian-tikz.tex'</span>, <span class="string">'figurehandle'</span>, fig, <span class="string">'imagesAsPng'</span>, true, <span class="string">'checkForUpdates'</span>, false, <span class="string">'externalData'</span>, true, <span class="string">'relativeDataPath'</span>, <span class="string">'testing/tikz-data/'</span>, <span class="string">'dataPath'</span>, <span class="string">'testing/tikz-data/'</span>, <span class="string">'noSize'</span>, false, <span class="string">'showInfo'</span>, false, <span class="string">'standalone'</span>, true);<span class="comment">%, 'maxChunkLength', 120);</span>
+0034 <span class="comment">% matlab2tikz('latex/plots/static/gaussian-tikz.tex');</span>
+0035 <span class="comment">% print -dpsc latex/plots/static/gaussian.eps</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

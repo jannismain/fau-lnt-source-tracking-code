@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gaussian_plot</title>
+  <meta name="keywords" content="gaussian_plot">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">snippets</a> &gt; gaussian_plot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/snippets&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>gaussian_plot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function f = gaussian_plot() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="matlab2tikz_test.html" class="code" title="">matlab2tikz_test</a>	% plot sine wave</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function f = gaussian_plot()</a>
+0002 N = 4.0;
+0003 x=linspace(-N, N, 60);
+0004 y=x;
+0005 [X,Y]=meshgrid(x,y);
+0006 
+0007 
+0008 var=1; mid=2; prob=0.004;
+0009 z1=prob*(1000/sqrt(2*pi).*exp(-((X-mid).^2/var)-((Y-mid).^2/var)));
+0010 
+0011 var=1; mid=-2; prob=0.0018;
+0012 z2=prob*(1000/sqrt(2*pi).*exp(-((X-mid).^2/var)-((Y-mid).^2/var)));
+0013 
+0014 var=1; mid=-2; prob=0.0035;
+0015 z4=prob*(1000/sqrt(2*pi).*exp(-((X+mid).^2/var)-((Y-mid).^2/var)));
+0016 
+0017 var=1; mid=-2; prob=0.0008;
+0018 z5=prob*(1000/sqrt(2*pi).*exp(-((X-mid).^2/var)-((Y+mid).^2/var)));
+0019 
+0020 var=1; mid=0; prob=0.001;
+0021 z3=prob*(1000/sqrt(2*pi).*exp(-((X-mid).^2/var)-((Y-mid).^2/var)));
+0022 
+0023 <span class="comment">% var2 = 2;</span>
+0024 <span class="comment">% z2=5*0.001*(1000/sqrt(2*pi).*exp(-((X.^2/var2)+(Y.^2/var2))+3));</span>
+0025 z=z1+z2+z3+z4+z5;
+0026 
+0027 f = figure(<span class="string">'Name'</span>,<span class="string">'Gaussian Mixture Model'</span>,<span class="keyword">...</span>
+0028                   <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0029                   <span class="string">'Color'</span>,<span class="string">'white'</span>);
+0030 hold on;
+0031 axis off;
+0032 
+0033 surf(X,Y,z);
+0034 colormap(<span class="string">'jet'</span>);
+0035 <span class="comment">% shading interp</span>
+0036 axis tight
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

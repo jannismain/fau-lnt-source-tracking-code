@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of stuff</title>
+  <meta name="keywords" content="stuff">
+  <meta name="description" content="% stft.m -&gt; Calculation of cross correlation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">helpers</a> &gt; stuff.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/helpers&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>stuff
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% stft.m -&gt; Calculation of cross correlation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% stft.m -&gt; Calculation of cross correlation
+ m = &quot;Calculate cross-correlation of received signals&quot;; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);
+     
+     [c,lag] = xcorr(Y_m(1, :), Y_m(2,:));
+     [~, I] = max(abs(c));
+     lag_delta = lag(I);
+     t_delta = (lag_delta*1000)/fs;
+     sprintf(num2str(t_delta, '%5.5\n'));
+     if PLOT(1) &amp;&amp; PLOT(counter)
+         figure; plot(lag,c);
+         title('Cross-Correlation xcorr(r1, r2)');
+     end</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% stft.m -&gt; Calculation of cross correlation</span>
+0002 <span class="comment">% m = &quot;Calculate cross-correlation of received signals&quot;; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%     [c,lag] = xcorr(Y_m(1, :), Y_m(2,:));</span>
+0005 <span class="comment">%     [~, I] = max(abs(c));</span>
+0006 <span class="comment">%     lag_delta = lag(I);</span>
+0007 <span class="comment">%     t_delta = (lag_delta*1000)/fs;</span>
+0008 <span class="comment">%     sprintf(num2str(t_delta, '%5.5\n'));</span>
+0009 <span class="comment">%     if PLOT(1) &amp;&amp; PLOT(counter)</span>
+0010 <span class="comment">%         figure; plot(lag,c);</span>
+0011 <span class="comment">%         title('Cross-Correlation xcorr(r1, r2)');</span>
+0012 <span class="comment">%     end</span>
+0013 
+0014 
+0015 <span class="comment">%% simulate.m -&gt; plot H</span>
+0016 <span class="comment">%     if PLOT(1) &amp;&amp; PLOT(counter)</span>
+0017 <span class="comment">%         figure; plot_count = 1;</span>
+0018 <span class="comment">%         for r = 1:size(H, 1)</span>
+0019 <span class="comment">%             for s = 1:size(H, 2)</span>
+0020 <span class="comment">%                 subplot(size(H, 1), size(H, 2), plot_count);</span>
+0021 <span class="comment">%                 plot(squeeze(H(r,s,:)));</span>
+0022 <span class="comment">%                 title(strcat(&quot;RIR(R_{&quot;, int2str(r), &quot;}, S_{&quot;, int2str(s), &quot;})&quot;))</span>
+0023 <span class="comment">%                 plot_count = plot_count + 1;</span>
+0024 <span class="comment">%             end</span>
+0025 <span class="comment">%         end</span>
+0026 <span class="comment">%     end</span>
+0027 
+0028 <span class="comment">%% simulate.m -&gt; plot Y</span>
+0029 <span class="comment">%     if PLOT(1) &amp;&amp; PLOT(counter)</span>
+0030 <span class="comment">%         figure; plot_count = 1;</span>
+0031 <span class="comment">%         for r = 1:n_receiver_pairs</span>
+0032 <span class="comment">%             for s = 1:n_sources</span>
+0033 <span class="comment">%                 subplot(size(Y, 1), size(Y, 2), plot_count);</span>
+0034 <span class="comment">%                 plot(squeeze(Y(r,s,:)));</span>
+0035 <span class="comment">%                 title(strcat(&quot;S_{&quot;, int2str(s), &quot;} x RIR(R_{&quot;, int2str(r), &quot;}, S_{&quot;, int2str(s), &quot;})&quot;))</span>
+0036 <span class="comment">%                 plot_count = plot_count + 1;</span>
+0037 <span class="comment">%             end</span>
+0038 <span class="comment">%         end</span>
+0039 <span class="comment">%     end</span>
+0040 
+0041 <span class="comment">%% simulate.m -&gt; plot x</span>
+0042 <span class="comment">%     if PLOT(1) &amp;&amp; PLOT(counter)</span>
+0043 <span class="comment">%         figure;</span>
+0044 <span class="comment">%         for r = 1:n_receivers</span>
+0045 <span class="comment">%             subplot(n_receivers, 1,r);</span>
+0046 <span class="comment">%             plot(x(1,:));</span>
+0047 <span class="comment">%             title(strcat(&quot;R_{&quot;, int2str(r), &quot;}&quot;))</span>
+0048 <span class="comment">%         end</span>
+0049 <span class="comment">%     end</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%     if PLAY_AUDIO &gt; 0 &amp;&amp; PLAY_AUDIO &lt;= n_receivers</span>
+0052 <span class="comment">%         sound(x(PLAY_AUDIO, :), fs);</span>
+0053 <span class="comment">%     end</span>
+0054 
+0055 <span class="comment">%% simulate.m -&gt; doa_trig_calc</span>
+0056 <span class="comment">% DoA Calculation...</span>
+0057 <span class="comment">% m = &quot;Actual DoA Calculation...&quot;; counter = next_step(m, counter, STEP, STOP_AFTER_STEP);</span>
+0058 <span class="comment">%     DOA = doa_trig(S,R);</span>
+0059 <span class="comment">%     for s=1:n_sources</span>
+0060 <span class="comment">%         fprintf('%s Actual DOA(S_{%d}): %0.2f\x03C0 (%0.1f\x00B0)\n', FORMAT_PREFIX, s, deg2rad(DOA(s)/pi), DOA(s));</span>
+0061 <span class="comment">%     end</span>
+0062 
+0063 <span class="comment">%% simulate.m -&gt; mixing signals alternative</span>
+0064 <span class="comment">%     x = zeros(n_samples_y, 2, n_receiver_pairs);</span>
+0065 <span class="comment">%     for mic_pair = 1:n_receiver_pairs</span>
+0066 <span class="comment">%         for mic = 1:2</span>
+0067 <span class="comment">%             for s = 1:n_sources</span>
+0068 <span class="comment">%                 x(:, mic, mic_pair) = x(:, mic, mic_pair) + squeeze(squeeze(Y(:, s, mic, mic_pair)));</span>
+0069 <span class="comment">%             end</span>
+0070 <span class="comment">% %             fprintf(&quot;%s R%d.%d (length = %d)\n&quot;, FORMAT_PREFIX, mic_pair, mic, length(x(:, mic, mic_pair)));</span>
+0071 <span class="comment">%         end</span>
+0072 <span class="comment">%     end</span>
+0073 
+0074 <span class="comment">%% simulate.m -&gt; trim all source signals to length of shortest one</span>
+0075 <span class="comment">% inside for loop:</span>
+0076 <span class="comment">%         if (n_samples_s == 0) || ( n_samples_s &gt; length(temp))</span>
+0077 <span class="comment">%             fprintf(&quot;%s New minimal sample length: %6.0d (was %d)\n&quot;, FORMAT_PREFIX, length(temp), n_samples_s);</span>
+0078 <span class="comment">%             n_samples_s = length(temp);</span>
+0079 <span class="comment">%         end</span>
+0080 
+0081 <span class="comment">% outside for loop:</span>
+0082 <span class="comment">%     n_samples_s = source_length*fs;  % trim signals to 3 seconds instead of the shortest signal length</span>
+0083 <span class="comment">%     S_data = S_data(1:n_samples_s, :);</span>
+0084 <span class="comment">%     fprintf(&quot;%s Truncated S to %dx%d\n&quot;, FORMAT_PREFIX, size(S_data, 1), size(S_data, 2));</span>
+0085 
+0086 <span class="comment">%% testbed_dynamic.m -&gt; visualize random sample of audio signals</span>
+0087 <span class="comment">% fig_size = [1800 1400];  % width x height</span>
+0088 <span class="comment">% scr_size = get(0,'ScreenSize');</span>
+0089 <span class="comment">% fig_xpos = ceil((scr_size(3)-fig_size(1))/2); % center the figure on the screen horizontally</span>
+0090 <span class="comment">% fig_ypos = ceil((scr_size(4)-fig_size(2))/2); % center the figure on the screen vertically</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">% f = figure('Name','Sample of Simulated RIRs',...</span>
+0093 <span class="comment">%                   'NumberTitle','off',...</span>
+0094 <span class="comment">%                   'Color','white',...</span>
+0095 <span class="comment">%                   'Position', [fig_xpos fig_ypos fig_size(1) fig_size(2)],...</span>
+0096 <span class="comment">%                   'MenuBar','none');</span>
+0097 <span class="comment">% for n = 1:9</span>
+0098 <span class="comment">%     ax = subplot_tight(3,3,n, .05);</span>
+0099 <span class="comment">%     m = randi(24,1);</span>
+0100 <span class="comment">%     t = randi(201,1);</span>
+0101 <span class="comment">% %     rir = cell2mat(temp.RIR_cell(m,t));</span>
+0102 <span class="comment">% %     source = conv(source,rir);</span>
+0103 <span class="comment">%     plot(source_data(:,1))</span>
+0104 <span class="comment">% %     ylim([-0.1 0.1])</span>
+0105 <span class="comment">%     title('Signal at mic #1');</span>
+0106 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

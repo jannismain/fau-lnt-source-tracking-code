@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of get_column_names_result</title>
+  <meta name="keywords" content="get_column_names_result">
+  <meta name="description" content="% GET_COLUMN_NAMES_RESULT Generate column names of final results data table">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">helpers</a> &gt; get_column_names_result.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/helpers&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>get_column_names_result
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% GET_COLUMN_NAMES_RESULT Generate column names of final results data table</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ clabels ] = get_column_names_result( n_sources ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% GET_COLUMN_NAMES_RESULT Generate column names of final results data table
+   This is useful when the raw data table is to be displayed in LaTeX without much hassle</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/evaluation/random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>	% RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ clabels ] = get_column_names_result( n_sources )</a>
+0002 <span class="comment">%% GET_COLUMN_NAMES_RESULT Generate column names of final results data table</span>
+0003 <span class="comment">%   This is useful when the raw data table is to be displayed in LaTeX without much hassle</span>
+0004     
+0005 numbers = linspace(1,n_sources,n_sources);
+0006 clabels = &quot;&quot;;
+0007 
+0008 <span class="comment">%% generate x/y pairs</span>
+0009 <span class="comment">% $$ x_1, y_1, x_2, y_2, ..., x_N, y_N $$</span>
+0010 
+0011 <span class="keyword">for</span> s=1:n_sources
+0012     clabels = strcat(clabels, sprintf(&quot;$x_<span class="comment">%d$,$y_%d$,&quot;, numbers(s), numbers(s)));</span>
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">%% generate x_hat/y_hat pairs</span>
+0016 <span class="comment">% $$ \hat x_1, \hat y_1, \hat x_2, \hat y_2, ..., \hat x_N, \hat y_N $$</span>
+0017 
+0018 <span class="keyword">for</span> s=1:n_sources
+0019     clabels = strcat(clabels, sprintf(&quot;$\\hat x_<span class="comment">%d$,$\\hat y_%d$,&quot;, numbers(s), numbers(s)));</span>
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="comment">%% generate error labels</span>
+0023 <span class="comment">% $$ err_{1}, err_{2}, ..., err_{N} $$</span>
+0024 
+0025 <span class="keyword">for</span> s=1:n_sources
+0026     <span class="keyword">if</span> s==n_sources <span class="comment">% omit last seperator</span>
+0027         clabels = strcat(clabels, sprintf(&quot;err\\textsubscript{<span class="comment">%d}&quot;, numbers(s)));</span>
+0028     <span class="keyword">else</span>
+0029         clabels = strcat(clabels, sprintf(&quot;err\\textsubscript{<span class="comment">%d},&quot;, numbers(s)));</span>
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% concat all labels</span>
+0034 <span class="comment">% $$ \hat x_1, \hat y_1, ..., \hat x_1, \hat y_1, ..., err_{1}, err_{2}, ... $$</span>
+0035 clabels = strsplit(clabels, <span class="string">','</span>);
+0036 <span class="keyword">end</span>
+0037</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

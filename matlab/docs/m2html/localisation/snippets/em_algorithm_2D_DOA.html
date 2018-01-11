@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of em_algorithm_2D_DOA</title>
+  <meta name="keywords" content="em_algorithm_2D_DOA">
+  <meta name="description" content="EM_ALGORITHM takes an stft signal and calculates the DOA of n speakers">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">snippets</a> &gt; em_algorithm_2D_DOA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/snippets&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>em_algorithm_2D_DOA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EM_ALGORITHM takes an stft signal and calculates the DOA of n speakers</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [DOA_vec, psi] = em_algorithm(y_hat, fig) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EM_ALGORITHM takes an stft signal and calculates the DOA of n speakers
+
+ NOTES:
+   - None</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [DOA_vec, psi] = em_algorithm(y_hat, fig)</a>
+0002 <span class="comment">% EM_ALGORITHM takes an stft signal and calculates the DOA of n speakers</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% NOTES:</span>
+0005 <span class="comment">%   - None</span>
+0006 
+0007 load(<span class="string">'config.mat'</span>)
+0008 cprintf(<span class="string">'*blue'</span>, <span class="string">'\n&lt;em_algorithm.m&gt;\n'</span>);
+0009 fprintf(&quot;<span class="comment">%s INPUT: y_hat = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(y_hat, 1), size(y_hat, 2), size(y_hat, 3));</span>
+0010 m = &quot;Estimate DOA using the an EM Algorithm<span class="keyword">...</span><span class="comment">&quot;; counter = next_step(m, counter);</span>
+0011 
+0012 phi = squeeze((y_hat(1,:,:)./y_hat(2,:,:)).*abs(y_hat(1,:,:)./y_hat(2,:,:)));
+0013 fprintf(&quot;<span class="comment">%s INPUT: phi = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(phi, 1), size(phi, 2), size(phi, 3));</span>
+0014 DOA_vec = 0:1:180; <span class="comment">% vector of DOA candidates</span>
+0015 
+0016 cfg.S = n_sources;
+0017 cfg.T = size(phi,2);
+0018 cfg.K = size(phi,1);
+0019 cfg.D = length(DOA_vec); <span class="comment">% Number of DOAs</span>
+0020 fprintf(&quot;<span class="comment">%s INPUT: K = %d, T = %d, S = %d, D = %d\n&quot;, FORMAT_PREFIX, cfg.K, cfg.T, cfg.S, cfg.D);</span>
+0021 
+0022 <span class="comment">% Use the overal variance of the dataset as the initial variance for each cluster.</span>
+0023 variance = ones(cfg.S,1) * sqrt(var(phi(:)));
+0024 
+0025 <span class="comment">% Assign equal prior probabilities to each cluster.</span>
+0026 psi = ones(cfg.S,cfg.D) * (1 / (cfg.D*cfg.S));
+0027 
+0028 <span class="comment">% produce matrices of suitable sice for matrix multiplications</span>
+0029 freq_mat = repmat((1:cfg.K).',1,cfg.T,cfg.S,length(DOA_vec));
+0030 phi_mat = repmat(phi,1,1,cfg.S,cfg.D);
+0031 DOA_mat = reshape(DOA_vec,1,1,1,length(DOA_vec));
+0032 DOA_mat = repmat(DOA_mat,cfg.K,cfg.T,cfg.S,1);
+0033 
+0034 <span class="comment">% phase hypothesis computed from DOAs</span>
+0035 phi_tilde_mat = exp(-1i*(pi*freq_mat)/(cfg.K).*(d_r*fs)/(c).*cosd(DOA_mat)); <span class="comment">% K/T/S/D</span>
+0036 fprintf(&quot;<span class="comment">%s INPUT: freq_mat = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(freq_mat, 1), size(freq_mat, 2), size(freq_mat, 3));</span>
+0037 fprintf(&quot;<span class="comment">%s INPUT: DOA_mat = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(DOA_mat, 1), size(DOA_mat, 2), size(DOA_mat, 3));</span>
+0038 fprintf(&quot;<span class="comment">%s OUTPUT: dimensions of phi_tilde_mat = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(phi_tilde_mat, 1), size(phi_tilde_mat, 2), size(phi_tilde_mat, 3));</span>
+0039 fprintf(&quot;<span class="comment">%s OUTPUT: dimensions of phi_mat = %dx%dx%d\n&quot;, FORMAT_PREFIX, size(phi_mat, 1), size(phi_mat, 2), size(phi_mat, 3));</span>
+0040 ang_dist = abs(phi_mat-phi_tilde_mat).^2; <span class="comment">% angular distances of observed phase differences and hypothesis</span>
+0041 
+0042 <span class="comment">% setup plot</span>
+0043 subplot_tight(2,2,4, PLOT_BORDER);
+0044 hold on;
+0045 box off;
+0046 title(<span class="string">'DOA Estimation (EM-Algorithm)'</span>)
+0047 
+0048 <span class="keyword">for</span> iter = 1:10
+0049     
+0050     fprintf(<span class="string">'%s EM Iteration %d\n'</span>, FORMAT_PREFIX, iter);
+0051     
+0052     <span class="comment">%% Expectation Step</span>
+0053     psi_mat = reshape(psi,1,1,size(psi,1),size(psi,2));
+0054     psi_mat = repmat(psi_mat,cfg.K,cfg.T,1,1);
+0055     var_mat = ones(cfg.K,cfg.T,n_sources,cfg.D);
+0056     <span class="keyword">for</span> S_idx = 1:n_sources
+0057         var_mat(:,:,S_idx,:) = var_mat(:,:,S_idx,:) * variance(S_idx);
+0058     <span class="keyword">end</span>
+0059     pdf = psi_mat.*(1 ./ (var_mat * pi)) .* exp(-ang_dist ./ (var_mat));
+0060     pdf_sum = repmat(sum(sum(pdf,4),3),1,1,n_sources,cfg.D);
+0061     mu = pdf./pdf_sum;
+0062     mu(isnan(mu)) = 0; <span class="comment">% avoid NaNs</span>
+0063     
+0064     <span class="comment">%% Maximization Step</span>
+0065     psi = squeeze(sum(sum(mu,2),1)/(cfg.T*cfg.K));
+0066     psi = psi./sum(sum((psi))); <span class="comment">% normalization due to weighting</span>
+0067     
+0068     var_denominator = squeeze(sum(sum(sum(mu.*ang_dist,1),2),4));
+0069     var_numerator = squeeze(sum(sum(sum(mu,1),2),4));
+0070     variance = var_denominator./var_numerator;
+0071     
+0072     psi_smoothed = smooth(psi(1,:)); <span class="comment">% smoothing for clear representation</span>
+0073     
+0074     <span class="comment">% plot result</span>
+0075     plot(DOA_vec,psi_smoothed)
+0076     xlabel(<span class="string">'DOA \rightarrow'</span>)
+0077     ylabel(<span class="string">'p(DOA) \rightarrow'</span>)
+0078     grid on
+0079     axis tight
+0080     pause(0.2)
+0081     
+0082 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

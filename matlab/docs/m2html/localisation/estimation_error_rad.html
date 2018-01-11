@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimation_error_rad</title>
+  <meta name="keywords" content="estimation_error_rad">
+  <meta name="description" content="ESTIMATION_ERROR Calculates the estimation error based on the true source positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; estimation_error_rad.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>estimation_error_rad
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>ESTIMATION_ERROR Calculates the estimation error based on the true source positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ESTIMATION_ERROR Calculates the estimation error based on the true source positions</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="estimation_error_min.html" class="code" title="function [ loc_est, est_err ] = estimation_error_min( S, loc_est_assorted )">estimation_error_min</a>	ESTIMATION_ERROR_MIN Find assignment with the minimal estimation error across all possible assignments</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/helpers/rerun.html" class="code" title="">rerun</a>	% Setup Environment</li><li><a href="../localisation/plotting/analyse_em_steps.html" class="code" title="function analyse_em_steps(psi, variance, md, room)">analyse_em_steps</a>	PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations</li><li><a href="testrun.html" class="code" title="">testrun</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )</a>
+0002 <span class="comment">%ESTIMATION_ERROR Calculates the estimation error based on the true source positions</span>
+0003 
+0004 <span class="comment">%% Description</span>
+0005 <span class="comment">% Find assignment with the minimal estimation error on a per-source basis. First, the</span>
+0006 <span class="comment">% |threshold| is initialised to 0. Then the algorithm looks at each source successively and</span>
+0007 <span class="comment">% determines, if an estimate is within a circle with the radius |threshold| around a source.</span>
+0008 <span class="comment">% If true, this estimate is assigned to its original source location. If false, the |threshold|</span>
+0009 <span class="comment">% is increased. This procedure repeats until all estimates have been assigned.</span>
+0010 
+0011 <span class="comment">%% Arguments</span>
+0012 <span class="comment">% * *S (mat):* _|2xN| matrix that holds source location coordinates (e.g. |[2.4, 2.7; 4.8, 1.0]|)_</span>
+0013 <span class="comment">% * *loc_est_assorted (mat):* _|2xN| matrix that holds source location estimates (e.g. |[4.2, 1.1; 2.4, 2.5]|)_</span>
+0014 
+0015 <span class="comment">%% Returns</span>
+0016 <span class="comment">% * *loc_est (mat):* _|2xN| matrix that holds assigned source location estimates (e.g. |[2.4, 2.5; 4.2, 1.1]|)_</span>
+0017 <span class="comment">% * *est_err (mat):* _|1xN| matrix that holds the estimation error per source (e.g. |[0.20; 0.61]|, in metre)_</span>
+0018 
+0019 <span class="comment">%% Notes</span>
+0020 <span class="comment">% * assigned or sorted means, that the order of the estimates corresponds to the order of</span>
+0021 <span class="comment">% the sources _S_.</span>
+0022 <span class="comment">% * unassigned or assorted means, that the order of estimates does _NOT_ correspond to the</span>
+0023 <span class="comment">% order of sources _S_.</span>
+0024 <span class="comment">% * If an estimate is equidistant to two or more source locations,</span>
+0025 <span class="comment">% |&lt;estimation_error_min.html estimation_error_min&gt;| is used as a fallback!</span>
+0026 <span class="comment">% * This error calculation routine is a replacement of the *deprecated* function |&lt;estimation_error.html estimation_error&gt;|</span>
+0027 
+0028 fprintf(<span class="string">'\n&lt;%s.m&gt;'</span>, mfilename); fprintf(<span class="string">' (t = %2.4f)\n'</span>, toc);
+0029 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Both input arguments &quot;S&quot; and &quot;loc_est&quot; are required!'</span>); <span class="keyword">end</span>
+0030 <span class="keyword">if</span> size(S, 1)==1, loc_est_assorted = loc_est_assorted; <span class="keyword">end</span>
+0031 <span class="keyword">if</span> size(S, 1) ~= size(loc_est_assorted, 1), error(<span class="string">'dimensions of input arguments mismatch! (S is %dx%d, loc_est is %dx%d)'</span>, size(S), size(loc_est_assorted)); <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% Initialisation</span>
+0034 <span class="comment">% Initialise all variables used in the procedure below</span>
+0035 est_err = ones(size(loc_est_assorted, 1), 1)*inf;
+0036 loc_est = zeros(size(loc_est_assorted));
+0037 
+0038 all_assigned = false;
+0039 threshold = 0;
+0040 increment = 0.01;
+0041 
+0042 <span class="comment">%% Compute Error</span>
+0043 <span class="comment">% Compute localisation error with increasing thresholds. Stop, when all estimates have</span>
+0044 <span class="comment">% been assigned!</span>
+0045 <span class="keyword">while</span> ~all_assigned
+0046     found=0;
+0047     found_diff=[];
+0048     pair_idx = [];
+0049     <span class="keyword">for</span> s=1:size(S, 1)
+0050         <span class="keyword">for</span> s2=1:size(loc_est_assorted, 1)
+0051 <span class="comment">%             if s2&lt;s || S(s2)==inf || loc_est_assorted(s)==inf, continue; end  % skip</span>
+0052             diff = norm(S(s2,1:2)-loc_est_assorted(s,1:2));
+0053             <span class="keyword">if</span> diff &lt;= threshold
+0054                 found = found+1;
+0055                 found_diff = [found_diff diff];
+0056                 pair_idx = [pair_idx; s s2];
+0057                 <span class="keyword">continue</span>;
+0058             <span class="keyword">end</span>
+0059         <span class="keyword">end</span> 
+0060     <span class="keyword">end</span>
+0061     <span class="comment">%% More than 1 new assignment with current threshold found</span>
+0062     <span class="comment">% If multiple assignments are found for a certain threshold value, it could be the</span>
+0063     <span class="comment">% case, that either a original source location or a location estimate was assigned</span>
+0064     <span class="comment">% multiple times. The |else|-block handles this by falling back to the minimal</span>
+0065     <span class="comment">% assignment strategy, while the |if|-block identifies a valid assignment, where two</span>
+0066     <span class="comment">% distinct estimates have been assigned to two distinct source locations at the same</span>
+0067     <span class="comment">% time.</span>
+0068     <span class="keyword">if</span> found&gt;1
+0069         <span class="comment">% very complicated way of checking, if there are duplicate values in either column</span>
+0070         <span class="comment">% (--&gt; multiple assignments of one estimate or source position)</span>
+0071         <span class="keyword">if</span> length(unique(pair_idx(:,1)))==length(pair_idx(:,1)) &amp;&amp; length(unique(pair_idx(:,2)))==length(pair_idx(:,2))
+0072             <span class="keyword">for</span> i=1:size(pair_idx, 1)
+0073                 est_err(pair_idx(i,2)) = found_diff(i);
+0074                 loc_est(pair_idx(i,2), 1:2) = loc_est_assorted(pair_idx(i,1), 1:2);
+0075                 loc_est_assorted(pair_idx(i,1), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+0076                 S(pair_idx(i,2), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">else</span>  <span class="comment">% multiply assigned estimates or actual source positions!</span>
+0079             <span class="comment">% find &quot;minimum error assignment&quot; for remaining estimates</span>
+0080             [est_min, err_min] = <a href="estimation_error_min.html" class="code" title="function [ loc_est, est_err ] = estimation_error_min( S, loc_est_assorted )">estimation_error_min</a>(S(S(:,1)~=inf,:), loc_est_assorted(loc_est_assorted(:,1)~=inf,:));
+0081             [~,S_est_remaining_idx] = ismember(est_min, loc_est_assorted, <span class="string">'rows'</span>);
+0082             [~,S_remaining_idx] = ismember(S(S(:,1)~=inf,:),S, <span class="string">'rows'</span>);
+0083             <span class="comment">% apply minimum error assignment to remaining estimates</span>
+0084             <span class="keyword">for</span> i=1:length(S_remaining_idx)
+0085                 loc_est(S_remaining_idx(i),:) = loc_est_assorted(S_est_remaining_idx(i),:);
+0086                 est_err(S_remaining_idx(i),:) = err_min(i);
+0087                 loc_est_assorted(S_est_remaining_idx(i), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+0088                 S(S_remaining_idx(i), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+0089             <span class="keyword">end</span>
+0090             fprintf(&quot;WARN: Closest estimate assignment not conclusive! Will fall back to minimum error assignment <span class="keyword">for</span> remaining estimates!&quot;)
+0091             all_assigned=true;
+0092         <span class="keyword">end</span>
+0093     <span class="comment">%% Only 1 new assignment with current threshold found</span>
+0094     <span class="comment">% If only 1 new assignment is identified for a certain threshold, this is the next,</span>
+0095     <span class="comment">% most optimal assignment in the context of this assignment strategy.</span>
+0096     <span class="keyword">elseif</span> found==1 
+0097         est_err(pair_idx(2)) = found_diff;
+0098         loc_est(pair_idx(2), 1:2) = loc_est_assorted(pair_idx(1), 1:2);
+0099         loc_est_assorted(pair_idx(1), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+0100         S(pair_idx(2), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+0101     <span class="keyword">else</span>
+0102         <span class="keyword">if</span> min(loc_est_assorted)==inf
+0103             all_assigned=true;
+0104         <span class="keyword">else</span>
+0105             threshold = threshold+increment;
+0106         <span class="keyword">end</span>
+0107     <span class="keyword">end</span>
+0108 <span class="keyword">end</span>
+0109 
+0110 <span class="comment">%% Finalise</span>
+0111 est_err(est_err&lt;0.01)=0;  <span class="comment">% removes errors due to floating point arithmetic</span>
+0112 
+0113 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

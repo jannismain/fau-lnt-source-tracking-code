@@ -1,0 +1,15 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  matlab2tikz_test -> gaussian_plot;
+
+  argparser [URL="argparser.html"];
+  em_algorithm_2D_DOA [URL="em_algorithm_2D_DOA.html"];
+  em_example [URL="em_example.html"];
+  gaussian_plot [URL="gaussian_plot.html"];
+  gaussian_plot_tracking [URL="gaussian_plot_tracking.html"];
+  large_arrays [URL="large_arrays.html"];
+  matlab2tikz_test [URL="matlab2tikz_test.html"];
+  print_array [URL="print_array.html"];
+  signalmodeltesting [URL="signalmodeltesting.html"];
+  test_parallel [URL="test_parallel.html"];
+}

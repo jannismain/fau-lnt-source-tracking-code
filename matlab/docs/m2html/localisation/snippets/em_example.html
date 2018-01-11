@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of em_example</title>
+  <meta name="keywords" content="em_example">
+  <meta name="description" content="Script to simulate EM algorithm for estimation of parameters of a mixture">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">snippets</a> &gt; em_example.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/snippets&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>em_example
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Script to simulate EM algorithm for estimation of parameters of a mixture</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Script to simulate EM algorithm for estimation of parameters of a mixture
+ of two multivariate normal distributions. See the related pdf-document
+ for the model definitions etc.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Script to simulate EM algorithm for estimation of parameters of a mixture</span>
+0002 <span class="comment">% of two multivariate normal distributions. See the related pdf-document</span>
+0003 <span class="comment">% for the model definitions etc.</span>
+0004 
+0005 <span class="comment">% The script is targeted at teaching/educational purposes, and therefore,</span>
+0006 <span class="comment">% the performance of the code is not optimized but made more comprehensible</span>
+0007 <span class="comment">% (there are some unnecessary for-loops etc.). The script is divided into</span>
+0008 <span class="comment">% cells (search help: &quot;What are code cells?&quot;) as follows:</span>
+0009 <span class="comment">% 1. Simulation parameters (define model and algorithm parameters)</span>
+0010 <span class="comment">% 2. Generate observation data (Generate samples from the specified model)</span>
+0011 <span class="comment">% 3. Algorithm (Run the EM algorithm)</span>
+0012 <span class="comment">% 4. Figures (plot figures, see explanations therein)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% E.g., you can navigate between code cells with &quot;ctrl+Arrow up/down&quot; and</span>
+0015 <span class="comment">% evaluate the cell (i.e., run the code inside the cell) with ctrl+Enter.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% For simplicity reasons, the code does not include any convergence</span>
+0018 <span class="comment">% criterion to stop the iteration loop, although the likelihood maximum</span>
+0019 <span class="comment">% would be practically reached (if needed, add this functionality in the</span>
+0020 <span class="comment">% code by yourself). Also, some extreme covariance matrices might result to</span>
+0021 <span class="comment">% errors, especially with small number of samples (i.e., N is small). This</span>
+0022 <span class="comment">% can be avoided by checking whether the covariance matrix is</span>
+0023 <span class="comment">% positive-semidefinite or not (use, e.g., Cholesky factorization for this</span>
+0024 <span class="comment">% (see help for &quot;chol&quot;)).</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Please report and give feedback on any typos etc. in the code.</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% Made by Jukka Talvitie, December 4th 2013</span>
+0029 <span class="comment">% jukka.talvitie@tut.fi</span>
+0030 <span class="comment">% Department of Electronics and Communications Engineering</span>
+0031 <span class="comment">% Tampere University of Technology</span>
+0032 
+0033 clear all; clc; close all
+0034 <span class="comment">%% 1. Simulation Parameters:</span>
+0035 <span class="comment">%---------------------------------------------------------------------------</span>
+0036 
+0037 <span class="comment">% Selection of the seed for the random number generator:</span>
+0038 <span class="comment">% E.g., fix the seed and select different initial guesses for the</span>
+0039 <span class="comment">% algorithm. For some observation sets, this leads to different results and</span>
+0040 <span class="comment">% final likelihood values)</span>
+0041 seed_num = sum(round(1000*clock)); <span class="comment">% random seed based on the current time</span>
+0042 <span class="comment">% seed_num = 211245;</span>
+0043 
+0044 <span class="comment">% For newer Matlab versions:</span>
+0045 <span class="comment">%rng(seed_num)</span>
+0046 
+0047 <span class="comment">% For older Matlab versions:</span>
+0048 stream = RandStream(<span class="string">'mt19937ar'</span>,<span class="string">'seed'</span>,seed_num);
+0049 RandStream.setGlobalStream(stream);
+0050 
+0051 
+0052 <span class="comment">% Number os observations/samples taken</span>
+0053 N = 50;
+0054 
+0055 <span class="comment">%Number of iterations (no convergence criterion applied):</span>
+0056 N_iter = 40; <span class="comment">%first iteration is the initialization</span>
+0057 
+0058 <span class="comment">%Initialization (choose the first guess values):</span>
+0059 tau_est = [0.5 0.5]; <span class="comment">%here starting with fifty-fifty</span>
+0060 mu_est = [0 -5;0 5]; <span class="comment">%mean value initial guess</span>
+0061 C_est={diag(10*[1 1]) diag(10*[1 1])}; <span class="comment">%covariance value initial guess</span>
+0062 <span class="comment">% If you are not satisfied with the end result of the algorithm, try</span>
+0063 <span class="comment">% different initial values and compare the final likelihood values. Does</span>
+0064 <span class="comment">% the final estimate (and/or final likelihood) change?</span>
+0065 
+0066 
+0067 
+0068 <span class="comment">% ANIMATION THROUGH ITERATIONS</span>
+0069 <span class="comment">% (define 'true' if you want to see the animation, otherwise 'false'):</span>
+0070 animate_iterations = true; <span class="comment">% (press ctrl+c to stop the animation)</span>
+0071 <span class="comment">% What you see in the animation (at each iteration step):</span>
+0072 <span class="comment">%-different colors represent different distributions and their observations</span>
+0073 <span class="comment">%-numbers show what is the likelihood for the observation to belong into</span>
+0074 <span class="comment">% the most likely distribution (i.e. value is always between 0.5...1)</span>
+0075 <span class="comment">%-black cross on top of observation indicates that the observation is</span>
+0076 <span class="comment">% mapped into incrorrect distribution (i.e., hard estimate of the</span>
+0077 <span class="comment">% originated distribution of this observation is wrong))</span>
+0078 
+0079 
+0080 <span class="comment">%--The following constructs the distributions and generates the</span>
+0081 <span class="comment">%observations</span>
+0082 <span class="comment">% (i.e. these are parameters that we want to estimate, so we &quot;don't know</span>
+0083 <span class="comment">% them&quot; in the process) Try different type of distributions and see how the</span>
+0084 <span class="comment">% algorithm works!</span>
+0085 
+0086 <span class="comment">% Probability of the sample to be taken from the 1st distributions and 2nd</span>
+0087 <span class="comment">% distribution:</span>
+0088 tau = [1/3 2/3]; <span class="comment">%NB!!! always: sum(tau)=1</span>
+0089 
+0090 <span class="comment">% Mean of the distributions (in column vectors)</span>
+0091 <span class="comment">%(here randomly chosing some values between -5...5 )</span>
+0092 mu = 10*rand(2,2)-5;
+0093 
+0094 <span class="comment">% Covariance matrix C (has to be symmetric positive-semidefinite): First</span>
+0095 <span class="comment">% we randomly generate standard deviations for &quot;x&quot; and &quot;y&quot; dimensions (i.e.</span>
+0096 <span class="comment">% square root of C's diagonal elements. Here distributions are separated by</span>
+0097 <span class="comment">% columns):</span>
+0098 std_values = 1+4*rand(2,2); <span class="comment">%values vary between 1 and 5</span>
+0099 
+0100 corr_term = 2*rand(1,2)-1; <span class="comment">% xy-correlation term (varies between -1...1)</span>
+0101 
+0102 <span class="comment">%Finally building the covariance matrices C1 and C2:</span>
+0103 C1 = diag(std_values(:,1).^2);
+0104 C1(1,2)=corr_term(1)*prod(std_values(:,1));
+0105 C1(2,1)=C1(1,2);
+0106 
+0107 C2 = diag(std_values(:,2).^2);
+0108 C2(1,2)=corr_term(2)*prod(std_values(:,2));
+0109 C2(2,1)=C2(1,2);
+0110 
+0111 C={C1 C2}; <span class="comment">% concatenate separate covariance matrices into 1x2 cell</span>
+0112 
+0113 
+0114 <span class="comment">% End of simulation Parameters--------------------------------------------</span>
+0115 
+0116 <span class="comment">%% 2. Generate observation data:</span>
+0117 
+0118 <span class="comment">%hidden variable z determining from which distribution the sample is taken</span>
+0119 <span class="comment">%(this is based on the probability given in tau)</span>
+0120 z = (rand(N,1)&lt;=tau(2))+1;
+0121 <span class="comment">%z is either 1 or 2 whether sampled from 1st or 2nd distribution</span>
+0122 
+0123 <span class="comment">% observations X (Nx2 matrix, where each row indicates one observation)</span>
+0124 X = NaN(N,2); 
+0125 <span class="keyword">for</span> dist_ind=1:2
+0126     X(z==dist_ind,:) = mvnrnd(<span class="keyword">...</span>
+0127         mu(:,dist_ind)',C{dist_ind},sum(z==dist_ind));
+0128 <span class="keyword">end</span>
+0129 
+0130 
+0131 <span class="comment">%% 3. The algorithm</span>
+0132 
+0133 <span class="comment">%Initialize the loop parameters</span>
+0134 
+0135 <span class="comment">% P(z|x,current parameter estimates), see the pdf-file</span>
+0136 T = NaN(N,2);
+0137 
+0138 <span class="comment">% Memorize values at each iteration (not necessarily needed in practice):</span>
+0139 tau_iter_mem = cell(1,N_iter);
+0140 mu_iter_mem = cell(1,N_iter);
+0141 C_iter_mem = cell(1,N_iter);
+0142 T_iter_mem = cell(1,N_iter);
+0143 likelihoodValue = zeros(1,N_iter);
+0144 
+0145 <span class="comment">% The 1st iteration is here the initialization phase</span>
+0146 tau_iter_mem{1} = tau_est;
+0147 mu_iter_mem{1} = mu_est;
+0148 C_iter_mem{1} = C_est;
+0149 T_iter_mem{1} = T; <span class="comment">% =NaNs, i.e., not available in the initialization</span>
+0150 likelihoodValue(1)=NaN; <span class="comment">%i.e., not available in the initialization</span>
+0151 <span class="keyword">for</span> iter_ind = 2:N_iter <span class="comment">%Go through the iteration loop</span>
+0152     
+0153     <span class="comment">%E-step----------------------------------------------------------------</span>
+0154     <span class="comment">%calculate &quot;P(z|x,current parameter estimates)&quot;</span>
+0155     T_sum=0;
+0156     <span class="keyword">for</span> dist_ind=1:2
+0157         T(:,dist_ind) = tau_est(dist_ind)*mvnpdf(X,mu_est(:,dist_ind)',C_est{dist_ind});
+0158         T_sum = T_sum + T(:,dist_ind);
+0159     <span class="keyword">end</span>
+0160     T = T./repmat(T_sum,1,2);
+0161     
+0162     
+0163     <span class="comment">% Here we calculate the overall value of the likelihood. Here it's used</span>
+0164     <span class="comment">% only for the plotting purposes, so in practice it is not necessarily</span>
+0165     <span class="comment">% needed. The likelihood function, or more precisely, the expectation</span>
+0166     <span class="comment">% of the likelihood with respect to the hidden parameter z, given the</span>
+0167     <span class="comment">% observations and the current parameter estimates can be written as</span>
+0168     <span class="comment">% (i.e., this is the function in the E-step):</span>
+0169     <span class="comment">% Q(parameter|parameter_estimates)=</span>
+0170     <span class="keyword">for</span> meas_ind = 1:N
+0171         <span class="keyword">for</span> dist_ind=1:2
+0172         Xmu = X(meas_ind,:)-mu_est(:,dist_ind)';
+0173         likelihoodValue(iter_ind) = likelihoodValue(iter_ind) + <span class="keyword">...</span>
+0174             T(meas_ind,dist_ind).*(log(tau(dist_ind))<span class="keyword">...</span>
+0175             -0.5*log(det(C_est{dist_ind}))<span class="keyword">...</span>
+0176             -0.5*(Xmu*(C_est{dist_ind}\Xmu'))-log(2*pi));
+0177         <span class="keyword">end</span>
+0178     <span class="keyword">end</span>
+0179     <span class="comment">% NB! Since this function reveals the overall likelihood of the</span>
+0180     <span class="comment">% estimated parameters, it can be used to find the global peak by</span>
+0181     <span class="comment">% comparing the converged likelihoods between different initial guesses</span>
+0182     <span class="comment">% of the parameters.</span>
+0183     
+0184     <span class="comment">%M-step----------------------------------------------------------------</span>
+0185     
+0186     <span class="comment">%Update the parameter estimates:</span>
+0187     <span class="keyword">for</span> dist_ind=1:2
+0188         
+0189         <span class="comment">% tau overall sampling probability</span>
+0190         tau_est(dist_ind) = sum(T(:,dist_ind))/N; 
+0191         
+0192         <span class="comment">% distribution means</span>
+0193         mu_est(:,dist_ind) = <span class="keyword">...</span>
+0194             sum(repmat(T(:,dist_ind),1,2).*X)'/sum(T(:,dist_ind));
+0195         
+0196         <span class="comment">% distribution covariances</span>
+0197         <span class="keyword">for</span> meas_ind=1:N
+0198             C_est{dist_ind} = C_est{dist_ind} + T(meas_ind,dist_ind).*<span class="keyword">...</span>
+0199                 (X(meas_ind,:)-mu_est(:,dist_ind)')'*<span class="keyword">...</span>
+0200                 (X(meas_ind,:)-mu_est(:,dist_ind)');
+0201         <span class="keyword">end</span>
+0202         C_est{dist_ind} = C_est{dist_ind}/sum(T(:,dist_ind));
+0203         
+0204     <span class="keyword">end</span>
+0205     
+0206     <span class="comment">% Memorize values for each iteration (only for plotting purposes)</span>
+0207     tau_iter_mem{iter_ind} = tau_est;
+0208     mu_iter_mem{iter_ind} = mu_est;
+0209     C_iter_mem{iter_ind} = C_est;
+0210     T_iter_mem{iter_ind} = T;
+0211 <span class="keyword">end</span>
+0212 
+0213 
+0214 
+0215 <span class="comment">%% 4. Figures:</span>
+0216 
+0217 <span class="comment">% figure #1 ---------------------------------------------------------------</span>
+0218 <span class="comment">% Plot the observations and the distribution contours along with the</span>
+0219 <span class="comment">% estimated ones:</span>
+0220 <span class="comment">% - Colored contours are the two modeled distributions</span>
+0221 <span class="comment">% - Colored circles are observations from the two distributions</span>
+0222 <span class="comment">% - Black contours are the estimated distributions</span>
+0223 
+0224 figure
+0225 <span class="comment">%create x-y grid for the contour</span>
+0226 hold on
+0227 min_val = min(X(:)); <span class="comment">%create grid limits for the contours</span>
+0228 max_val = max(X(:)); <span class="comment">%create grid limits for the contours</span>
+0229 [Xg Yg] = meshgrid(min_val:0.1:max_val); <span class="comment">%create grid for the contours</span>
+0230 Zg = NaN(size(Xg)); <span class="comment">%contour initialization</span>
+0231 colors=<span class="string">'rb'</span>; <span class="comment">%colors for the distributions</span>
+0232 <span class="keyword">for</span> dist_ind=1:2
+0233     
+0234     <span class="comment">%True distributions</span>
+0235     plot(X(z==dist_ind,1),X(z==dist_ind,2),<span class="string">'ko'</span>,<span class="keyword">...</span>
+0236         <span class="string">'MarkerFaceColor'</span>,colors(dist_ind))
+0237     Zg(:) = mvnpdf([Xg(:) Yg(:)],mu(:,dist_ind)',C{dist_ind});
+0238     contour(Xg,Yg,Zg,colors(dist_ind),<span class="string">'LineWidth'</span>,2)
+0239     
+0240     <span class="comment">%Estimated distributions</span>
+0241     f = mvnpdf([Xg(:) Yg(:)],mu_est(:,dist_ind)',C_est{dist_ind});
+0242     Zg(:) = f;
+0243     contour(Xg,Yg,Zg,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)<span class="comment">%,colors(dist_ind))</span>
+0244     
+0245 <span class="keyword">end</span>
+0246 hold off
+0247 v_ax = axis; <span class="comment">%memorize the axis</span>
+0248 <span class="comment">%--------------------------------------------------------------------------</span>
+0249 
+0250 
+0251 <span class="comment">% figure #2 ---------------------------------------------------------------</span>
+0252 <span class="comment">% Likelihood curve as a function of iteration steps:</span>
+0253 <span class="comment">% (notice that numerical accuracy might affect this result a little bit...)</span>
+0254 figure
+0255 plot(1:N_iter,likelihoodValue)
+0256 xlabel(<span class="string">'Iteration index'</span>)
+0257 ylabel(<span class="string">'Log-likelihood'</span>)
+0258 title([<span class="string">'Likelihood function as function of iterations '</span><span class="keyword">...</span>
+0259     <span class="string">'(where to stop iterations?)'</span>])
+0260 grid on
+0261 <span class="comment">%--------------------------------------------------------------------------</span>
+0262 
+0263 
+0264 <span class="comment">% Figure #3 (if animate_iterations==true)----------------------------------</span>
+0265 <span class="comment">% Animate iterations one-by-one</span>
+0266 <span class="comment">% Observations from the two distributions are shown with colored circles</span>
+0267 <span class="comment">% (as in the figure#1). The estimated contours are plotted with black color</span>
+0268 <span class="comment">% step-by-step at each iteration round. Here the numbers next to</span>
+0269 <span class="comment">% observations indicate the expectation that the observation is from the</span>
+0270 <span class="comment">% specified distribution (~0 means unlikely, ~1 means likely, the numerical</span>
+0271 <span class="comment">% accuracy is 3 numbers: 0.9999 appears as 1). If there's a black cross on</span>
+0272 <span class="comment">% top of the observation, it indicates that the observation is mapped into</span>
+0273 <span class="comment">% incorrect distribution (i.e. the likelihood is lower for the correct</span>
+0274 <span class="comment">% distribution).</span>
+0275 
+0276 <span class="keyword">if</span> animate_iterations 
+0277     
+0278     <span class="comment">% NB! If needed, this can be done done much more efficiently using</span>
+0279     <span class="comment">% axis/line/figure object handles</span>
+0280     figure
+0281     <span class="keyword">for</span> iter=1:N_iter-1
+0282         
+0283         clf
+0284         hold on
+0285         <span class="keyword">for</span> dist_ind=1:2
+0286             
+0287             <span class="comment">% Plot the estimated distributions for this iteration</span>
+0288             f = mvnpdf([Xg(:) Yg(:)],mu_iter_mem{1,iter}(:,dist_ind)'<span class="keyword">...</span>
+0289                 ,C_iter_mem{1,iter}{dist_ind});
+0290             Zg(:) = f;
+0291             contour(Xg,Yg,Zg,<span class="string">'k'</span>)
+0292             
+0293             <span class="comment">%Plot observations colored based on their original distribution</span>
+0294             plot(X(z==dist_ind,1),X(z==dist_ind,2),<span class="string">'ko'</span>,<span class="keyword">...</span>
+0295                 <span class="string">'MarkerFaceColor'</span>,colors(dist_ind),<span class="string">'MarkerSize'</span>,10)
+0296             
+0297             
+0298             <span class="keyword">if</span> iter&gt;1 <span class="comment">%Iteration 1 is only the initialization phase</span>
+0299                 
+0300                 <span class="comment">% &quot;Hard estimates&quot; for the distribution origin of the</span>
+0301                 <span class="comment">% observations</span>
+0302                 z_hard = (T_iter_mem{iter}(:,2)&gt;T_iter_mem{iter}(:,1))+1;
+0303                 <span class="comment">% &quot;Soft estimates&quot; for the distribution origin of the</span>
+0304                 <span class="comment">% observations</span>
+0305                 z_prob = diag(T_iter_mem{iter+1}(:,z_hard));
+0306 
+0307                 <span class="comment">%Flip distributions, if our estimate of the distribution #1</span>
+0308                 <span class="comment">%estimates actually the distribution #2 and vice versa:</span>
+0309                 <span class="keyword">if</span> ~(mean(z_hard==z)&gt;0.5)
+0310                     z_hard = -z_hard+3; 
+0311                 <span class="keyword">end</span>
+0312                 
+0313                 <span class="comment">%plot cross-markers if the hard estimate is incorrect</span>
+0314                 plot(X(z_hard~=z,1),X(z_hard~=z,2),<span class="string">'kx'</span>,<span class="string">'MarkerSize'</span>,14,<span class="keyword">...</span>
+0315                     <span class="string">'LineWidth'</span>,2.5)
+0316                 <span class="comment">%include likelihood numbers in the plot</span>
+0317                 text(X(z_hard==dist_ind,1)+0.15,X(z_hard==dist_ind,2),<span class="keyword">...</span>
+0318                     num2str(z_prob(z_hard==dist_ind),3))
+0319 
+0320             <span class="keyword">end</span>
+0321 
+0322             
+0323         <span class="keyword">end</span>
+0324         axis(v_ax) <span class="comment">%fix the axis</span>
+0325         title([<span class="string">'Iteration #'</span> num2str(iter) <span class="string">', Likelihood='</span><span class="keyword">...</span>
+0326             num2str(likelihoodValue(iter))])<span class="comment">%update the title</span>
+0327         drawnow <span class="comment">%force to draw immeadiately</span>
+0328         pause(1/10) <span class="comment">%pause time (modify to fit your preferences)</span>
+0329         
+0330     <span class="keyword">end</span>
+0331     <span class="comment">%Title after all iterations:</span>
+0332     title([<span class="string">'All iterations (N_{iter}='</span> num2str(N_iter)<span class="keyword">...</span>
+0333         <span class="string">') performed (likelihood='</span> num2str(likelihoodValue(end)) <span class="string">').'</span>])
+0334 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

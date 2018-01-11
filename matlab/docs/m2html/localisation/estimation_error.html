@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimation_error</title>
+  <meta name="keywords" content="estimation_error">
+  <meta name="description" content="ESTIMATION_ERROR Calculates the estimation error based on the true source positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; estimation_error.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>estimation_error
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>ESTIMATION_ERROR Calculates the estimation error based on the true source positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ loc_est, est_err ] = estimation_error( S, loc_est_assorted ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ESTIMATION_ERROR Calculates the estimation error based on the true source positions
+% ToDo's
+ * Refactor to reliably allow for more/less estimates than real sources
+% Caveats
+ * Dependent on order of location estimates
+% NOTE
+ * *DEPRECATED* --&gt; Use |&lt;estimation_error_rad.html estimation_error_rad&gt;| instead!</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/testing/estimate_location_test.html" class="code" title="">estimate_location_test</a>	% Test 1: Specific psi matrix #1</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ loc_est, est_err ] = estimation_error( S, loc_est_assorted )</a>
+0002 <span class="comment">%ESTIMATION_ERROR Calculates the estimation error based on the true source positions</span>
+0003 <span class="comment">%% ToDo's</span>
+0004 <span class="comment">% * Refactor to reliably allow for more/less estimates than real sources</span>
+0005 <span class="comment">%% Caveats</span>
+0006 <span class="comment">% * Dependent on order of location estimates</span>
+0007 <span class="comment">%% NOTE</span>
+0008 <span class="comment">% * *DEPRECATED* --&gt; Use |&lt;estimation_error_rad.html estimation_error_rad&gt;| instead!</span>
+0009 
+0010 <span class="comment">%% Initialisation</span>
+0011 fprintf(<span class="string">'\n&lt;%s.m&gt;'</span>, mfilename); fprintf(<span class="string">' (t = %2.4f)\n'</span>, toc);
+0012 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Both input arguments &quot;S&quot; and &quot;loc_est&quot; are required!'</span>); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> size(S, 1)==1, loc_est_assorted = loc_est_assorted; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> size(S, 1) ~= size(loc_est_assorted, 1), error(<span class="string">'dimensions of input arguments mismatch! (S is %dx%d, loc_est is %dx%d)'</span>, size(S), size(loc_est_assorted)); <span class="keyword">end</span>
+0015 
+0016 diff = inf;
+0017 est_err = ones(size(loc_est_assorted, 1), 1)*inf;
+0018 loc_est = zeros(size(loc_est_assorted));
+0019 
+0020 <span class="comment">%% Assign perfect matches first</span>
+0021 <span class="keyword">for</span> s=1:size(S, 1)
+0022     <span class="keyword">for</span> s2=1:size(loc_est_assorted, 1)
+0023         <span class="keyword">if</span> s2&lt;s, <span class="keyword">continue</span>; <span class="keyword">end</span>  <span class="comment">% check each pair only once</span>
+0024         diff = norm(S(s2,1:2)-loc_est_assorted(s,1:2));
+0025         <span class="keyword">if</span> diff &lt; 0.01
+0026             est_err(s2) = 0;
+0027             loc_est(s2, 1:2) = loc_est_assorted(s, 1:2);
+0028             loc_est_assorted(s, 1:2) = inf;  <span class="comment">% remove perfect match from estimates</span>
+0029             S(s2, 1:2) = inf;  <span class="comment">% remove perfect match from sources</span>
+0030             <span class="keyword">break</span>;
+0031         <span class="keyword">end</span>
+0032     <span class="keyword">end</span> 
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%% Assign remaining estimates</span>
+0036 idx_loc_est_assorted = -1;
+0037 <span class="keyword">for</span> s=1:size(S, 1)  <span class="comment">% go through all real source positions</span>
+0038     <span class="keyword">if</span> S(s, 1) == inf, <span class="keyword">continue</span>; <span class="keyword">end</span>  <span class="comment">% skip, if S(s) has already been assigned</span>
+0039     <span class="keyword">for</span> s_est=1:size(loc_est_assorted, 1)  <span class="comment">% go through all estimated source positions</span>
+0040         <span class="keyword">if</span> loc_est_assorted(s_est, 1) == inf, <span class="keyword">continue</span>; <span class="keyword">end</span>  <span class="comment">% skip, if S_est(s) has already been assigned</span>
+0041         diff = norm(S(s,1:2)-loc_est_assorted(s_est,1:2));
+0042         <span class="keyword">if</span> diff &lt; est_err(s)
+0043             est_err(s) = diff;
+0044             loc_est(s, 1:2) = loc_est_assorted(s_est, 1:2);
+0045             idx_loc_est_assorted = s_est;
+0046         <span class="keyword">end</span>
+0047     <span class="keyword">end</span>
+0048     <span class="keyword">if</span> idx_loc_est_assorted &gt; -1
+0049         loc_est_assorted(idx_loc_est_assorted, 1:2) = inf;  <span class="comment">% 'remove' assigned estimates from sources</span>
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">%% final steps</span>
+0054 est_err(est_err&lt;0.01)=0;  <span class="comment">% removes errors due to floating point arithmetic</span>
+0055 
+0056 <span class="keyword">end</span>
+0057</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

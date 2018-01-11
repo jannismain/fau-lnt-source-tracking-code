@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of get_random_sources</title>
+  <meta name="keywords" content="get_random_sources">
+  <meta name="description" content="% GET_RANDOM_SOURCES provides random source positions within a specified 3-dimensional room">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">configuration</a> &gt; get_random_sources.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/configuration&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>get_random_sources
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% GET_RANDOM_SOURCES provides random source positions within a specified 3-dimensional room</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [S, distance] = get_random_sources(n_sources, distance_wall, distance_sources, ROOM) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% GET_RANDOM_SOURCES provides random source positions within a specified 3-dimensional room
+
+ Source positions can be constrained by a minimum required distance between sources and
+ between a source and the wall, as well as the maximum _x_ and _y_ coordinates given by
+ _ROOM_.
+
+% Caveats
+ * Resolution of source locations is fixed to _0.1m_
+ * Distance is checked on a per-coordinate basis. Actual minimum distance might therefore be
+ slightly higher than specified
+ * z-coordinate of all source locations is fixed to _1.0m_
+
+% TODO's
+ * add z-coordinate parameter
+ * add parameter to adjust grid resolution
+ * use code from |estimation_error_rad.m| to check for eucledian distance
+
+% Arguments
+ * *n_sources (int)*: number of sources _(default: *2*)_
+ * *distance_wall*: minimum required distance between source and wall _(in decimetre, default: *12*)_
+ * *distance_sources*: required minimum distance between sources _(in decimetre, default: *5*)_
+ * *ROOM (mat)*: room dimensions _(2x1 matrix, default: *[6, 6]*)_</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="config_update.html" class="code" title="function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">config_update</a>	% CONFIG_UPDATE Creates config-file and returns its filename.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [S, distance] = get_random_sources(n_sources, distance_wall, distance_sources, ROOM)</a>
+0002 <span class="comment">%% GET_RANDOM_SOURCES provides random source positions within a specified 3-dimensional room</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Source positions can be constrained by a minimum required distance between sources and</span>
+0005 <span class="comment">% between a source and the wall, as well as the maximum _x_ and _y_ coordinates given by</span>
+0006 <span class="comment">% _ROOM_.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%% Caveats</span>
+0009 <span class="comment">% * Resolution of source locations is fixed to _0.1m_</span>
+0010 <span class="comment">% * Distance is checked on a per-coordinate basis. Actual minimum distance might therefore be</span>
+0011 <span class="comment">% slightly higher than specified</span>
+0012 <span class="comment">% * z-coordinate of all source locations is fixed to _1.0m_</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%% TODO's</span>
+0015 <span class="comment">% * add z-coordinate parameter</span>
+0016 <span class="comment">% * add parameter to adjust grid resolution</span>
+0017 <span class="comment">% * use code from |estimation_error_rad.m| to check for eucledian distance</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%% Arguments</span>
+0020 <span class="comment">% * *n_sources (int)*: number of sources _(default: *2*)_</span>
+0021 <span class="comment">% * *distance_wall*: minimum required distance between source and wall _(in decimetre, default: *12*)_</span>
+0022 <span class="comment">% * *distance_sources*: required minimum distance between sources _(in decimetre, default: *5*)_</span>
+0023 <span class="comment">% * *ROOM (mat)*: room dimensions _(2x1 matrix, default: *[6, 6]*)_</span>
+0024 
+0025 <span class="keyword">if</span> nargin &lt; 1, n_sources = 2; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> nargin &lt; 2, distance_wall = 12; <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin &lt; 3, distance_sources = 5; <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 4, ROOM = [6 6]; <span class="keyword">end</span>
+0029 
+0030 <span class="comment">%% Algorithm</span>
+0031 <span class="comment">% The algorithm arbitrarily choses source locations until a set of source locations is</span>
+0032 <span class="comment">% found that satisfies all requirements. While not very efficient, this was easy to</span>
+0033 <span class="comment">% implement and does the job! :)</span>
+0034 
+0035 x_done = false; y_done = false; i = 0;
+0036 
+0037 <span class="keyword">while</span> (x_done==false || y_done==false)
+0038     
+0039     <span class="comment">% chose random coordinate value from set of all valid source locations</span>
+0040     x_rand = randi([0+distance_wall, ROOM(1)*10-distance_wall], n_sources, 1)./10;
+0041     y_rand = randi([0+distance_wall, ROOM(2)*10-distance_wall], n_sources, 1)./10;
+0042     i = i+1;
+0043 
+0044     <span class="comment">% ensure distance_sources requirement</span>
+0045     <span class="keyword">if</span> min(abs(diff(x_rand))) &gt; distance_sources/10
+0046         x_done = true;
+0047     <span class="keyword">elseif</span> min(abs(diff(y_rand))) &gt; distance_sources/10
+0048         y_done = true;
+0049     <span class="keyword">end</span>
+0050 
+0051     <span class="keyword">if</span> n_sources==1, <span class="keyword">break</span>; <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%% Output</span>
+0055 S      = [x_rand y_rand ones(n_sources, 1)];
+0056 distance = min(abs(diff(x_rand)))+min(abs(diff(y_rand)));
+0057 fprintf(<span class="string">'      -&gt; done! (found %i sufficiently spaced sources (distance = %0.2f) after %i attempts)\n'</span>, n_sources, distance, i);
+0058 
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

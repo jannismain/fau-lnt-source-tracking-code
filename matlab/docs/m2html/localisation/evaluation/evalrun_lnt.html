@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of evalrun_lnt</title>
+  <meta name="keywords" content="evalrun_lnt">
+  <meta name="description" content="% EVALRUN_LNT evaluation script for LNT servers">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">evaluation</a> &gt; evalrun_lnt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/evaluation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>evalrun_lnt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% EVALRUN_LNT evaluation script for LNT servers</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% EVALRUN_LNT evaluation script for LNT servers
+ This script is called by |&lt;../lntscripts/run_eval_local.sh run_eval_local.sh&gt;|. First,
+ it adds the |&lt;../matlab/ matlab&gt;| folder incl. its subfolders to the Matlab path.
+ Second, the default random stream is reset, so trials on the same machine (started with
+ a slight delay) have unique random values. Last, the parameter set is defined and the
+ evaluation is run for 2 - 7 sources. Running trials for a range of parameter values can
+ be done by adding an outer loop around the |n_sources| one.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>	% RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% EVALRUN_LNT evaluation script for LNT servers</span>
+0002 <span class="comment">% This script is called by |&lt;../lntscripts/run_eval_local.sh run_eval_local.sh&gt;|. First,</span>
+0003 <span class="comment">% it adds the |&lt;../matlab/ matlab&gt;| folder incl. its subfolders to the Matlab path.</span>
+0004 <span class="comment">% Second, the default random stream is reset, so trials on the same machine (started with</span>
+0005 <span class="comment">% a slight delay) have unique random values. Last, the parameter set is defined and the</span>
+0006 <span class="comment">% evaluation is run for 2 - 7 sources. Running trials for a range of parameter values can</span>
+0007 <span class="comment">% be done by adding an outer loop around the |n_sources| one.</span>
+0008 
+0009 <span class="comment">%% REMOTE SERVER MATLAB CONFIG</span>
+0010 <span class="comment">% # Move from |&lt;../matlab/localisation/evaluation/ evaluation&gt;| subfolder to |&lt;../matlab/</span>
+0011 <span class="comment">% matlab&gt;| root</span>
+0012 <span class="comment">% # Add all subfolders in |&lt;../matlab/ ./matlab/&gt;| to MATLAB path</span>
+0013 <span class="comment">% # Reset random stream with clock-based seed</span>
+0014 cd(<span class="string">'../../.'</span>)
+0015 addpath_recurse;
+0016 rand(<span class="string">'state'</span>,sum(100*clock));
+0017 
+0018 <span class="comment">%% DEFINE PARAMETER SET:</span>
+0019 description=<span class="string">'var-fixed'</span>; <span class="comment">% use only single quotes, double quotes will raise error in mkdir()</span>
+0020 md = 5;
+0021 wd = 12;
+0022 rand_samples = true;
+0023 trials = [5 5];
+0024 T60=0.3;
+0025 SNR=0;
+0026 em_iterations=10;
+0027 em_conv_threshold=-1;
+0028 guess_randomly=false;
+0029 reflect_order=3;
+0030 var_init=[2 3];
+0031 var_fixed=true;
+0032 
+0033 <span class="comment">%% EVALUATION TRIAL RUN</span>
+0034 <span class="keyword">for</span> i=1:length(var_init)
+0035     <span class="keyword">for</span> sources = 2:7
+0036             <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials(i),md,wd,rand_samples,T60,SNR,em_iterations,em_conv_threshold,guess_randomly,reflect_order,var_init(i),var_fixed,<span class="string">'/HOMES/mainczyk/thesis/src/'</span>);
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

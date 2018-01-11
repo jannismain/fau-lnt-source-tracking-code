@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of em_algorithm</title>
+  <meta name="keywords" content="em_algorithm">
+  <meta name="description" content="% EM_ALGORITHM Estimate parameters of GMM from PRPs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; em_algorithm.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>em_algorithm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>% EM_ALGORITHM Estimate parameters of GMM from PRPs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% EM_ALGORITHM Estimate parameters of GMM from PRPs
+ TEST
+% Arguments
+ * *fn_cfg (str)*: _filename of configuration file (i.e. |config_5x8d0.mat|)_
+ * *phi (mat)*: _matrix with PRP value for each combination_
+ * *iterations (int)*: _number of maximum em iterations_
+ * *conv_threshold (int)*: _convergence threshold for em algorithm (-1 equals no threshold)_
+ * *return_all_psi (bool)*: _return psi with additional dimension to provide psi values across em iterations (default: *false*)_</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/evaluation/single_example_eval.html" class="code" title="function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">single_example_eval</a>	% SINGLE_EXAMPLE_EVAL Run single evaluation trial</li><li><a href="../localisation/helpers/rerun.html" class="code" title="">rerun</a>	% Setup Environment</li><li><a href="testrun.html" class="code" title="">testrun</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)</a>
+0002 <span class="comment">%% EM_ALGORITHM Estimate parameters of GMM from PRPs</span>
+0003 <span class="comment">% TEST</span>
+0004 <span class="comment">%% Arguments</span>
+0005 <span class="comment">% * *fn_cfg (str)*: _filename of configuration file (i.e. |config_5x8d0.mat|)_</span>
+0006 <span class="comment">% * *phi (mat)*: _matrix with PRP value for each combination_</span>
+0007 <span class="comment">% * *iterations (int)*: _number of maximum em iterations_</span>
+0008 <span class="comment">% * *conv_threshold (int)*: _convergence threshold for em algorithm (-1 equals no threshold)_</span>
+0009 <span class="comment">% * *return_all_psi (bool)*: _return psi with additional dimension to provide psi values across em iterations (default: *false*)_</span>
+0010 
+0011 fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc);
+0012 load(fn_cfg);
+0013 <span class="keyword">if</span> nargin&gt;2, em.iterations = iterations; fprintf(<span class="string">'WARNING: Overriding EM-Iterations (%d)!\n'</span>, iterations); <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&gt;3, em.conv_threshold = conv_threshold; fprintf(<span class="string">'WARNING: Overriding EM convergence threshold (%d)!\n'</span>, conv_threshold); <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;5, return_all_psi = false; <span class="keyword">end</span>
+0016 
+0017 <span class="comment">%% Initialisation</span>
+0018 freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
+0019 phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
+0020 phi_mat = repmat(phi_mat,1,1,em.Y-2*room.N_margin,em.X-2*room.N_margin,1);
+0021 
+0022 <span class="comment">%% Compute Distances</span>
+0023 m = <span class="string">'Compute distances...'</span>; counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter);
+0024 norm_differences = zeros(em.Y-2*room.N_margin,em.X-2*room.N_margin,room.R_pairs);
+0025 <span class="keyword">for</span> idx_pairs = 1:room.R_pairs
+0026     <span class="keyword">for</span> idx_x = (room.N_margin+1):(em.X-room.N_margin)
+0027         <span class="keyword">for</span> idx_y = (room.N_margin+1):(em.Y-room.N_margin)
+0028             norm_differences(idx_y-room.N_margin,idx_x-room.N_margin,idx_pairs) = norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2,1:2),2) - norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2-1,1:2),2);
+0029         <span class="keyword">end</span>
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032 norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
+0033 fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+0034 
+0035 <span class="comment">%% Compute Phi Tilde</span>
+0036 m = <span class="string">'Compute phi tilde...'</span>; counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter);
+0037 phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); <span class="comment">% K/T/Y/X</span>
+0038 <span class="comment">% TODO: Make algorithm dependent on number of sources, evaluate</span>
+0039 <span class="comment">% performance (better, worse?)  --&gt; additional dimension for phi and psi</span>
+0040 clear norm_differences;
+0041 fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+0042 
+0043 <span class="comment">%% Compute Angular Distances</span>
+0044 m = <span class="string">'Compute angular distances...'</span>; counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter);
+0045 phi_diff = bsxfun(@minus,phi_mat,phi_tilde_mat);
+0046 ang_dist = bsxfun(@power,abs((phi_diff)),2);  <span class="comment">% slower by about 1 sec on MBP</span>
+0047 <span class="comment">%   ang_dist = abs(phi_mat-phi_tilde_mat).^2;     % slightly slower (maybe 0.1 sec on MBP)</span>
+0048 <span class="comment">%   ang_dist = bsxfun(@power,abs(phi_mat-phi_tilde_mat),2);</span>
+0049 fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+0050 clear phi_mat; clear phi_tilde_mat; clear phi_diff;
+0051 
+0052 <span class="comment">%% EM Algorithm Init</span>
+0053 m = <span class="string">'EM-Iterations...'</span>; counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter);
+0054 psi = ones(em.Y-2*room.N_margin,em.X-2*room.N_margin,1) * (1 /(em.X-2*room.N_margin)*(em.Y-2*room.N_margin));
+0055 psi_old = zeros(size(psi));
+0056 
+0057 variance = em.var;
+0058 var_ret = zeros(em.iterations+1, 1);
+0059 var_ret(1) = em.var;
+0060 
+0061 <span class="keyword">if</span> return_all_psi
+0062     psi_ret = zeros(em.iterations, size(psi, 1), size(psi, 2));
+0063 <span class="keyword">end</span>
+0064 <span class="comment">%% EM Algorithm Iterations</span>
+0065 <span class="keyword">for</span> iter = 1:em.iterations
+0066     fprintf(<span class="string">'%s EM Iter. #%2d: '</span>, FORMAT_PREFIX, iter);
+0067     fprintf(<span class="string">'\x0394\x03C8 = %2.4f (t = %2.4f)\n'</span>, norm(psi(:)-psi_old(:)), toc);  <span class="comment">% \x0394\x03C8 = Delta Psi</span>
+0068     psi_old = psi;
+0069 <span class="comment">%% Expectation</span>
+0070     e_start = toc;
+0071     pdf = bsxfun(@times,reshape(psi,1,1,em.Y-2*room.N_margin,em.X-2*room.N_margin,1),prod((1 / (variance * pi))*exp(-ang_dist / (variance)),5));
+0072     mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,em.T,1,1));
+0073     mu(isnan(mu)) = 0;
+0074 
+0075 <span class="comment">%% Maximization</span>
+0076     m_start = toc;
+0077     psi = squeeze(sum(sum(mu,2),1)/(em.T*em.K));
+0078     psi(psi&lt;=0) = eps;  <span class="comment">% reset negative values to the smallest possible positive value</span>
+0079     m_var_start = toc;
+0080     <span class="keyword">if</span> ~em.var_fixed
+0081         var_denominator = squeeze(sum(sum(sum(sum(sum(bsxfun(@times,reshape(mu,size(mu,1),size(mu,2),size(mu,3),size(mu,4),1),ang_dist),5),4),3),2),1));
+0082         var_numerator = room.R_pairs*squeeze(sum(sum(sum(sum(mu,4),3),2),1));
+0083         variance = var_denominator./var_numerator;
+0084     <span class="keyword">end</span>
+0085     m_stop = toc;
+0086 <span class="comment">%% Profile Algorithm</span>
+0087     em_duration = m_stop-e_start;
+0088     e_duration = m_start-e_start;
+0089     m_psi_duration = m_var_start-m_start;
+0090     m_var_duration = m_stop-m_var_start;
+0091     fprintf(&quot;<span class="comment">%s Iteration took %2.4f (100), E took %2.4f (%2.2f), M-Psi took %2.4f (%2.2f), M-Var took %2.4f (%2.2f)\n&quot;, FORMAT_PREFIX, em_duration, e_duration, e_duration/em_duration, m_psi_duration, m_psi_duration/em_duration, m_var_duration, m_var_duration/em_duration);</span>
+0092 <span class="comment">%% Update Return Values</span>
+0093     var_ret(iter+1)=variance;
+0094     <span class="keyword">if</span> return_all_psi
+0095         psi_ret(iter, :, :) = psi;
+0096     <span class="keyword">else</span>
+0097         psi_ret = psi;
+0098     <span class="keyword">end</span>
+0099 <span class="comment">%% Convergence Check</span>
+0100     <span class="keyword">if</span> em.conv_threshold &gt; 0
+0101         <span class="keyword">if</span>(norm(psi_old(:) - psi(:)) &lt; em.conv_threshold), <span class="keyword">break</span>; <span class="keyword">end</span>
+0102     <span class="keyword">end</span>
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="comment">%% Delete outer margin (around microphones) to eliminate false peaks</span>
+0106 <span class="keyword">if</span> size(psi_ret, 3) == 1  <span class="comment">% return_all_psi == false</span>
+0107     psi_ret(1,:) = 0;
+0108     psi_ret(size(psi, 1),:) = 0;
+0109     psi_ret(:,1) = 0;
+0110     psi_ret(:,size(psi, 2)) = 0;
+0111 <span class="keyword">else</span>  <span class="comment">% return_all_psi == true</span>
+0112     psi_ret(:, 1,:) = 0;
+0113     psi_ret(:, size(psi, 1),:) = 0;
+0114     psi_ret(:, :, 1) = 0;
+0115     psi_ret(:, :,size(psi, 2)) = 0;
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">%% Shorten Return Variables to only include actual iterations</span>
+0119 <span class="comment">% Otherwise, when convergence is determined before max |em_iterations| is reached, the</span>
+0120 <span class="comment">% return value would be zero for the iterations not executed.</span>
+0121 psi_ret(iter+1:em.iterations,:,:) = [];  <span class="comment">% remove zero rows, so size(psi, 1) gives actual em-iterations</span>
+0122 var_ret(iter+1:em.iterations) = [];  <span class="comment">% remove zero rows, so size(psi, 1) gives actual em-iterations</span>
+0123 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

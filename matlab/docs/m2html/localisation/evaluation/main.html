@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of main</title>
+  <meta name="keywords" content="main">
+  <meta name="description" content="% MAIN repository for evaluation trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">evaluation</a> &gt; main.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/evaluation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>main
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% MAIN repository for evaluation trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function main(eval, trials, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% MAIN repository for evaluation trials
+ This function provides several different evaluation trials.
+
+ *Example:* To run an evaluation trial with $$ n = 50 $$ for $$ T_{60} \in \{0.0, 0.3,
+ 0.6, 0.9\} $$, one could enter the following command:
+
+   &gt;&gt; main('T60', 50)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>	% RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</li><li><a href="single_example_eval.html" class="code" title="function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">single_example_eval</a>	% SINGLE_EXAMPLE_EVAL Run single evaluation trial</li><li><a href="../../localisation/snippets/print_array.html" class="code" title="function print_array( a, format)">print_array</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function main(eval, trials, varargin)</a>
+0002 <span class="comment">%% MAIN repository for evaluation trials</span>
+0003 <span class="comment">% This function provides several different evaluation trials.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% *Example:* To run an evaluation trial with $$ n = 50 $$ for $$ T_{60} \in \{0.0, 0.3,</span>
+0006 <span class="comment">% 0.6, 0.9\} $$, one could enter the following command:</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   &gt;&gt; main('T60', 50)</span>
+0009 <span class="comment">%</span>
+0010 
+0011 <span class="comment">%% Arguments</span>
+0012 <span class="comment">% * *eval (str)*: name of evaluation trial to run _(required)_</span>
+0013 <span class="comment">% * *trials (int)*: number of trials to run _(default: *100*)_</span>
+0014 <span class="comment">% * *varargin (cell array)*: variable additional arguments _(i.e. used to provide non-default max. em-iteration range for |em-iteration| trial)_</span>
+0015 clearvars(<span class="string">'-except'</span>, <span class="string">'eval'</span>, <span class="string">'trials'</span>, <span class="string">'varargin'</span>);
+0016 <span class="keyword">if</span> nargin &lt; 2, trials=100; <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%% Evaluation Trials</span>
+0019 <span class="keyword">switch</span> eval
+0020     <span class="comment">%% BASE EVALUATION</span>
+0021     <span class="keyword">case</span> <span class="string">'base'</span>
+0022         description=<span class="string">'base'</span>;  <span class="comment">% use only single quotes, double quotes will raise error in mkdir()</span>
+0023         md = 5;
+0024         wd = 12;
+0025         rand_samples = true;
+0026         T60=0.0;
+0027         SNR=0;
+0028         em_iterations=5;
+0029         em_conv_threshold=-1;
+0030         guess_randomly=false;
+0031         reflect_order=3;
+0032         <span class="keyword">for</span> sources = 2:7
+0033             <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
+0034         <span class="keyword">end</span>
+0035         
+0036     <span class="comment">%% T60 EVALUATION</span>
+0037     <span class="keyword">case</span> <span class="string">'T60'</span>
+0038         description=<span class="string">'T60'</span>;
+0039         md = 5;
+0040         wd = 12;
+0041         rand_samples = true;
+0042         T60=[0.0 0.3 0.6 0.9];
+0043         SNR=0;
+0044         em_iterations=5;
+0045         em_conv_threshold=-1;
+0046         guess_randomly=false;
+0047         trials=[150,150,150];
+0048         r=-1;
+0049         var_init=0.1;
+0050         var_fixed=false;
+0051         <span class="keyword">for</span> i=1:length(T60)
+0052             <span class="keyword">for</span> sources = 2:7
+0053                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials(i),md,wd,rand_samples,T60(i),SNR,em_iterations, em_conv_threshold, guess_randomly, r,var_init, var_fixed);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056     <span class="comment">%% EM-ITERATIONS EVALUATION</span>
+0057     <span class="keyword">case</span> <span class="string">'em-iterations'</span>
+0058         description=<span class="string">'em-iterations'</span>;
+0059         md = 5;
+0060         wd = 12;
+0061         rand_samples = true;
+0062         T60=0.6;
+0063         SNR=0;
+0064         <span class="keyword">if</span> ~(isempty(varargin))
+0065             fprintf(<span class="string">'WARN: User provided non-default evaluation parameter em_iterations = '</span>);
+0066             <a href="../../localisation/snippets/print_array.html" class="code" title="function print_array( a, format)">print_array</a>(varargin{1}, <span class="string">'0.1f'</span>);
+0067             em_iterations = varargin{1};
+0068         <span class="keyword">else</span>
+0069             em_iterations=[1 5 10 20];
+0070         <span class="keyword">end</span>
+0071         em_conv_threshold=-1;
+0072         guess_randomly=false;
+0073         reflect_order=3;
+0074         <span class="keyword">for</span> em=1:length(em_iterations)
+0075             <span class="keyword">for</span> sources = 2:7
+0076                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations(em), em_conv_threshold, guess_randomly, reflect_order);
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">end</span>
+0079     <span class="comment">%% GUESSING EVALUATION</span>
+0080     <span class="keyword">case</span> <span class="string">'guessing'</span>
+0081         description=<span class="string">'_guessing'</span>;  <span class="comment">% underscore used to exclude directory from being loaded into python by default</span>
+0082         trials=250;
+0083         md = 5;
+0084         wd = 12;
+0085         rand_samples = true;
+0086         T60=0.0;
+0087         SNR=0;
+0088         em_iterations=0;
+0089         em_conv_threshold=-1;
+0090         guess_randomly=true;
+0091         reflect_order=3;
+0092         var_init=0.1;
+0093         var_fixed=false;
+0094         <span class="keyword">for</span> sources = 2:7
+0095             <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order);
+0096         <span class="keyword">end</span>
+0097     <span class="comment">%% GUESSING EVALUATION (with alternative error calculation)</span>
+0098     <span class="keyword">case</span> <span class="string">'guessing_alt_err'</span>
+0099         description=<span class="string">'guessing_alt_err'</span>;
+0100         trials=500;
+0101         md = 5;
+0102         wd = 12;
+0103         rand_samples = true;
+0104         T60=0.0;
+0105         SNR=0;
+0106         em_iterations=0;
+0107         em_conv_threshold=-1;
+0108         guess_randomly=true;
+0109         reflect_order=-1;
+0110         var_init=0.1;
+0111         var_fixed=false;
+0112         alt_err = true;
+0113         <span class="keyword">for</span> sources = 8:9
+0114             <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, false, alt_err);
+0115         <span class="keyword">end</span>
+0116     <span class="comment">%% SINGLE EXAMPLE EVALUATION</span>
+0117     <span class="keyword">case</span> <span class="string">'em-single'</span>
+0118         sources=4;
+0119         md = 5;
+0120         wd = 12;
+0121         rand_sources = true;
+0122         T60=0.0;
+0123         em_iterations=50;
+0124         em_conv_threshold=-1;
+0125         <span class="keyword">for</span> i=1:5
+0126             est_err(i, :) = <a href="single_example_eval.html" class="code" title="function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">single_example_eval</a>(sources,rand_sources, md, wd, T60, em_iterations, em_conv_threshold);
+0127         <span class="keyword">end</span>
+0128     <span class="comment">%% MIN-DISTANCE EVALUATION</span>
+0129     <span class="keyword">case</span> <span class="string">'min-distance'</span>
+0130         description=<span class="string">'min-distance'</span>;  <span class="comment">% use only single quotes, double quotes will raise error in mkdir()</span>
+0131         md = [3 5 10];
+0132         wd = 12;
+0133         rand_samples = true;
+0134         T60=0.3;
+0135         SNR=0;
+0136         em_iterations=5;
+0137         em_conv_threshold=-1;
+0138         sources_trial = [6 6 5];
+0139         trials = [100 200 100];
+0140         guess_randomly=false;
+0141         r=3;
+0142         var_init=0.1;
+0143         var_fixed=false;
+0144         <span class="keyword">for</span> i=1:length(md)
+0145             <span class="keyword">for</span> sources = sources_trial(i):7
+0146                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials(i),md(i),wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, r,var_init, var_fixed);
+0147             <span class="keyword">end</span>
+0148         <span class="keyword">end</span>
+0149     <span class="comment">%% REFLECT-ORDER EVALUATION</span>
+0150     <span class="keyword">case</span> <span class="string">'reflect-order'</span>
+0151         description=<span class="string">'reflect-order'</span>;
+0152         md = 5;
+0153         wd = 12;
+0154         rand_samples = true;
+0155         T60=0.0;
+0156         SNR=0;
+0157         em_iterations=5;
+0158         em_conv_threshold=-1;
+0159         guess_randomly=false;
+0160         <span class="keyword">if</span> ~(isempty(varargin))
+0161             fprintf(<span class="string">'WARN: User provided non-default evaluation parameter reflect_order = '</span>);
+0162             <a href="../../localisation/snippets/print_array.html" class="code" title="function print_array( a, format)">print_array</a>(varargin{1}, <span class="string">'0.1f'</span>);
+0163             reflect_order = varargin{1};
+0164         <span class="keyword">else</span>
+0165             reflect_order=[-1 3 1];
+0166         <span class="keyword">end</span>
+0167         <span class="keyword">for</span> i=1:length(reflect_order)
+0168             <span class="keyword">for</span> sources = 2:7
+0169                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly, reflect_order(i));
+0170             <span class="keyword">end</span>
+0171         <span class="keyword">end</span>
+0172     <span class="comment">%% NOISE EVALUATION</span>
+0173     <span class="keyword">case</span> <span class="string">'noise'</span>
+0174         description=<span class="string">'noise'</span>;
+0175         md = 5;
+0176         wd = 12;
+0177         rand_samples = true;
+0178         T60=0.6;
+0179         SNR=[15 30];
+0180         em_iterations=5;
+0181         em_conv_threshold=-1;
+0182         guess_randomly=false;
+0183         reflect_order=-1;
+0184         <span class="keyword">for</span> i=1:length(SNR)
+0185             <span class="keyword">for</span> sources = 2:7
+0186                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR(i),em_iterations, em_conv_threshold, guess_randomly, reflect_order);
+0187             <span class="keyword">end</span>
+0188         <span class="keyword">end</span>
+0189     <span class="comment">%% WALL-DISTANCE EVALUATION</span>
+0190     <span class="keyword">case</span> <span class="string">'wd'</span>
+0191         description=<span class="string">'wd'</span>;  <span class="comment">% perfect conditions, increased wd, trying to get 100% success rate!</span>
+0192         md = 5;
+0193         wd = [12, 13, 15];
+0194         rand_samples = true;
+0195         T60=0.0;
+0196         SNR=0;
+0197         em_iterations=5;
+0198         em_conv_threshold=-1;
+0199         guess_randomly=false;
+0200         reflect_order=0;
+0201         <span class="keyword">for</span> i=1:length(wd)
+0202             <span class="keyword">for</span> sources = 2:7
+0203                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd(i),rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order);
+0204             <span class="keyword">end</span>
+0205         <span class="keyword">end</span>
+0206     <span class="comment">%% INITIAL VARIANCE EVALUATION</span>
+0207     <span class="keyword">case</span> <span class="string">'var'</span>
+0208         description=<span class="string">'var'</span>;  <span class="comment">% test fixed variance with different values</span>
+0209         md = 5;
+0210         wd = 12;
+0211         rand_samples = true;
+0212         T60=0.3;
+0213         SNR=0;
+0214         em_iterations=5;
+0215         em_conv_threshold=-1;
+0216         guess_randomly=false;
+0217         reflect_order=3;
+0218         variance=[0.1 0.5 1];
+0219         <span class="keyword">for</span> i=1:length(variance)
+0220             <span class="keyword">for</span> sources = 2:7
+0221                 <a href="random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>(description,sources,trials,md,wd,rand_samples,T60,SNR,em_iterations, em_conv_threshold, guess_randomly,reflect_order,variance(i));
+0222             <span class="keyword">end</span>
+0223         <span class="keyword">end</span>
+0224     <span class="comment">%%</span>
+0225     <span class="keyword">otherwise</span>
+0226         <span class="comment">%% Unknown Evaluation Name</span>
+0227         cprintf(<span class="string">'*err'</span>, <span class="string">'This evaluation is not yet defined! Please check the spelling of &quot;%s&quot; or define &quot;%s&quot; as new evaluation!\n'</span>, eval, eval);
+0228 
+0229 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

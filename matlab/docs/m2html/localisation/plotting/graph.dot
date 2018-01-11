@@ -1,0 +1,13 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  plot_simulation_environment -> plot_room;
+
+  analyse_em_steps [URL="analyse_em_steps.html"];
+  analyse_pdf [URL="analyse_pdf.html"];
+  analyse_prp [URL="analyse_prp.html"];
+  plot_assignment_example [URL="plot_assignment_example.html"];
+  plot_results [URL="plot_results.html"];
+  plot_room [URL="plot_room.html"];
+  plot_signals [URL="plot_signals.html"];
+  plot_simulation_environment [URL="plot_simulation_environment.html"];
+}

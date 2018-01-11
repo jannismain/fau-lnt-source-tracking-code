@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimate_location</title>
+  <meta name="keywords" content="estimate_location">
+  <meta name="description" content="% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; estimate_location.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>estimate_location
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/helpers/eliminate_neighbourhood.html" class="code" title="function [ psi ] = eliminate_neighbourhood( psi, x, y, d )">eliminate_neighbourhood</a>	ELIMINATE_NEIGHBOURHOOD Set values of psi to zero for rectangle around [x,y] with length 2*d</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/helpers/rerun.html" class="code" title="">rerun</a>	% Setup Environment</li><li><a href="../localisation/plotting/analyse_em_steps.html" class="code" title="function analyse_em_steps(psi, variance, md, room)">analyse_em_steps</a>	PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations</li><li><a href="../localisation/testing/estimate_location_test.html" class="code" title="">estimate_location_test</a>	% Test 1: Specific psi matrix #1</li><li><a href="testrun.html" class="code" title="">testrun</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)</a>
+0002 <span class="comment">%% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</span>
+0003 
+0004 <span class="comment">%% Arguments</span>
+0005 <span class="comment">% * *psi (mat)*: _Output of |&lt;em_algorithm.html em_iterations.m&gt;|_</span>
+0006 <span class="comment">% * *n_sources (int)*: _number of locations to be found_</span>
+0007 <span class="comment">% * *elimination_area (int)*: _size of area around found location estimate to eliminate_</span>
+0008 <span class="comment">% * *room (struct)*: _room setup structure from configuration file_</span>
+0009 
+0010 <span class="comment">%% Returns</span>
+0011 <span class="comment">% * *loc_est (mat)*: _|2xN| matrix of |[x y]| coordinates of estimated locations (i.e. |[2.4, 3.0; 1.2, 4.9]| for |n=2|)_</span>
+0012 
+0013 fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc);
+0014 
+0015 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'input argument &quot;psi&quot; is required!'</span>); <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;2, n_sources=2; <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;3, elimination_area=0; <span class="keyword">end</span>
+0018 <span class="keyword">if</span> nargin&lt;4, min_distance=5; <span class="keyword">end</span>
+0019 
+0020 loc_est = zeros(n_sources, 2);
+0021 
+0022 <span class="keyword">for</span> n=1:n_sources
+0023     <span class="comment">%% determine maximum</span>
+0024     valid_loc = false;
+0025     <span class="keyword">while</span> ~valid_loc
+0026         [~,idx_Xmax] = max(max(psi,[],1));  <span class="comment">% ~ = max. value of psi at identified index</span>
+0027         [~,idx_Ymax] = max(max(psi,[],2));
+0028         loc_est(n, 1:2) = [room.grid_x(idx_Xmax),room.grid_y(idx_Ymax)] + room.N_margin*room.grid_resolution;
+0029         valid_loc = true;
+0030         <span class="keyword">if</span> n&gt;1  <span class="comment">% is this is not the first estimate, make comparison to other estimates</span>
+0031             <span class="keyword">for</span> m=1:n-1
+0032                 <span class="keyword">if</span>(norm(loc_est(n, :)-loc_est(m, :)) &lt; min_distance/10)  <span class="comment">% est. too close</span>
+0033                     psi = <a href="../localisation/helpers/eliminate_neighbourhood.html" class="code" title="function [ psi ] = eliminate_neighbourhood( psi, x, y, d )">eliminate_neighbourhood</a>(psi, idx_Xmax, idx_Ymax, elimination_area);
+0034                     <span class="comment">%fprintf('      -&gt; Estimate #%d is within %0.2fm of #%d. Will skip this one!\n', n, min_distance/10, m);</span>
+0035                     valid_loc = false;
+0036                     <span class="keyword">break</span>;
+0037                 <span class="keyword">end</span>
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">else</span>
+0040             psi = <a href="../localisation/helpers/eliminate_neighbourhood.html" class="code" title="function [ psi ] = eliminate_neighbourhood( psi, x, y, d )">eliminate_neighbourhood</a>(psi, idx_Xmax, idx_Ymax, elimination_area);
+0041         <span class="keyword">end</span>
+0042         <span class="keyword">if</span> valid_loc, fprintf(<span class="string">'      -&gt; Estimate #%d at x=%0.2f, y=%0.2f\n'</span>, n, loc_est(n, :)); <span class="keyword">end</span>
+0043         <span class="keyword">if</span> sum(sum(psi))==0, <span class="keyword">break</span>; <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

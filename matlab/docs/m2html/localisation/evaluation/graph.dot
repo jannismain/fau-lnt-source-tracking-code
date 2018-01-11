@@ -1,0 +1,15 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  evalrun_lnt -> random_sources_eval;
+  evalrun_peng -> random_sources_eval;
+  evalrun_whacky -> random_sources_eval;
+  main -> random_sources_eval;
+  main -> single_example_eval;
+
+  evalrun_lnt [URL="evalrun_lnt.html"];
+  evalrun_peng [URL="evalrun_peng.html"];
+  evalrun_whacky [URL="evalrun_whacky.html"];
+  main [URL="main.html"];
+  random_sources_eval [URL="random_sources_eval.html"];
+  single_example_eval [URL="single_example_eval.html"];
+}

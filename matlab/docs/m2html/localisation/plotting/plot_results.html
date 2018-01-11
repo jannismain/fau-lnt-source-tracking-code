@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_results</title>
+  <meta name="keywords" content="plot_results">
+  <meta name="description" content="PLOT_RESULTS Plots location estimation results">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; plot_results.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plot_results
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PLOT_RESULTS Plots location estimation results</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ fig ] = plot_results( psi, loc_est, room) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOT_RESULTS Plots location estimation results</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/evaluation/random_sources_eval.html" class="code" title="function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)">random_sources_eval</a>	% RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</li><li><a href="../../localisation/helpers/rerun.html" class="code" title="">rerun</a>	% Setup Environment</li><li><a href="../../localisation/testrun.html" class="code" title="">testrun</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ fig ] = plot_results( psi, loc_est, room)</a>
+0002 <span class="comment">%PLOT_RESULTS Plots location estimation results</span>
+0003     <span class="keyword">if</span> size(psi, 3)&gt;1
+0004         iterations = size(psi, 1);
+0005     <span class="keyword">else</span>
+0006         iterations=1;
+0007     <span class="keyword">end</span>
+0008 
+0009     scr_size = get(0,<span class="string">'ScreenSize'</span>);
+0010     fig_size = [2*scr_size(3)/3 scr_size(4)/2];  <span class="comment">% width x height</span>
+0011     fig_xpos = ceil((scr_size(3)-fig_size(1))/2); <span class="comment">% center the figure on the screen horizontally</span>
+0012     fig_ypos = ceil((scr_size(4)-fig_size(2))/2); <span class="comment">% center the figure on the screen vertically</span>
+0013     fig = figure(<span class="string">'Name'</span>,<span class="string">'Location Estimate Result'</span>,<span class="keyword">...</span>
+0014                   <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0015                   <span class="string">'Color'</span>,<span class="string">'white'</span>,<span class="keyword">...</span>
+0016                   <span class="string">'Position'</span>, [fig_xpos fig_ypos fig_size(1) fig_size(2)]);<span class="comment">%,...</span>
+0017                   <span class="comment">%'Visible','off');  TODO: Comment this back in for trial runs!</span>
+0018 
+0019     <span class="keyword">if</span> iterations&gt;1  <span class="comment">% plot entire em-step history</span>
+0020         <span class="keyword">for</span> i=1:iterations
+0021             subplot_tight(2,iterations,i)
+0022             imagesc(room.grid_x,room.grid_y,squeeze(psi(i,:,:)))
+0023             set(gca,<span class="string">'Ydir'</span>,<span class="string">'Normal'</span>)
+0024             set(gca, <span class="string">'box'</span>, <span class="string">'off'</span>)
+0025             hold on
+0026 
+0027             plot(room.R(:, 1), room.R(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'g'</span>);
+0028             plot(room.S(:, 1), room.S(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0029             plot(loc_est(:, 1), loc_est(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+0030 
+0031             axis([0,room.dimensions(1),0,room.dimensions(2)]);
+0032             subplot_tight(2,iterations,i+iterations)
+0033             fprintf(<span class="string">'grid_x = %dx%d, grid_y = %dx%d, psi = %dx%d'</span>, size(room.grid_x, 1), size(room.grid_x, 2), size(room.grid_y, 1), size(room.grid_y, 2), size(psi, 2), size(psi, 3))
+0034             surf(room.grid_x,room.grid_y,squeeze(psi(i,:,:)))
+0035             view([-10 35]);
+0036             shading interp
+0037         <span class="keyword">end</span>
+0038     <span class="keyword">else</span>            <span class="comment">% plot only final result</span>
+0039         subplot_tight(1,2,1);
+0040         imagesc(room.grid_x,room.grid_y,psi)
+0041         set(gca,<span class="string">'Ydir'</span>,<span class="string">'Normal'</span>)
+0042         set(gca, <span class="string">'box'</span>, <span class="string">'off'</span>)
+0043         hold on
+0044 
+0045         plot(room.R(:, 1), room.R(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'g'</span>);
+0046         plot(room.S(:, 1), room.S(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0047         plot(loc_est(:, 1), loc_est(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+0048         axis([0,room.dimensions(1),0,room.dimensions(2)]);
+0049 
+0050         subplot_tight(1,2,2);
+0051         surf(room.grid_x,room.grid_y,psi)
+0052         view([-65 25]);
+0053         shading interp
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

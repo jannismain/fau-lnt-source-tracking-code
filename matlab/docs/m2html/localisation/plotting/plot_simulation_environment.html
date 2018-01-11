@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_simulation_environment</title>
+  <meta name="keywords" content="plot_simulation_environment">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; plot_simulation_environment.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plot_simulation_environment
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="plot_room.html" class="code" title="function [fig, ax_s, ax_r, ax_bg] = plot_room(ROOM, R, S, subplots, add_legend, fig, varargin)">plot_room</a>	PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 tic;
+0002 [~, fn_cfg] = evalc(<span class="string">'config_update(2, false);'</span>);
+0003 load(fn_cfg);
+0004 
+0005 EXPORT = false;
+0006 
+0007 PATH_SRC = [filesep <span class="string">'Users'</span> filesep <span class="string">'jannismainczyk'</span> filesep <span class="string">'thesis'</span> filesep <span class="string">'latex'</span> filesep];
+0008 PATH_LATEX_ABS = strcat(PATH_SRC, <span class="string">'data/plots/setup/tikz-data/'</span>);
+0009 PATH_TIKZ_OUTPUT = strcat(PATH_SRC, <span class="string">'data/plots/setup/setup.tex'</span>);
+0010 PATH_PDF_OUTPUT = strcat(PATH_SRC, <span class="string">'data'</span>, filesep, <span class="string">'plots'</span>, filesep, <span class="string">'setup'</span>, filesep, <span class="string">'setup.pdf'</span>);
+0011 PATH_PNG_OUTPUT = strcat(PATH_SRC, <span class="string">'data'</span>, filesep, <span class="string">'plots'</span>, filesep, <span class="string">'setup'</span>, filesep, <span class="string">'setup.png'</span>);
+0012 PATH_OUTPUT = strcat(PATH_SRC, <span class="string">'data'</span>, filesep, <span class="string">'plots'</span>, filesep, <span class="string">'setup'</span>, filesep, <span class="string">'setup'</span>);
+0013 
+0014 
+0015 fig = figure(<span class="string">'Units'</span>, <span class="string">'centimeters'</span>, <span class="string">'InnerPosition'</span>, [0 0 12 12]);
+0016 [fig, ax_s, ax_r] = <a href="plot_room.html" class="code" title="function [fig, ax_s, ax_r, ax_bg] = plot_room(ROOM, R, S, subplots, add_legend, fig, varargin)">plot_room</a>(ROOM, R, S, 1, false, fig);
+0017 hold on
+0018 
+0019 <span class="comment">% plot grid across whole room</span>
+0020 step = room.grid_resolution;
+0021 [Xall,Yall] = meshgrid(step:step:room.dimensions(1)-step,step:step:room.dimensions(2)-step);
+0022 Zall = ones(length(Xall), length(Yall));
+0023 axd1 = plot3(Xall,Yall,Zall, <span class="string">'k.'</span>, <span class="string">'MarkerSize'</span>, 1);
+0024 
+0025 <span class="comment">% plot grid of possible source locations</span>
+0026 xyMin = sources.wall_distance/10;
+0027 xMax = room.dimensions(1)-sources.wall_distance/10;
+0028 yMax = room.dimensions(2)-sources.wall_distance/10;
+0029 [X,Y] = meshgrid(xyMin:step:xMax,xyMin:step:yMax);
+0030 Z = ones(length(X), length(Y));
+0031 axd2 = plot3(X,Y,Z, <span class="string">'w.'</span>, <span class="string">'MarkerSize'</span>, 1);
+0032 grid off;
+0033 
+0034 <span class="comment">% move sources and receivers to front (uistack() does not work, as gridpoints have ZData of 1, others 0)</span>
+0035 set(ax_s, <span class="string">'ZData'</span>, 2*ones(size(S, 1),1));
+0036 set(ax_r, <span class="string">'ZData'</span>, 2*ones(size(R, 1),1));
+0037 <span class="comment">% if ~isempty(R)</span>
+0038 <span class="comment">%     ax_r = plot(R(:, 1), R(:, 2),'O','MarkerSize', 8, 'Linewidth',1,'Color','g');</span>
+0039 <span class="comment">%     legend_elements = [legend_elements ax_r];</span>
+0040 <span class="comment">%     legend_elements_desc = [legend_elements_desc string('receiver')];</span>
+0041 <span class="comment">% else</span>
+0042 <span class="comment">%     ax_r = [];</span>
+0043 <span class="comment">% end</span>
+0044 <span class="comment">% ax_s = plot(S(:, 1), S(:, 2),'x','MarkerSize', 12, 'Linewidth',1,'Color','r');</span>
+0045 
+0046 <span class="keyword">if</span> EXPORT
+0047     <span class="comment">% export to tikz</span>
+0048     matlab2tikz(PATH_TIKZ_OUTPUT,<span class="keyword">...</span>
+0049                <span class="string">'figurehandle'</span>, fig,<span class="keyword">...</span>
+0050                <span class="string">'imagesAsPng'</span>, true,<span class="keyword">...</span>
+0051                <span class="string">'checkForUpdates'</span>, false,<span class="keyword">...</span>
+0052                <span class="string">'externalData'</span>, false,<span class="keyword">...</span>
+0053                <span class="string">'relativeDataPath'</span>, <span class="string">'data/plots/setup/tikz-data/'</span>,<span class="keyword">...</span>
+0054                <span class="string">'dataPath'</span>, PATH_LATEX_ABS,<span class="keyword">...</span>
+0055                <span class="string">'noSize'</span>, false,<span class="keyword">...</span>
+0056                <span class="string">'width'</span>, <span class="string">'0.5\textwidth'</span>,<span class="keyword">...</span>
+0057                <span class="string">'height'</span>, <span class="string">'0.5\textwidth'</span>,<span class="keyword">...</span>
+0058                <span class="string">'showInfo'</span>, false);
+0059 
+0060     <span class="comment">% resize elements for non-tikz output</span>
+0061     <span class="keyword">for</span> i=1:length(axd1)
+0062         axd1(i).MarkerSize = 2;
+0063     <span class="keyword">end</span>
+0064     <span class="keyword">for</span> i=1:length(axd2)
+0065         axd2(i).MarkerSize = 2;
+0066     <span class="keyword">end</span>
+0067     <span class="keyword">for</span> i=1:length(ax_s)
+0068         ax_s(i).MarkerSize = 6;
+0069     <span class="keyword">end</span>
+0070     <span class="keyword">for</span> i=1:length(ax_r)
+0071         ax_r(i).MarkerSize = 6;
+0072     <span class="keyword">end</span>
+0073 
+0074     <span class="comment">% export as pdf</span>
+0075     print(fig, <span class="string">'-dpdf'</span>, PATH_PDF_OUTPUT, <span class="string">'-bestfit'</span>);
+0076     <span class="comment">%export as png/jpeg</span>
+0077     saveas(fig, [PATH_OUTPUT <span class="string">'.png'</span>]);
+0078     saveas(fig, [PATH_OUTPUT <span class="string">'.jpg'</span>]);
+0079     
+0080 <span class="keyword">end</span>
+0081 
+0082 delete(fn_cfg);</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

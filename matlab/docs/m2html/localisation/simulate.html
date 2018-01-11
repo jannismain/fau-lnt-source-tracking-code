@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of simulate</title>
+  <meta name="keywords" content="simulate">
+  <meta name="description" content="SIMULATE Simulates received signals in a room with audio sources and receivers.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">localisation</a> &gt; simulate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>simulate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>SIMULATE Simulates received signals in a room with audio sources and receivers.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [x] = simulate(fn_cfg, ROOM, R, sources, mix) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SIMULATE Simulates received signals in a room with audio sources and receivers.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../localisation/evaluation/single_example_eval.html" class="code" title="function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">single_example_eval</a>	% SINGLE_EXAMPLE_EVAL Run single evaluation trial</li><li><a href="../localisation/helpers/rerun.html" class="code" title="">rerun</a>	% Setup Environment</li><li><a href="../localisation/plotting/analyse_prp.html" class="code" title="">analyse_prp</a>	</li><li><a href="../localisation/plotting/plot_signals.html" class="code" title="">plot_signals</a>	</li><li><a href="testrun.html" class="code" title="">testrun</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x] = simulate(fn_cfg, ROOM, R, sources, mix)</a>
+0002 <span class="comment">% SIMULATE Simulates received signals in a room with audio sources and receivers.</span>
+0003 
+0004 <span class="comment">%% Description</span>
+0005 <span class="comment">% Simulates received signals in a room with audio sources and receivers. For the</span>
+0006 <span class="comment">% simulation, the &lt;https://github.com/ehabets/RIR-Generator RIR-Generator&gt; by Emanuel</span>
+0007 <span class="comment">% Habets is used. If |SNR~=0| in |fn_cfg|, AWGN is added with the corresponding |dB|</span>
+0008 <span class="comment">% value.</span>
+0009 
+0010 <span class="comment">%% Arguments</span>
+0011 <span class="comment">% * *fn_cfg (str)*: _filename of configuration file (e.g. |'config_5x8d0.mat'|)_</span>
+0012 <span class="comment">% * *ROOM (mat)*: room dimensions _(3x1 matrix, e.g. |[6, 6, 6.1]|)_</span>
+0013 <span class="comment">% * *R (mat)*: receiver position matrix _(3x2*M matrix)_</span>
+0014 <span class="comment">% * *sources (mat)*: sources parameter struct that contains the following two attributes</span>
+0015 <span class="comment">% *     *sources.positions (mat)*: matrix of source positions _(3xS matrix)_</span>
+0016 <span class="comment">% *     *sources.samples (mat)*: matrix of speech sample file names _(5xS matrix, e.g. |['1.WAV', '3.WAV', '2.WAV']| for |S=3|)_</span>
+0017 <span class="comment">% * *mix (bool)*: mix simulated signals together per microphone pair _(default: *true*)_</span>
+0018 
+0019 <span class="comment">%% Caveats</span>
+0020 <span class="comment">% * |SNR=0| in |fn_cfg| means no noise, _not_ noise with |0dB|</span>
+0021 
+0022 <span class="comment">%% Ideas for Improvement</span>
+0023 <span class="comment">% * There should be a way to use fftfilt without nested for loops using reshape on H and S_data</span>
+0024 <span class="comment">% * Also, we go from time- to stft domain back to time domain (fftfilt) only to transform</span>
+0025 <span class="comment">% back into stft-domain in the next step. Better: Directly multiply signal in STFT-domain (without fftfilt).</span>
+0026 <span class="comment">% *Note*: This may bring additional work (e.g. reshaping to specified size)</span>
+0027 
+0028 <span class="comment">%% Initialisation</span>
+0029 <span class="keyword">try</span> fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc); <span class="keyword">end</span>
+0030 load(fn_cfg)
+0031 <span class="keyword">if</span> nargin&lt;5, mix=true;<span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% Calculate RIRs</span>
+0034 m = sprintf(<span class="string">'Calculate RIR for each Source-Receiver combination... (t = %2.4f)'</span>, toc); counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter); <span class="comment">%#ok&lt;*NODEF&gt;</span>
+0035 
+0036 H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
+0037 <span class="keyword">for</span> mic_pair = 1:n_receiver_pairs
+0038     <span class="keyword">for</span> s = 1:n_sources
+0039         H(:, s, :,mic_pair) = rir_generator(<span class="keyword">...</span>
+0040         room.c, <span class="keyword">...</span>
+0041         fs, <span class="keyword">...</span>
+0042         R((mic_pair*2-1):(mic_pair*2),:,:), <span class="keyword">...</span>
+0043         sources.positions(s, :), <span class="keyword">...</span>
+0044         ROOM, <span class="keyword">...</span>
+0045         rir.t_reverb, <span class="keyword">...</span>
+0046         rir.length, <span class="keyword">...</span>
+0047         mics.type, <span class="keyword">...</span>
+0048         rir.reflect_order, <span class="keyword">...</span>
+0049         3)';
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 H = H/(max(max(max(max(H)))));
+0053 fprintf(<span class="string">'%s Generated RIR %dx%dx%dx%d\n'</span>, FORMAT_PREFIX, size(H, 1), size(H, 2), size(H, 3), size(H, 4));
+0054 
+0055 <span class="comment">%% Load Source Data</span>
+0056 <span class="comment">% Load speech samples, trim signal to the length specified in |fn_cfg| and add AWGN, if</span>
+0057 <span class="comment">% |SNR~=0|.</span>
+0058 m = sprintf(<span class="string">'Load source data... (t = %2.4f)'</span>, toc); counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter);
+0059 
+0060     S_data = zeros(source_length*fs, n_sources);
+0061     <span class="keyword">for</span> s = 1:n_sources
+0062         [temp, fs_temp] = audioread(sources.samples(s, :));
+0063         <span class="keyword">if</span> fs_temp ~= fs
+0064             temp = resample(temp, fs, fs_temp);
+0065             <span class="keyword">if</span> SNR&gt;0
+0066                 temp = awgn(temp, SNR, <span class="string">'measured'</span>);
+0067             <span class="keyword">end</span>
+0068         <span class="keyword">end</span>
+0069 
+0070         <span class="keyword">if</span> length(temp)&gt;source_length*fs
+0071             S_data(1:source_length*fs, s) = temp(1:source_length*fs);
+0072         <span class="keyword">else</span>
+0073             S_data(1:length(temp), s) = temp;
+0074         <span class="keyword">end</span>
+0075     <span class="keyword">end</span>
+0076 
+0077 <span class="comment">%% Y x RIRs</span>
+0078 <span class="comment">% Convolute source data with RIR to compute received signal</span>
+0079 m = sprintf(<span class="string">'Convolute source data with room impulse response... (t = %2.4f)'</span>, toc); counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter); <span class="comment">%#ok&lt;*NASGU&gt;</span>
+0080 
+0081     n_samples_y = source_length*fs;
+0082 
+0083     Y = zeros(n_samples_y, n_sources, 2, n_receiver_pairs);
+0084     <span class="keyword">for</span> mic_pair = 1:n_receiver_pairs
+0085         <span class="keyword">for</span> mic = 1:2
+0086             <span class="keyword">for</span> s = 1:n_sources
+0087                 Y(:, s, mic, mic_pair) = fftfilt(squeeze(H(:, s, mic, mic_pair)), S_data(:, s));
+0088             <span class="keyword">end</span>
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 
+0092 <span class="comment">%% Mix Signals at Receiver Pairs</span>
+0093 <span class="comment">% _Optional:_ Mix signals for receiver pairs.</span>
+0094 <span class="keyword">if</span> mix
+0095     m = sprintf(<span class="string">'Mixing Signals... (t = %2.4f)'</span>, toc); counter = <a href="../localisation/helpers/next_step.html" class="code" title="function [new_counter] = next_step(description, counter, STEP, STOP_AFTER_STEP)">next_step</a>(m, counter); <span class="comment">%#ok&lt;*NASGU&gt;</span>
+0096         x = squeeze(sum(Y, 2));
+0097 <span class="keyword">else</span>
+0098     x = Y;
+0099 <span class="keyword">end</span>
+0100 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

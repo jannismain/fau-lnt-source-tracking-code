@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimation_error_test</title>
+  <meta name="keywords" content="estimation_error_test">
+  <meta name="description" content="% Test 0: Constructed Example with S=2">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">testing</a> &gt; estimation_error_test.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/testing&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>estimation_error_test
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Test 0: Constructed Example with S=2</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Test 0: Constructed Example with S=2</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Test 0: Constructed Example with S=2</span>
+0002 S =                [1.5 4.6;
+0003                     1.2 2.0];
+0004 loc_est_assorted = [3.9 1.7;
+0005                     3.0 4.0];
+0006 tic;
+0007 [~,~,est_err] = evalc(<span class="string">'estimation_error(S, loc_est_assorted);'</span>);
+0008 assert(round(est_err(1), 2)==1.62)
+0009 assert(round(est_err(2), 2)==2.72)
+0010 <span class="comment">%% Test 1: S(1) not in S_est</span>
+0011 S =                [1.5 1.3;
+0012                     1.8 4.4;
+0013                     3.9 1.7;
+0014                     3.0 4.0];
+0015 loc_est_assorted = [3.9 1.7;
+0016                     3.0 4.0;
+0017                     1.8 4.4;
+0018                     1.1 3.9];
+0019 tic;
+0020 [~,~,est_err] = evalc(<span class="string">'estimation_error(S, loc_est_assorted);'</span>);
+0021 [~,loc_est_min,est_err_min] = evalc(<span class="string">'estimation_error_min(S, loc_est_assorted);'</span>);
+0022 assert(round(est_err(1), 2)==2.63)
+0023 assert(est_err(2)==0)
+0024 assert(est_err(3)==0)
+0025 assert(est_err(4)==0)
+0026 assert(sum(est_err==est_err_min)==4)
+0027 
+0028 <span class="comment">%% Test 2: S_est(1) not in S</span>
+0029 S =                [1.1 3.9;
+0030                     1.8 4.4;
+0031                     3.9 1.7;
+0032                     3.0 4.0];
+0033 loc_est_assorted = [3.9 4.0;
+0034                     3.0 4.0;
+0035                     1.8 4.4;
+0036                     1.1 3.9];
+0037 tic;
+0038 [~,~,est_err] = evalc(<span class="string">'estimation_error(S, loc_est_assorted);'</span>);
+0039 assert(est_err(1)==0)
+0040 assert(est_err(2)==0)
+0041 assert(round(est_err(3), 2)==2.30)
+0042 assert(est_err(4)==0)
+0043 
+0044 <span class="comment">%% Test 3: S_est(1:2) not in S</span>
+0045 S =                [1.1 3.9;
+0046                     1.8 4.4;
+0047                     3.9 1.7;
+0048                     3.0 4.0];
+0049 loc_est_assorted = [3.9 4.0;
+0050                     3.4 2.0;
+0051                     1.8 4.4;
+0052                     1.1 3.9];
+0053 tic;
+0054 [~,~,est_err] = evalc(<span class="string">'estimation_error(S, loc_est_assorted);'</span>);
+0055 assert(est_err(1)==0)
+0056 assert(est_err(2)==0)
+0057 assert(round(est_err(3), 2)==0.58)
+0058 assert(round(est_err(4), 2)==0.90)
+0059 
+0060 <span class="comment">%% Test 4: S_est(1:4) not in S, but close</span>
+0061 S =                [1.1 3.9;
+0062                     1.8 4.4;
+0063                     3.9 1.7;
+0064                     3.0 4.0];
+0065 loc_est_assorted = [2.8 4.0;
+0066                     3.8 1.8;
+0067                     2.0 4.4;
+0068                     1.1 4.0];
+0069 tic;
+0070 [~,~,est_err] = evalc(<span class="string">'estimation_error(S, loc_est_assorted);'</span>);
+0071 assert(round(est_err(1), 2)==0.10)
+0072 assert(round(est_err(2), 2)==0.20)
+0073 assert(round(est_err(3), 2)==0.14)
+0074 assert(round(est_err(4), 2)==0.20)
+0075 
+0076 <span class="comment">%% Test 5: 4 wrong estimates, 10 random permutations</span>
+0077 S =                [1.1 3.9;
+0078                     1.8 4.4;
+0079                     3.9 1.7;
+0080                     3.0 4.0];
+0081 S_est =            [2.8 4.0;
+0082                     3.8 1.8;
+0083                     2.0 4.4;
+0084                     1.1 4.0];
+0085 <span class="keyword">for</span> n=1:10
+0086     tic;
+0087     S_est_perm = S_est(randperm(length(S_est)),:);
+0088     [~,~,est_err] = evalc(<span class="string">'estimation_error(S, S_est_perm);'</span>);
+0089     assert(round(mean(est_err), 2)==0.16);
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">%% Test 6: 2 wrong estimates close to same S, 10 random permutations</span>
+0093 S =                [1.1 3.9;
+0094                     1.8 4.4;
+0095                     3.9 1.7;
+0096                     3.0 4.0];
+0097 S_est =            [2.8 4.0;
+0098                     3.9 1.7;
+0099                     2.5 4.4;
+0100                     1.1 3.9];
+0101 <span class="keyword">for</span> n=1:10
+0102     tic;
+0103     S_est_perm = S_est(randperm(length(S_est)),:);
+0104     [~,~,est_err] = evalc(<span class="string">'estimation_error(S, S_est_perm);'</span>);
+0105     assert(round(mean(est_err), 2)==0.23);
+0106 <span class="keyword">end</span>
+0107 
+0108 <span class="comment">%% Test 7: 4 random estimates, 10 random permutations</span>
+0109 S =                [1.1 3.9;
+0110                     1.8 4.4;
+0111                     3.9 1.7;
+0112                     3.0 4.0];
+0113                 
+0114 S_est = round(rand(4,2)*5, 1);
+0115 mean_err = zeros(10, 1);
+0116 <span class="keyword">for</span> n=1:10
+0117     tic;
+0118     S_est_perm = S_est(randperm(length(S_est)),:);
+0119     [~,~,est_err] = evalc(<span class="string">'estimation_error(S, S_est_perm);'</span>);
+0120     mean_err(n) = mean(est_err);
+0121 <span class="keyword">end</span>
+0122 assert(min(mean_err)==max(mean_err));
+0123 
+0124 <span class="comment">%% Test 8: 2-5 random sources, 2-5 random estimates, all permutations of S_est</span>
+0125 <span class="keyword">for</span> m=1:50
+0126     <span class="keyword">for</span> n=2:5
+0127         S = round(rand(n,2)*5, 1);        
+0128         S_est = round(rand(n,2)*5, 1);
+0129 
+0130         all_perm_S = perms(1:size(S,1));
+0131         loc_err = zeros(size(all_perm_S,1), n);
+0132         <span class="keyword">for</span> i=1:size(all_perm_S, 1)
+0133             [~, ~, loc_err(i,:)] = evalc(<span class="string">'estimation_error(S,S_est(all_perm_S(i,:),:));'</span>);
+0134         <span class="keyword">end</span>
+0135         mean_err = mean(loc_err, 2);
+0136         assert(round(min(mean_err),2)==round(max(mean_err),2));
+0137     <span class="keyword">end</span>
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="comment">%% Test 9: 2-5 random sources, 2-5 random estimates, all permutations of S</span>
+0141 <span class="keyword">for</span> m=1:50
+0142     <span class="keyword">for</span> n=2:5
+0143         S = round(rand(n,2)*5, 1);        
+0144         S_est = round(rand(n,2)*5, 1);
+0145 
+0146         all_perm_S = perms(1:size(S,1));
+0147         loc_err = zeros(size(all_perm_S,1), n);
+0148         <span class="keyword">for</span> i=1:size(all_perm_S, 1)
+0149             [~, ~, loc_err(i,:)] = evalc(<span class="string">'estimation_error(S(all_perm_S(i,:),:),S_est);'</span>);
+0150         <span class="keyword">end</span>
+0151         mean_err = mean(loc_err, 2);
+0152         assert(round(min(mean_err),2)==round(max(mean_err),2));
+0153     <span class="keyword">end</span>
+0154 <span class="keyword">end</span>
+0155 
+0156 <span class="comment">%% Test 10: Constructed Example with S=4</span>
+0157 S =     [4.7 1.2;
+0158          1.5 2.9;
+0159          1.7 4.5;
+0160          2.3 2.7];
+0161 S_est = [1.5,2.9;
+0162          2.3,2.7;
+0163          2.2,4.9;
+0164          1.1,3.9];
+0165 [~,loc_est,est_err] = evalc(<span class="string">'estimation_error(S, S_est);'</span>);
+0166 assert(round(mean(est_err), 2)==1.29);</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

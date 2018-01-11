@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of eliminate_neighbourhood</title>
+  <meta name="keywords" content="eliminate_neighbourhood">
+  <meta name="description" content="ELIMINATE_NEIGHBOURHOOD Set values of psi to zero for rectangle around [x,y] with length 2*d">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">helpers</a> &gt; eliminate_neighbourhood.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/helpers&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>eliminate_neighbourhood
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ELIMINATE_NEIGHBOURHOOD Set values of psi to zero for rectangle around [x,y] with length 2*d</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ psi ] = eliminate_neighbourhood( psi, x, y, d ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ELIMINATE_NEIGHBOURHOOD Set values of psi to zero for rectangle around [x,y] with length 2*d</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>	% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ psi ] = eliminate_neighbourhood( psi, x, y, d )</a>
+0002 <span class="comment">%ELIMINATE_NEIGHBOURHOOD Set values of psi to zero for rectangle around [x,y] with length 2*d</span>
+0003 
+0004 <span class="comment">%% Description</span>
+0005 <span class="comment">% Set values of psi to zero for rectangle around [x,y] with length 2*d</span>
+0006 
+0007 <span class="comment">%% Arguments</span>
+0008 <span class="comment">% * *psi (mat)*: _Output of |&lt;em_algorithm.html em_iterations.m&gt;|_</span>
+0009 <span class="comment">% * *x (int)*: _x coordinate index of psi to eliminate area around_</span>
+0010 <span class="comment">% * *y (int)*: _y coordinate index of psi to eliminate area around_</span>
+0011 <span class="comment">% * *d (int)*: _half of length of rectangle that will be eliminated from |psi|_</span>
+0012 
+0013 <span class="comment">%% Returns</span>
+0014 <span class="comment">% * *psi (mat)*: _Version of input argument |psi|, where rectangle was set to zero_</span>
+0015 
+0016 <span class="comment">%% Determine Corners of Rectangle</span>
+0017 <span class="comment">% Rectangle defined by midpoint |[x y]| and length |d|. Actual side length of rectangle is</span>
+0018 <span class="comment">% d*2+1!</span>
+0019 xmax = size(psi, 2);
+0020 ymax = size(psi, 1);
+0021 <span class="keyword">if</span> x+d &gt; xmax, x_top = xmax; <span class="keyword">else</span>, x_top = x+d; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> x-d &lt;    1, x_bot =    1; <span class="keyword">else</span>, x_bot = x-d; <span class="keyword">end</span>
+0023 <span class="keyword">if</span> y+d &gt; ymax, y_top = ymax; <span class="keyword">else</span>, y_top = y+d; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> y-d &lt;    1, y_bot =    1; <span class="keyword">else</span>, y_bot = y-d; <span class="keyword">end</span>
+0025 
+0026 <span class="comment">%% Set Values to 0</span>
+0027 psi(y_bot:y_top,x_bot:x_top) = 0;
+0028 fprintf(<span class="string">'      -&gt; Eliminated psi from x=%d, y=%d to x=%d, y=%d\n'</span>, x_bot, y_bot, x_top, y_top)
+0029 <span class="keyword">end</span>
+0030</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

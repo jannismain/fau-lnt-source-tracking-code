@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_room</title>
+  <meta name="keywords" content="plot_room">
+  <meta name="description" content="PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; plot_room.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plot_room
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [fig, ax_s, ax_r, ax_bg] = plot_room(ROOM, R, S, subplots, add_legend, fig, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="plot_simulation_environment.html" class="code" title="">plot_simulation_environment</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fig, ax_s, ax_r, ax_bg] = plot_room(ROOM, R, S, subplots, add_legend, fig, varargin)</a>
+0002 <span class="comment">%PLOT_ROOM creates a room to simulate signals at audio receivers from multiple sources</span>
+0003 
+0004 <span class="keyword">if</span> nargin&lt;4, subplots=2; <span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargin&lt;5, add_legend=true; <span class="keyword">end</span>
+0006 <span class="keyword">if</span> nargin&lt;6, fig_supplied=false;<span class="keyword">else</span>,fig_supplied=true;<span class="keyword">end</span>
+0007 
+0008 
+0009 width=subplots*800;
+0010 height=800;
+0011 <span class="comment">%CONSTANTS</span>
+0012 ROOM_FIXPOINT = 0;
+0013 ROOM_BORDER = 0;
+0014 ROOM_WIDTH = ROOM(1);
+0015 ROOM_HEIGHT = ROOM(2);
+0016 ROOM_TEXT_OFFSET_X = 0.15;
+0017 ROOM_TEXT_OFFSET_Y = 0.15;
+0018 PLOT_ELEM_SIZE = 14;
+0019 PLOT_BORDER = .05;
+0020 
+0021 n_receivers = size(R, 1);
+0022 n_sources = size(S, 1);
+0023 
+0024 fig_size = [width height];  <span class="comment">% width x height</span>
+0025 scr_size = get(0,<span class="string">'ScreenSize'</span>);
+0026 fig_xpos = ceil((scr_size(3)-fig_size(1))/2); <span class="comment">% center the figure on the screen horizontally</span>
+0027 fig_ypos = ceil((scr_size(4)-fig_size(2))/2); <span class="comment">% center the figure on the screen vertically</span>
+0028 
+0029 <span class="keyword">if</span> ~fig_supplied
+0030     fig = figure(<span class="string">'Name'</span>,<span class="string">'Simulation Setup'</span>,<span class="keyword">...</span>
+0031                   <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0032                   <span class="string">'Color'</span>,<span class="string">'white'</span>,<span class="keyword">...</span>
+0033                   <span class="string">'Position'</span>, [fig_xpos fig_ypos fig_size(1) fig_size(2)],<span class="keyword">...</span>
+0034                   <span class="string">'MenuBar'</span>,<span class="string">'none'</span>);
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> subplots &gt; 1, subplot_tight(1,subplots,1, PLOT_BORDER);<span class="keyword">end</span>
+0037 
+0038 <span class="comment">% plot room rectangle and surroundings</span>
+0039 <span class="comment">% rectangle('Position',[ROOM_FIXPOINT;ROOM_FIXPOINT;ROOM_WIDTH;ROOM_HEIGHT]);</span>
+0040 <span class="keyword">if</span> ROOM_BORDER &gt; 0
+0041     plot(ROOM_FIXPOINT - ROOM_BORDER, ROOM_FIXPOINT - ROOM_BORDER, <span class="string">'.'</span>, <span class="string">'Color'</span>, <span class="string">'w'</span>)
+0042     plot(ROOM_WIDTH + ROOM_BORDER, ROOM_HEIGHT + ROOM_BORDER, <span class="string">'.'</span>, <span class="string">'Color'</span>, <span class="string">'w'</span>)
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">% plot receivers and sources</span>
+0046 hold on;
+0047 legend_elements = [];
+0048 legend_elements_desc = [];
+0049 
+0050 ax_bg = surf(linspace(0,ROOM(1),ROOM(1)),linspace(0,ROOM(2), ROOM(2)), zeros(ROOM(1), ROOM(2)));
+0051 legend_elements = [legend_elements ax_bg];
+0052 legend_elements_desc = [legend_elements_desc string(<span class="string">'room'</span>)];
+0053 
+0054 colormap([61/255 38/255 168/255]);
+0055 <span class="keyword">if</span> ~isempty(R)
+0056     ax_r = plot(R(:, 1), R(:, 2),<span class="string">'O'</span>,<span class="string">'MarkerSize'</span>, 8, <span class="string">'Linewidth'</span>,1,<span class="string">'Color'</span>,<span class="string">'g'</span>);   
+0057     legend_elements = [legend_elements ax_r];
+0058     legend_elements_desc = [legend_elements_desc string(<span class="string">'receiver'</span>)];
+0059 <span class="keyword">else</span>
+0060     ax_r = [];
+0061 <span class="keyword">end</span>
+0062 ax_s = plot(S(:, 1), S(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,1,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+0063 legend_elements_desc = [legend_elements_desc string(<span class="string">'source'</span>)];
+0064 legend_elements = [legend_elements ax_s];
+0065 hold off;
+0066 shading interp;
+0067 <span class="comment">% legend show;</span>
+0068 <span class="keyword">if</span> add_legend
+0069     legend(legend_elements, legend_elements_desc(:));
+0070 <span class="keyword">end</span>
+0071 <span class="comment">% legend('Location','NorthEastOutside')</span>
+0072 
+0073 axis([-ROOM_BORDER,ROOM_WIDTH+ROOM_BORDER,-ROOM_BORDER,ROOM_HEIGHT+ROOM_BORDER]);
+0074 
+0075 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

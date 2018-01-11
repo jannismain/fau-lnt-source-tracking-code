@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of analyse_prp</title>
+  <meta name="keywords" content="analyse_prp">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; analyse_prp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>analyse_prp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/configuration/config_update.html" class="code" title="function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">config_update</a>	% CONFIG_UPDATE Creates config-file and returns its filename.</li><li><a href="../../localisation/simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>	SIMULATE Simulates received signals in a room with audio sources and receivers.</li><li><a href="../../localisation/stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>	STFT Calculate the short-time fourier transformation (STFT) using a certain parameter set.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 fn_cfg = <a href="../../localisation/configuration/config_update.html" class="code" title="function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">config_update</a>(2, false, 5, 12, false, 0.3, 5, -1, 3, 0, 1, false);
+0002 load(fn_cfg);
+0003 x = <a href="../../localisation/simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>(fn_cfg, ROOM, R, sources);
+0004 [~, phi] = <a href="../../localisation/stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>(fn_cfg, x);
+0005 
+0006 <span class="comment">% EM Algorithm</span>
+0007 freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
+0008 phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
+0009 phi_mat = repmat(phi_mat,1,1,em.Y-2*room.N_margin,em.X-2*room.N_margin,1);
+0010 
+0011 norm_differences = zeros(em.Y-2*room.N_margin,em.X-2*room.N_margin,room.R_pairs);
+0012 <span class="keyword">for</span> idx_pairs = 1:room.R_pairs
+0013     <span class="keyword">for</span> idx_x = (room.N_margin+1):(em.X-room.N_margin)
+0014         <span class="keyword">for</span> idx_y = (room.N_margin+1):(em.Y-room.N_margin)
+0015             norm_differences(idx_y-room.N_margin,idx_x-room.N_margin,idx_pairs) = norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2,1:2),2) - norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2-1,1:2),2);
+0016         <span class="keyword">end</span>
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">end</span>
+0019 
+0020 norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
+0021 
+0022 figure(<span class="string">'Position'</span>, [20 20 900 450]); hold on;
+0023 plt_prp = subplot(121); hold on;
+0024 <span class="comment">%% phi_tilde_mat</span>
+0025 phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); <span class="comment">% K.X.Y.M</span>
+0026 phitm = squeeze(phi_tilde_mat(:,1,:,:,1));
+0027 phitm25 = squeeze(phitm(25,:,:));
+0028 plot(real(phitm25), imag(phitm25), <span class="string">'r.'</span>, <span class="string">'MarkerSize'</span>, 12);
+0029 xlabel(<span class="string">'Re'</span>); xlim([-2 2]); ylabel(<span class="string">'Im'</span>); ylim([-2 2]);
+0030 
+0031 <span class="comment">%% prepare reference room plot</span>
+0032 plt_room = subplot(122); hold on;
+0033 <span class="comment">% plot grid across whole room</span>
+0034 step = room.grid_resolution;
+0035 [Xall,Yall] = meshgrid(step:step:room.dimensions(1)-step,step:step:room.dimensions(2)-step);
+0036 Zall = ones(length(Xall), length(Yall));
+0037 axd1 = plot3(Xall,Yall,Zall, <span class="string">'k.'</span>, <span class="string">'MarkerSize'</span>, 1);
+0038 
+0039 <span class="comment">% % plot grid of possible source locations</span>
+0040 <span class="comment">% xyMin = sources.wall_distance/10;</span>
+0041 <span class="comment">% xMax = room.dimensions(1)-sources.wall_distance/10;</span>
+0042 <span class="comment">% yMax = room.dimensions(2)-sources.wall_distance/10;</span>
+0043 <span class="comment">% [X,Y] = meshgrid(xyMin:step:xMax,xyMin:step:yMax);</span>
+0044 <span class="comment">% Z = ones(length(X), length(Y));</span>
+0045 <span class="comment">% axd2 = plot3(X,Y,Z, 'w.', 'MarkerSize', 1);</span>
+0046 grid off;
+0047 ax_bg = surf(linspace(0,ROOM(1),ROOM(1)),linspace(0,ROOM(2), ROOM(2)), zeros(ROOM(1), ROOM(2)));
+0048 <span class="comment">% ax_r = plot(R(:, 1), R(:, 2),'O','MarkerSize', 8, 'Linewidth',1,'Color','g');</span>
+0049 ax_s = plot(S(:, 1), S(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,1,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+0050 set(ax_s, <span class="string">'ZData'</span>, 2*ones(size(S, 1),1));
+0051 shading interp;
+0052 axis([-ROOM_BORDER,ROOM(1)+ROOM_BORDER,-ROOM_BORDER,ROOM(2)+ROOM_BORDER]);
+0053 
+0054 map  = colormap(<span class="string">'prism'</span>);
+0055 map = map(1:size(R, 1)/2, :); <span class="comment">% get distinct colors for receivers</span>
+0056 colormap([61/255 38/255 168/255]);
+0057 time=0.005; last=0; this = 0; i=0;
+0058 
+0059 <span class="comment">%% phi differences</span>
+0060 <span class="comment">% phi_diff = bsxfun(@minus,phi_mat,phi_tilde_mat); % K.T.X.Y.M</span>
+0061 <span class="comment">% phid6035 = squeeze(phi_diff(24,35,:,:,:));</span>
+0062 <span class="comment">% for r=1:size(phid6035, 3)</span>
+0063 <span class="comment">%     c = map(r, :);</span>
+0064 <span class="comment">%     if r&gt;1, plt_r.MarkerSize = 6; end % decrease size of old receiver pair</span>
+0065 <span class="comment">%     plt_r = plot(R(r*2-1:r*2, 1), R(r*2-1:r*2, 2),'O','MarkerSize', 12, 'Linewidth',2,'Color',c);</span>
+0066 <span class="comment">%     for x=1:20:size(phid6035, 1)</span>
+0067 <span class="comment">%         for y=1:20:size(phid6035, 2)</span>
+0068 <span class="comment">%             if mod(r,2)==0, activity_marker = 'y*'; else, activity_marker = 'c*'; end</span>
+0069 <span class="comment">%             plot(plt_room, (9+x)/10,(9+y)/10, activity_marker, 'MarkerSize', 2);</span>
+0070 <span class="comment">%             if i&gt;1, this.MarkerSize = 4; end % decrease size of old marker</span>
+0071 <span class="comment">%             this = plot(plt_prp, real(phid6035(x,y)), imag(phid6035(x,y)), '*', 'Color', c, 'MarkerSize', 12);</span>
+0072 <span class="comment">%             i = i+1; pause(time);</span>
+0073 <span class="comment">%         end</span>
+0074 <span class="comment">%     end</span>
+0075 <span class="comment">% end</span>
+0076 <span class="comment">%% angular distances</span>
+0077 ang_dist = bsxfun(@power,abs((phi_diff)),2);
+0078 angd6035 = squeeze(ang_dist(24,35,:,:,1));
+0079 
+0080 psi = ones(em.Y-2*room.N_margin,em.X-2*room.N_margin,1) * (1 /(em.X-2*room.N_margin)*(em.Y-2*room.N_margin));
+0081 psi_old = zeros(size(psi));
+0082 variance = em.var;
+0083 plt_em = figure(<span class="string">'Position'</span>, ([20 500 900 450]));
+0084 pause(0.01);
+0085 <span class="keyword">for</span> iter = 1:em.iterations
+0086     psi_old = psi;
+0087     
+0088     <span class="comment">%% Expectation</span>
+0089     
+0090     pdf = bsxfun(@times,reshape(psi,1,1,em.Y-2*room.N_margin,em.X-2*room.N_margin,1),prod((1 / (variance * pi))*exp(-ang_dist / (variance)),5));
+0091     pdf6025 = squeeze(pdf(24,35,:,:)); surf(subplot(131), pdf6025);
+0092     
+0093     
+0094     mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,em.T,1,1)); mu(isnan(mu)) = 0;
+0095     mu6025 = squeeze(mu(24,35,:,:)); surf(subplot(132), mu6025);
+0096     
+0097     <span class="comment">%% Maximization</span>
+0098     psi = squeeze(sum(sum(mu,2),1)/(em.T*em.K)); psi(psi&lt;=0) = eps;  <span class="comment">% reset negative values to the smallest possible positive value</span>
+0099     surf(subplot(133), psi)
+0100     variance = squeeze(sum(sum(sum(sum(sum(bsxfun(@times,reshape(mu,size(mu,1),size(mu,2),size(mu,3),size(mu,4),1),ang_dist),5),4),3),2),1))./room.R_pairs*squeeze(sum(sum(sum(sum(mu,4),3),2),1));
+0101     pause(0.01);
+0102 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

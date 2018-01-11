@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of analyse_em_steps</title>
+  <meta name="keywords" content="analyse_em_steps">
+  <meta name="description" content="PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">plotting</a> &gt; analyse_em_steps.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>analyse_em_steps
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function analyse_em_steps(psi, variance, md, room) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations
+
+   PARAMETERS:
+   psi: a history of estimates psi-matrices size(psi) = (trials x n_sources x coordinate)
+        Example: size(psi)=7x5x2 for 7 trials with 5 sources (and 2 coordinates)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>	% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</li><li><a href="../../localisation/estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>	ESTIMATION_ERROR Calculates the estimation error based on the true source positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/evaluation/single_example_eval.html" class="code" title="function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)">single_example_eval</a>	% SINGLE_EXAMPLE_EVAL Run single evaluation trial</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function analyse_em_steps(psi, variance, md, room)</a>
+0002 <span class="comment">%PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   PARAMETERS:</span>
+0005 <span class="comment">%   psi: a history of estimates psi-matrices size(psi) = (trials x n_sources x coordinate)</span>
+0006 <span class="comment">%        Example: size(psi)=7x5x2 for 7 trials with 5 sources (and 2 coordinates)</span>
+0007 
+0008 <span class="keyword">if</span> size(psi, 3) == 1, error(&quot;psi needs to be in the following shape: psi(trial, source, coordinate)&quot;); <span class="keyword">end</span>
+0009 
+0010 em_iterations = size(psi, 1);
+0011 n_sources = size(room.S, 1);
+0012 <span class="comment">% x_vals = linspace(0,em_iterations,em_iterations+1);</span>
+0013 loc_est_sorted = zeros(em_iterations, n_sources, 2);
+0014 est_err = zeros(em_iterations, n_sources);
+0015 
+0016 scr_size = get(0,<span class="string">'ScreenSize'</span>);
+0017 fig_size = [5*scr_size(3)/6 scr_size(4)/2];  <span class="comment">% width x height</span>
+0018 fig_xpos = ceil((scr_size(3)-fig_size(1))/2); <span class="comment">% center the figure on the screen horizontally</span>
+0019 fig_ypos = ceil((scr_size(4)-fig_size(2))/2); <span class="comment">% center the figure on the screen vertically</span>
+0020 fig1 = figure(<span class="string">'Name'</span>,<span class="string">'EM Algorithm: Estimation Error Overview'</span>,<span class="keyword">...</span>
+0021               <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0022               <span class="string">'Color'</span>,<span class="string">'white'</span>,<span class="keyword">...</span>
+0023               <span class="string">'Position'</span>, [fig_xpos scr_size(4)-fig_size(2)/1.5-50 fig_size(1) fig_size(2)/1.5],<span class="keyword">...</span>
+0024               <span class="string">'Visible'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
+0025               <span class="string">'MenuBar'</span>,<span class="string">'none'</span>);
+0026 fig2 = figure(<span class="string">'Name'</span>,sprintf(<span class="string">'EM Algorithm: \x03C8 across Iterations'</span>),<span class="keyword">...</span>
+0027               <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0028               <span class="string">'Color'</span>,<span class="string">'white'</span>,<span class="keyword">...</span>
+0029               <span class="string">'Position'</span>, [fig_xpos scr_size(4)-fig_size(2)-scr_size(4)/2 fig_size(1) fig_size(2)],<span class="keyword">...</span>
+0030               <span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0031 
+0032 <span class="keyword">for</span> i=1:em_iterations
+0033     loc_est = <a href="../../localisation/estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>(squeeze(psi(i, :, :)), n_sources, 0, md, room);
+0034     [loc_est_sorted(i,:,:), est_err(i,:)] = <a href="../../localisation/estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>(room.S, loc_est);
+0035     <span class="comment">% plot</span>
+0036     <span class="keyword">for</span> s=1:n_sources+1
+0037         figure(fig1);
+0038         subplot_tight(1,n_sources+1,s)
+0039         <span class="keyword">if</span> s~=n_sources+1
+0040             plot(est_err(:, s), <span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[0.4 0.4 0.4], <span class="string">'Marker'</span>, <span class="string">'x'</span>, <span class="string">'MarkerSize'</span>, 12);
+0041             title(sprintf(&quot;S<span class="comment">%d Estimation Error&quot;, s));</span>
+0042         <span class="keyword">else</span>  <span class="comment">% last iteration, plot mean</span>
+0043             plot(mean(est_err, 2), <span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[204/255 53/255 56/255], <span class="string">'Marker'</span>, <span class="string">'x'</span>, <span class="string">'MarkerSize'</span>, 12);
+0044             title(&quot;Average Estimation Error&quot;);
+0045         <span class="keyword">end</span>
+0046         ylim([-0.1 4.0])
+0047         yticks(linspace(0, 4, 21))
+0048         grid on
+0049     <span class="keyword">end</span>
+0050 
+0051     <span class="comment">%% PLOT PSI</span>
+0052     figure(fig2);
+0053     subplot_tight(3,em_iterations,i)
+0054     
+0055     psi_plot = zeros(room.Y,room.X);
+0056     psi_plot((room.N_margin+1):(room.Y-room.N_margin),(room.N_margin+1):(room.X-room.N_margin)) = squeeze(psi(i,:,:));
+0057     
+0058     imagesc(room.grid_x,room.grid_y,psi_plot)
+0059     set(gca,<span class="string">'Ydir'</span>,<span class="string">'Normal'</span>)
+0060     set(gca, <span class="string">'box'</span>, <span class="string">'off'</span>)
+0061     hold on
+0062 
+0063     plot(room.R(:, 1), room.R(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 12, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'g'</span>);    
+0064     plot(room.S(:, 1), room.S(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0065     plot(loc_est(:, 1), loc_est(:, 2),<span class="string">'x'</span>,<span class="string">'MarkerSize'</span>, 16, <span class="string">'Linewidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+0066 
+0067     axis([0,room.dimensions(1),0,room.dimensions(2)]);
+0068     subplot_tight(3,em_iterations,i+em_iterations)
+0069     surf(room.grid_x,room.grid_y,psi_plot)
+0070     view([45 25]);
+0071     <span class="keyword">if</span> i==1  <span class="comment">% first iteration</span>
+0072         z = zlim;
+0073         zMax = z(2);
+0074     <span class="keyword">end</span>
+0075     zlim([0 zMax*3])
+0076     shading interp
+0077     
+0078     <span class="comment">%% PLOT DELTA PSI</span>
+0079     subplot_tight(3,em_iterations,i+2*em_iterations)
+0080     <span class="keyword">if</span> i&gt;1
+0081         psi_diff = squeeze(psi(i,:,:)-psi(i-1,:,:));
+0082     <span class="keyword">else</span>
+0083         psi_diff = squeeze(psi(i,:,:));
+0084     <span class="keyword">end</span>
+0085     psi_diff_plot = zeros(room.Y,room.X);
+0086     psi_diff_plot((room.N_margin+1):(room.Y-room.N_margin),(room.N_margin+1):(room.X-room.N_margin)) = psi_diff(:,:);
+0087     mesh(room.grid_x,room.grid_y,psi_diff_plot)
+0088     view([45 10]);
+0089     zlim([-zMax/3 zMax/3])
+0090 <span class="comment">%     set(gca,'PlotBoxAspectRatio',[1 1 0.3])</span>
+0091 
+0092     <span class="keyword">end</span>
+0093 
+0094     figure(<span class="string">'Name'</span>,<span class="string">'EM Algorithm: Variance'</span>);
+0095     plot(variance, <span class="string">'rx-'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'MarkerSize'</span>, 6);
+0096     ylim([0,1]);
+0097     
+0098 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

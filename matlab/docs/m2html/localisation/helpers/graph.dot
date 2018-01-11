@@ -1,0 +1,13 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  doa_from_stft -> next_step;
+
+  doa_from_stft [URL="doa_from_stft.html"];
+  doa_trig [URL="doa_trig.html"];
+  eliminate_neighbourhood [URL="eliminate_neighbourhood.html"];
+  get_column_names_result [URL="get_column_names_result.html"];
+  next_step [URL="next_step.html"];
+  rand_string [URL="rand_string.html"];
+  rerun [URL="rerun.html"];
+  stuff [URL="stuff.html"];
+}

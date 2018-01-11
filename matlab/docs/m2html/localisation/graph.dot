@@ -1,0 +1,18 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  estimation_error_rad -> estimation_error_min;
+  testrun -> em_algorithm;
+  testrun -> estimate_location;
+  testrun -> estimation_error_rad;
+  testrun -> simulate;
+  testrun -> stft;
+
+  em_algorithm [URL="em_algorithm.html"];
+  estimate_location [URL="estimate_location.html"];
+  estimation_error [URL="estimation_error.html"];
+  estimation_error_min [URL="estimation_error_min.html"];
+  estimation_error_rad [URL="estimation_error_rad.html"];
+  simulate [URL="simulate.html"];
+  stft [URL="stft.html"];
+  testrun [URL="testrun.html"];
+}

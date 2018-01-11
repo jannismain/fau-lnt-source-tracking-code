@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rerun</title>
+  <meta name="keywords" content="rerun">
+  <meta name="description" content="% Setup Environment">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">localisation</a> &gt; <a href="index.html">helpers</a> &gt; rerun.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for localisation/helpers&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>rerun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Setup Environment</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Setup Environment</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../localisation/em_algorithm.html" class="code" title="function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)">em_algorithm</a>	% EM_ALGORITHM Estimate parameters of GMM from PRPs</li><li><a href="../../localisation/estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>	% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</li><li><a href="../../localisation/estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>	ESTIMATION_ERROR Calculates the estimation error based on the true source positions</li><li><a href="../../localisation/plotting/plot_results.html" class="code" title="function [ fig ] = plot_results( psi, loc_est, room)">plot_results</a>	PLOT_RESULTS Plots location estimation results</li><li><a href="../../localisation/simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>	SIMULATE Simulates received signals in a room with audio sources and receivers.</li><li><a href="../../localisation/stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>	STFT Calculate the short-time fourier transformation (STFT) using a certain parameter set.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Setup Environment</span>
+0002 cprintf(<span class="string">'comment'</span>, <span class="string">'--------------------- R E R U N   T E S T ---------------------\n'</span>);
+0003 <span class="comment">% You need to copy the config.mat file, that you want to rerun, to /localisation</span>
+0004 load(<span class="string">'config.mat'</span>);
+0005 tic;
+0006 
+0007 <span class="comment">%% Simulate Environment</span>
+0008 x = <a href="../../localisation/simulate.html" class="code" title="function [x] = simulate(fn_cfg, ROOM, R, sources, mix)">simulate</a>(ROOM, R, sources);
+0009 
+0010 <span class="comment">%% Calculate STFT</span>
+0011 [X, phi] = <a href="../../localisation/stft.html" class="code" title="function [X, phi] = stft(fn_cfg, x, tbins)">stft</a>(x);
+0012 
+0013 <span class="comment">%% Estimate Location (GMM+EM-Algorithmus)</span>
+0014 psi = <a href="../../localisation/em_algorithm.html" class="code" title="function [ psi_ret, iter, var_ret] = em_algorithm(fn_cfg, phi, iterations, conv_threshold, return_all_psi)">em_algorithm</a>(phi, 5, 0.001);
+0015 loc_est = <a href="../../localisation/estimate_location.html" class="code" title="function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)">estimate_location</a>(psi, n_sources, elimination_radius, min_distance, room);
+0016 [loc_est_sorted, est_err] = <a href="../../localisation/estimation_error_rad.html" class="code" title="function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )">estimation_error_rad</a>(S, loc_est);
+0017 
+0018 <span class="comment">%% Print Results</span>
+0019 <span class="keyword">for</span> s=1:n_sources
+0020     fprintf(&quot;<span class="comment">%s Source #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f], Error = %0.2f\n&quot;, FORMAT_PREFIX, s, S(s,1:2), loc_est_sorted(s, :), est_err(s));</span>
+0021 <span class="keyword">end</span>
+0022 fprintf(&quot;<span class="comment">%s Average Estimation Error = %0.2f (t = %2.4f)\n&quot;, FORMAT_PREFIX, mean(est_err), toc);</span>
+0023 
+0024 <span class="comment">%% Plot results</span>
+0025 psi_plot = zeros(em.Y,em.X);
+0026 psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+0027 [ fig ] = <a href="../../localisation/plotting/plot_results.html" class="code" title="function [ fig ] = plot_results( psi, loc_est, room)">plot_results</a>( psi_plot, loc_est, room);
+0028 
+0029 <span class="comment">%% End</span>
+0030 cprintf(<span class="string">'comment'</span>, <span class="string">'\n---------------------   E N D   ---------------------\n'</span>);</pre></div>
+<hr><address>Generated on Thu 11-Jan-2018 15:31:50 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
