@@ -1,0 +1,455 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Function makeindex</title>
+      <meta name="generator" content="MATLAB 7.6">
+      <meta name="date" content="2008-09-19">
+      <meta name="m-file" content="makeindex"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Function makeindex</h1>
+         <introduction>
+            <p><b>Description</b>: Developed so to enable uses to quickly publish directories of code and details of the cross function and global variable
+               dependancies.
+            </p>
+         </introduction>
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">Details</a></li>
+               <li><a href="#2">Requirements/Usage</a></li>
+               <li><a href="#4">User Selectable Publish Options</a></li>
+               <li><a href="#5">Go through each m file, extract info and publish</a></li>
+               <li><a href="#7">Read description from comment headers of file (You should setup header like this file)</a></li>
+               <li><a href="#8">Determine functions which calls this function</a></li>
+               <li><a href="#9">Determine globals used in this function</a></li>
+               <li><a href="#10">Publish file to HTML directory</a></li>
+               <li><a href="#13">Gather published filenames and generate links from the index page</a></li>
+               <li><a href="#14">Make index.html file</a></li>
+               <li><a href="#15">Go through and print out each line out</a></li>
+            </ul>
+         </div>
+         <h2>Details<a name="1"></a></h2>
+         <div>
+            <ul>
+               <li>Using the freely avalable grep tool this function parses m files in the current directory:</li>
+               <li>It will determine all the global variables used by the various files so it is easy to check for overlaps of possible conflicts.</li>
+               <li>It will also show which functions (scripts) are called by others and which which function in this directory are called by
+                  your code.
+               </li>
+               <li>It then makes a html folder and documents subsiquently published code in an index.html file along with links to the published
+                  files.
+               </li>
+            </ul>
+         </div>
+         <h2>Requirements/Usage<a name="2"></a></h2>
+         <div>
+            <ul>
+               <li>Linux users: have grep. Windows users: download gnu grep for win32 setups, <a href="http://gnuwin32.sourceforge.net/packages/grep.htm">http://gnuwin32.sourceforge.net/packages/grep.htm</a> make sure setup directory is added to the windows PATH environment variable.
+               </li>
+               <li>Place "makeindex.m" with other matlab tools or in directory added to the matlab path so it can be accessed in matlab from
+                  anyway
+               </li>
+               <li>Navigate to your directory</li>
+               <li>type "makeindex"</li>
+               <li>You wll now have a html directory with your docuemented code in it and an index.html file which shows brief details of each</li>
+            </ul>
+         </div>
+         <p><b>Note:</b> For best results and a valid desciption setup your comment in your files like this one so you will have a valid description
+            on the index.html page. Also name functions the same as the m file they are in
+         </p><pre class="codeinput"><span class="keyword">function</span> makeindex()
+</pre><h2>User Selectable Publish Options<a name="4"></a></h2><pre class="codeinput">username=<span class="string">'username'</span>;<span class="comment">% Please Change Me</span>
+
+publish_options.format=<span class="string">'html'</span>;
+publish_options.evalCode=false;
+publish_options.outputDir=<span class="string">'./html'</span>;
+
+
+current_dir=dir;
+<span class="comment">% m file index start number</span>
+currMfile=1;
+
+todaysdate=date;
+directoryName=pwd;
+<span class="keyword">if</span> ispc
+    slashPos=findstr(pwd,<span class="string">'\'</span>);
+<span class="keyword">else</span>
+    slashPos=findstr(pwd,<span class="string">'/'</span>);
+<span class="keyword">end</span>
+directoryName=directoryName(slashPos(end)+1:end);
+
+tic;<span class="keyword">try</span>
+</pre><h2>Go through each m file, extract info and publish<a name="5"></a></h2><pre class="codeinput"><span class="keyword">for</span> i=1:size(current_dir,1)
+    [b,c]=strtok(current_dir(i).name,<span class="string">'.'</span>);
+    <span class="keyword">if</span> strcmp(c(2:end),<span class="string">'m'</span>)
+</pre><pre class="codeinput">        mfilenames(currMfile).val=b;
+        mfilenames(currMfile).description=[];
+        mfilenames(currMfile).calledby=[];
+        mfilenames(currMfile).calls=[];
+        mfilenames(currMfile).globals=[];
+
+        [result,output]=system(strcat(<span class="string">'grep -H "'</span>,char(mfilenames(currMfile).val),<span class="string">'(" *.m'</span>));
+        <span class="keyword">if</span> result==1 &amp;&amp; ~isempty(output)
+            error(<span class="string">'Check grep is properly installed and env var is added to PATH! Go to a shell and type "grep" and make sure'</span>);
+        <span class="keyword">end</span>
+</pre><h2>Read description from comment headers of file (You should setup header like this file)<a name="7"></a></h2><pre class="codeinput">        tempfn=fopen(char([mfilenames(currMfile).val,<span class="string">'.m'</span>]));
+        linebyline=textscan(tempfn,<span class="string">'%s'</span>,<span class="string">'delimiter'</span>, <span class="string">'\n'</span>);
+        current_line=3;
+        <span class="keyword">while</span> ~strcmp(char(linebyline{1}{current_line}),<span class="string">''</span>)
+            commentmarkpos=findstr(char(linebyline{1}{current_line}),<span class="string">'%'</span>);
+            [remaining,nothing]=strtok(char(linebyline{1}{current_line}),<span class="string">'%'</span>);
+            <span class="keyword">if</span> isempty(mfilenames(currMfile).description) &amp;&amp; (strcmp(remaining,<span class="string">''</span>) ||<span class="keyword">...</span>
+                    strcmp(remaining,<span class="string">' '</span>)) ||<span class="keyword">...</span>
+                    isempty(mfilenames(currMfile).description) &amp;&amp; isempty(commentmarkpos) ||<span class="keyword">...</span>
+                    current_line==size(linebyline{1},1)
+
+                mfilenames(currMfile).description=<span class="string">'&lt;b&gt; None Valid &lt;/b&gt;'</span>;
+                <span class="keyword">break</span>;
+            <span class="keyword">else</span>
+                <span class="keyword">if</span> isempty(mfilenames(currMfile).description)
+                    mfilenames(currMfile).description=remaining;
+                <span class="keyword">else</span>
+                    mfilenames(currMfile).description=[mfilenames(currMfile).description,<span class="string">'&lt;br&gt;'</span>,remaining];
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            current_line=current_line+1;
+        <span class="keyword">end</span>
+
+        fclose(tempfn);
+</pre><h2>Determine functions which calls this function<a name="8"></a></h2><pre class="codeinput">        <span class="keyword">while</span> (result==0 &amp;&amp; size(output,2)&gt;0)
+            [templine,output]=strtok(output,char(10));
+            calledbyfile =strtrim(strtok(templine,<span class="string">'.'</span>));
+            <span class="keyword">if</span> isempty(strfind(mfilenames(currMfile).calledby,calledbyfile )) &amp;&amp;<span class="keyword">...</span>
+                    ~strcmp(calledbyfile,mfilenames(currMfile).val)
+                mfilenames(currMfile).calledby=[mfilenames(currMfile).calledby,<span class="string">' '</span>,calledbyfile];
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        [result,output]=system([<span class="string">'grep -H -w "global" '</span>,mfilenames(currMfile).val,<span class="string">'.m'</span>]);
+</pre><h2>Determine globals used in this function<a name="9"></a></h2><pre class="codeinput">        <span class="keyword">while</span> (result==0 &amp;&amp; size(output,2)&gt;0)
+            [templine,output]=strtok(output,char(10));
+            [preceeding,globalvars]=strtok(templine,char(32));
+            <span class="keyword">if</span> ~isempty(preceeding) &amp;&amp; ~strcmp(preceeding(end),<span class="string">'%'</span>) &amp;&amp; strcmp(preceeding(end-5:end),<span class="string">'global'</span>)
+                <span class="keyword">while</span> size(globalvars,2)&gt;0
+                    [currentvar,globalvars]=strtok(globalvars,char(32));
+                    <span class="keyword">if</span> size(currentvar,2)&gt;0 &amp;&amp;<span class="keyword">...</span>
+                            isempty(strfind(mfilenames(currMfile).globals,currentvar)) &amp;&amp;<span class="keyword">...</span>
+                            ~strcmp(currentvar,<span class="string">'global'</span>)
+
+                        <span class="keyword">try</span> <span class="keyword">if</span> strcmp(currentvar(end),<span class="string">';'</span>) &amp;&amp; size(currentvar,2)&gt;1;  currentvar=currentvar(1:end-1); <span class="keyword">end</span>; <span class="keyword">end</span>;
+                        <span class="keyword">if</span> isempty(strfind(mfilenames(currMfile).globals,strcat(currentvar,<span class="string">';'</span>)))
+                            mfilenames(currMfile).globals=[mfilenames(currMfile).globals,currentvar,<span class="string">'; '</span>];
+                        <span class="keyword">end</span>
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+</pre><h2>Publish file to HTML directory<a name="10"></a></h2><pre class="codeinput">        publish([mfilenames(currMfile).val,<span class="string">'.m'</span>],publish_options);
+
+        currMfile=currMfile+1;
+</pre><pre class="codeinput">    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">catch</span>; keyboard;<span class="keyword">end</span>
+<span class="comment">%check if we have found anything to publish</span>
+<span class="keyword">if</span> ~exist(<span class="string">'mfilenames'</span>,<span class="string">'var'</span>)
+    our_pwd=pwd;
+    error([<span class="string">'No m files found, please check current directory: '</span>,our_pwd]);
+<span class="keyword">end</span>
+</pre><h2>Gather published filenames and generate links from the index page<a name="13"></a></h2><pre class="codeinput"><span class="keyword">for</span> i=1:size(mfilenames,2)
+    <span class="keyword">for</span> j=1:size(mfilenames,2)
+        <span class="comment">%since we dont need to search through function which call the</span>
+        <span class="comment">%present to see if they are called by the present one</span>
+        <span class="keyword">if</span> i~=j &amp;&amp; ~isempty(strfind(mfilenames(j).calledby,mfilenames(i).val))
+            mfilenames(i).calls=[mfilenames(i).calls,<span class="string">' '</span>,mfilenames(j).val];
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>Make index.html file<a name="14"></a></h2><pre class="codeinput">cd <span class="string">html</span>
+<span class="comment">% Print Header</span>
+fid=fopen(<span class="string">'index.html'</span>,<span class="string">'w'</span>);
+fprintf(fid,<span class="string">'%s\n\r%s\n\r%s\n\r%s\n\r%s\n\r'</span>,<span class="string">'&lt;html&gt;'</span>,<span class="string">'&lt;head&gt;'</span>,[<span class="string">'&lt;H1&gt;Matlab Code: '</span>,directoryName,<span class="string">'&lt;/H1&gt;'</span>],[<span class="string">'&lt;H2&gt; &amp;copy '</span>,username,<span class="string">' '</span>,todaysdate,<span class="string">'&lt;/h2&gt;'</span>],<span class="string">'&lt;/head&gt;'</span>);
+fprintf(fid,<span class="string">'%s\n\r'</span>,<span class="string">'&lt;table border="1" width="100%"&gt;'</span>);
+fprintf(fid,<span class="string">'%s\n\r'</span>,<span class="string">'&lt;tr&gt;&lt;th width="15%"&gt;File (function)&lt;/th&gt;&lt;th width="26%"&gt;Description&lt;/th&gt;&lt;th width="24%"&gt;Calls&lt;/th&gt;&lt;th width="24%"&gt;Called By&lt;/th&gt;&lt;th width="11%"&gt;Globals Used&lt;/th&gt;&lt;/tr&gt;'</span>);
+</pre><h2>Go through and print out each line out<a name="15"></a></h2><pre class="codeinput"><span class="keyword">for</span> i=1:size(mfilenames,2)
+    fprintf(fid,<span class="string">'%s'</span>,<span class="string">'&lt;tr&gt;'</span>);
+    <span class="comment">%Check that there is a filename otherwise don't make it a link</span>
+    <span class="keyword">if</span> exist(strcat(mfilenames(i).val,<span class="string">'.html'</span>),<span class="string">'file'</span>)==2
+        fprintf(fid,<span class="string">'%s\n\r'</span>,strcat(<span class="string">'&lt;td&gt;&lt;a href="'</span>,mfilenames(i).val,<span class="string">'.html"&gt;'</span>,mfilenames(i).val,<span class="string">'&lt;/a&gt;&lt;/td&gt;'</span>));
+    <span class="keyword">else</span>
+        fprintf(fid,<span class="string">'%s\n\r'</span>,strcat(<span class="string">'&lt;td&gt;'</span>,mfilenames(i).val,<span class="string">' (No HTML file)&lt;/td&gt;'</span>));
+    <span class="keyword">end</span>
+
+    fprintf(fid,<span class="string">'%s'</span>,strcat(<span class="string">'&lt;td&gt;'</span>,mfilenames(i).description,<span class="string">'&amp;nbsp&lt;/td&gt;'</span>));
+    fprintf(fid,<span class="string">'%s'</span>,strcat(<span class="string">'&lt;td&gt;'</span>,mfilenames(i).calls,<span class="string">'&amp;nbsp&lt;/td&gt;'</span>));
+    fprintf(fid,<span class="string">'%s'</span>,strcat(<span class="string">'&lt;td&gt;'</span>,mfilenames(i).calledby,<span class="string">'&amp;nbsp&lt;/td&gt;'</span>));
+    fprintf(fid,<span class="string">'%s'</span>,strcat(<span class="string">'&lt;td&gt;'</span>,mfilenames(i).globals,<span class="string">'&amp;nbsp&lt;/td&gt;'</span>));
+
+    fprintf(fid,<span class="string">'%s'</span>,<span class="string">'&lt;/tr&gt;'</span>);
+<span class="keyword">end</span>
+
+fprintf(fid,<span class="string">'%s'</span>,<span class="string">'&lt;/table&gt; &lt;br&gt; Created by makeindex, &amp;copy;  Gavin Paul 2008&lt;/body&gt;&lt;/html&gt;'</span>);
+fclose(fid);
+
+toc
+display(<span class="string">'Publishing complete'</span>);
+<span class="comment">% open up the main index page</span>
+open <span class="string">index.html</span>;
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.6<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Function makeindex
+%
+% *Description*: Developed so to enable uses to quickly publish directories
+% of code and details of the cross function and global variable dependancies. 
+% 
+%% Details
+%  
+% * Using the freely avalable grep tool this function parses m files in the
+% current directory:
+% * It will determine all the global variables used by the various files so
+% it is easy to check for overlaps of possible conflicts. 
+% * It will also show which functions (scripts) are called by others and
+% which which function in this directory are called by your code. 
+% * It then makes a html folder and documents subsiquently published code in an index.html file along with links to the published files.
+%
+%% Requirements/Usage
+%  
+% * Linux users: have grep. Windows users: download gnu grep for win32 setups, 
+% <http://gnuwin32.sourceforge.net/packages/grep.htm>
+% make sure setup directory is added to the windows PATH environment variable. 
+% * Place "makeindex.m" with other matlab tools or in directory added to
+% the matlab path so it can be accessed in matlab from anyway
+% * Navigate to your directory
+% * type "makeindex"
+% * You wll now have a html directory with your docuemented code in it and
+% an index.html file which shows brief details of each
+%
+% *Note:* For best results and a valid desciption setup your comment in
+% your files like this one so you will have a valid description on the
+% index.html page. Also name functions the same as the m file they are in
+
+function makeindex()
+
+%% User Selectable Publish Options
+username='username';% Please Change Me
+
+publish_options.format='html';
+publish_options.evalCode=false;
+publish_options.outputDir='./html';
+
+
+current_dir=dir;
+% m file index start number
+currMfile=1;
+
+todaysdate=date;
+directoryName=pwd;
+if ispc
+    slashPos=findstr(pwd,'\');
+else
+    slashPos=findstr(pwd,'/');
+end
+directoryName=directoryName(slashPos(end)+1:end);
+
+tic;try
+%% Go through each m file, extract info and publish
+for i=1:size(current_dir,1)
+    [b,c]=strtok(current_dir(i).name,'.');
+    if strcmp(c(2:end),'m')
+        mfilenames(currMfile).val=b;
+        mfilenames(currMfile).description=[];
+        mfilenames(currMfile).calledby=[];
+        mfilenames(currMfile).calls=[];
+        mfilenames(currMfile).globals=[];
+        
+        [result,output]=system(strcat('grep -H "',char(mfilenames(currMfile).val),'(" *.m'));
+        if result==1 && ~isempty(output)
+            error('Check grep is properly installed and env var is added to PATH! Go to a shell and type "grep" and make sure');
+        end
+
+%% Read description from comment headers of file (You should setup header like this file)
+        tempfn=fopen(char([mfilenames(currMfile).val,'.m']));
+        linebyline=textscan(tempfn,'%s','delimiter', '\n');
+        current_line=3;
+        while ~strcmp(char(linebyline{1}{current_line}),'')    
+            commentmarkpos=findstr(char(linebyline{1}{current_line}),'%');
+            [remaining,nothing]=strtok(char(linebyline{1}{current_line}),'%');
+            if isempty(mfilenames(currMfile).description) && (strcmp(remaining,'') ||...
+                    strcmp(remaining,' ')) ||... 
+                    isempty(mfilenames(currMfile).description) && isempty(commentmarkpos) ||...
+                    current_line==size(linebyline{1},1)
+                
+                mfilenames(currMfile).description='<b> None Valid </b>';
+                break;
+            else
+                if isempty(mfilenames(currMfile).description)
+                    mfilenames(currMfile).description=remaining;
+                else
+                    mfilenames(currMfile).description=[mfilenames(currMfile).description,'<br>',remaining];
+                end
+            end      
+            current_line=current_line+1;
+        end
+
+        fclose(tempfn);
+
+%% Determine functions which calls this function
+        while (result==0 && size(output,2)>0)
+            [templine,output]=strtok(output,char(10));
+            calledbyfile =strtrim(strtok(templine,'.'));
+            if isempty(strfind(mfilenames(currMfile).calledby,calledbyfile )) &&...
+                    ~strcmp(calledbyfile,mfilenames(currMfile).val)
+                mfilenames(currMfile).calledby=[mfilenames(currMfile).calledby,' ',calledbyfile];
+            end
+        end
+        
+        [result,output]=system(['grep -H -w "global" ',mfilenames(currMfile).val,'.m']);
+
+%% Determine globals used in this function
+        while (result==0 && size(output,2)>0)
+            [templine,output]=strtok(output,char(10));            
+            [preceeding,globalvars]=strtok(templine,char(32));
+            if ~isempty(preceeding) && ~strcmp(preceeding(end),'%') && strcmp(preceeding(end-5:end),'global')
+                while size(globalvars,2)>0
+                    [currentvar,globalvars]=strtok(globalvars,char(32));
+                    if size(currentvar,2)>0 &&...
+                            isempty(strfind(mfilenames(currMfile).globals,currentvar)) &&...
+                            ~strcmp(currentvar,'global')
+                      
+                        try if strcmp(currentvar(end),';') && size(currentvar,2)>1;  currentvar=currentvar(1:end-1); end; end;
+                        if isempty(strfind(mfilenames(currMfile).globals,strcat(currentvar,';')))
+                            mfilenames(currMfile).globals=[mfilenames(currMfile).globals,currentvar,'; '];
+                        end
+                    end
+                end
+            end
+        end
+
+%% Publish file to HTML directory
+        publish([mfilenames(currMfile).val,'.m'],publish_options);
+        
+        currMfile=currMfile+1;
+    end
+end
+catch; keyboard;end
+%check if we have found anything to publish
+if ~exist('mfilenames','var')
+    our_pwd=pwd;
+    error(['No m files found, please check current directory: ',our_pwd]);
+end
+%% Gather published filenames and generate links from the index page
+
+for i=1:size(mfilenames,2)
+    for j=1:size(mfilenames,2)
+        %since we dont need to search through function which call the
+        %present to see if they are called by the present one
+        if i~=j && ~isempty(strfind(mfilenames(j).calledby,mfilenames(i).val))
+            mfilenames(i).calls=[mfilenames(i).calls,' ',mfilenames(j).val];
+        end
+    end
+end
+
+%% Make index.html file
+cd html
+% Print Header
+fid=fopen('index.html','w');
+fprintf(fid,'%s\n\r%s\n\r%s\n\r%s\n\r%s\n\r','<html>','<head>',['<H1>Matlab Code: ',directoryName,'</H1>'],['<H2> &copy ',username,' ',todaysdate,'</h2>'],'</head>');
+fprintf(fid,'%s\n\r','<table border="1" width="100%">');
+fprintf(fid,'%s\n\r','<tr><th width="15%">File (function)</th><th width="26%">Description</th><th width="24%">Calls</th><th width="24%">Called By</th><th width="11%">Globals Used</th></tr>');
+
+
+%% Go through and print out each line out
+for i=1:size(mfilenames,2)
+    fprintf(fid,'%s','<tr>');
+    %Check that there is a filename otherwise don't make it a link
+    if exist(strcat(mfilenames(i).val,'.html'),'file')==2
+        fprintf(fid,'%s\n\r',strcat('<td><a href="',mfilenames(i).val,'.html">',mfilenames(i).val,'</a></td>'));
+    else
+        fprintf(fid,'%s\n\r',strcat('<td>',mfilenames(i).val,' (No HTML file)</td>'));
+    end
+
+    fprintf(fid,'%s',strcat('<td>',mfilenames(i).description,'&nbsp</td>'));
+    fprintf(fid,'%s',strcat('<td>',mfilenames(i).calls,'&nbsp</td>'));    
+    fprintf(fid,'%s',strcat('<td>',mfilenames(i).calledby,'&nbsp</td>'));
+    fprintf(fid,'%s',strcat('<td>',mfilenames(i).globals,'&nbsp</td>'));
+
+    fprintf(fid,'%s','</tr>');
+end
+
+fprintf(fid,'%s','</table> <br> Created by makeindex, &copy;  Gavin Paul 2008</body></html>');
+fclose(fid);
+
+toc
+display('Publishing complete');
+% open up the main index page 
+open index.html;
+##### SOURCE END #####
+-->
+   </body>
+</html>
