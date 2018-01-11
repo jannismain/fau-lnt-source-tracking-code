@@ -1,4 +1,4 @@
-function analyse_em_steps_tracking(psi, var, room, sources)
+function analyse_em_steps(psi, variance, md, room)
 %PLOT_EM_STEPS A helper to visualise the incremental changes in between em iterations
 %
 %   PARAMETERS:
@@ -7,11 +7,11 @@ function analyse_em_steps_tracking(psi, var, room, sources)
 
 if size(psi, 3) == 1, error("psi needs to be in the following shape: psi(trial, source, coordinate)"); end
 
-iterations = size(psi, 1);
+em_iterations = size(psi, 1);
 n_sources = size(room.S, 1);
 % x_vals = linspace(0,em_iterations,em_iterations+1);
-loc_est_sorted = zeros(iterations, n_sources, 2);
-est_err = zeros(iterations, n_sources);
+loc_est_sorted = zeros(em_iterations, n_sources, 2);
+est_err = zeros(em_iterations, n_sources);
 
 scr_size = get(0,'ScreenSize');
 fig_size = [5*scr_size(3)/6 scr_size(4)/2];  % width x height
@@ -29,15 +29,15 @@ fig2 = figure('Name',sprintf('EM Algorithm: \x03C8 across Iterations'),...
               'Position', [fig_xpos scr_size(4)-fig_size(2)-scr_size(4)/2 fig_size(1) fig_size(2)],...
               'Visible','on');
 
-for i=1:iterations
-    loc_est = estimate_location(squeeze(psi(i, :, :)), n_sources, 0, 1, room);
-%     [loc_est_sorted(i,:,:), est_err(i,:)] = estimation_error_rad(room.S, loc_est);
+for i=1:em_iterations
+    loc_est = estimate_location(squeeze(psi(i, :, :)), n_sources, 0, md, room);
+    [loc_est_sorted(i,:,:), est_err(i,:)] = estimation_error_rad(room.S, loc_est);
     % plot
     for s=1:n_sources+1
         figure(fig1);
         subplot_tight(1,n_sources+1,s)
         if s~=n_sources+1
-            plot(loc_est(:, s), 'LineWidth',2,'Color',[0.4 0.4 0.4], 'Marker', 'x', 'MarkerSize', 12);
+            plot(est_err(:, s), 'LineWidth',2,'Color',[0.4 0.4 0.4], 'Marker', 'x', 'MarkerSize', 12);
             title(sprintf("S%d Estimation Error", s));
         else  % last iteration, plot mean
             plot(mean(est_err, 2), 'LineWidth',2,'Color',[204/255 53/255 56/255], 'Marker', 'x', 'MarkerSize', 12);
@@ -50,7 +50,7 @@ for i=1:iterations
 
     %% PLOT PSI
     figure(fig2);
-    subplot_tight(3,iterations,i)
+    subplot_tight(3,em_iterations,i)
     
     psi_plot = zeros(room.Y,room.X);
     psi_plot((room.N_margin+1):(room.Y-room.N_margin),(room.N_margin+1):(room.X-room.N_margin)) = squeeze(psi(i,:,:));
@@ -65,7 +65,7 @@ for i=1:iterations
     plot(loc_est(:, 1), loc_est(:, 2),'x','MarkerSize', 16, 'Linewidth',2,'Color','r');
 
     axis([0,room.dimensions(1),0,room.dimensions(2)]);
-    subplot_tight(3,iterations,i+iterations)
+    subplot_tight(3,em_iterations,i+em_iterations)
     surf(room.grid_x,room.grid_y,psi_plot)
     view([45 25]);
     if i==1  % first iteration
@@ -76,7 +76,7 @@ for i=1:iterations
     shading interp
     
     %% PLOT DELTA PSI
-    subplot_tight(3,iterations,i+2*iterations)
+    subplot_tight(3,em_iterations,i+2*em_iterations)
     if i>1
         psi_diff = squeeze(psi(i,:,:)-psi(i-1,:,:));
     else
@@ -92,7 +92,7 @@ for i=1:iterations
     end
 
     figure('Name','EM Algorithm: Variance');
-    plot(var, 'rx-', 'LineWidth', 1, 'MarkerSize', 6);
+    plot(variance, 'rx-', 'LineWidth', 1, 'MarkerSize', 6);
     ylim([0,1]);
     
 end

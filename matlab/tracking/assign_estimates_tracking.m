@@ -1,10 +1,16 @@
 function [ loc_est, est_err ] = assign_estimates_tracking( sources, all_loc_est_assorted )
-%ESTIMATION_ERROR Calculates the estimation error based on the true source positions
-%   bla bla
+%ASSIGN_ESTIMATES_TRACKING Assign location estimates and calculate the estimation error
+
+%% Description
+% Assign location estimates and calculate the estimation error for moving sources over
+% time.
+
+%% Note
+% * This assignment was _not used_ in the final thesis
 
 fprintf('\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
 
-% recalculate trajectory with em.T samples
+%% recalculate trajectory with em.T samples
 T = size(all_loc_est_assorted, 2);
 trajs = zeros(sources.n, T, 3);
 for s=1:sources.n

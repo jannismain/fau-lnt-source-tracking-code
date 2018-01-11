@@ -1,12 +1,29 @@
 function [ psi, loc_est, var_history, psi_history ] = rem_tracking( ang_dist, algorithm, var_init )
-%REM_TRACKING Summary of this function goes here
-%   Detailed explanation goes here
+%REM_TRACKING Source Tracking Algorithm using recursive EM
+
+%% Description
+% Source Tracking Algorithm using recursive EM
+%
+%% Arguments
+% * *ang_dist (mat)*: _angular distances computed in |<./rem_init.html rem_init.m>|_
+% * *algorithm (str)*: _Name of algorithm to use (either |'CREM'| or |'TREM'|)_
+% * *var_init (double)*: _initial value for variance (Overrides value set in |'config.mat'|)_
+
+%% Return
+% * *psi (mat)*: _matrix with weights of Gaussian components_
+% * *loc_est (mat)*: _coordinates of location estimates for all time steps |em.T|_
+% * *var_history (mat)*: _coordinates of location estimates for all time steps |em.T|_
+% * *psi_history (mat)*: _matrix of Gaussian component weights for all time steps |em.T|_
+
+%% Variables
+% * *psi_old (mat)*: _|psi| of last iteration_
+% * *mu (mat)*: _responsibility of Gaussian component for each position_
 
 load('config.mat')
 if nargin<2, error("Provide algorithm (either 'crem' or 'trem')"); end
 if nargin>2, fprintf('WARN: Overwriting em.var with %1.2f (was %1.2f)', var_init, em.var); em.var = var_init; end
 
-%% EM algorithm
+%% Create Variables
 m = "EM-Iterations..."; counter = next_step(m, counter);
 
 psi = ones(em.Ynet,em.Xnet,1) * (1 /(em.Xnet)*(em.Ynet));
@@ -22,18 +39,18 @@ for iter = 1:em.T
     fprintf('\x0394\x03C8 = %2.4f, \x03C3 = %1.4f (t = %2.4f)\n',norm(psi(:)-psi_old(:)), em.var, toc);  % \x0394\x03C8 = Delta Psi, \x03C3 = \sigma
     psi_old = psi;
 
-    %% Calculating Resposibility (Expectation)
+    %% Compute Resposibility (Expectation)
     gaussian = (1 / (em.var * pi))*exp(-ang_dist(:,iter,:,:,:) / (em.var));
     pdf = bsxfun(@times,reshape(psi,1,1,em.Ynet,em.Xnet,1),prod(gaussian,5));
     
     mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,1,1,1));
     mu(isnan(mu)) = 0;
     
-    %% Calculating Psi (Maximization)
+    %% Compute Component Weights (Maximization)
     psi = squeeze(sum(mu,1)/(em.K));
     psi(psi<=0) = eps;
     
-    %% Calculating Variance (Maximization)
+    %% Estimate Variance (Maximization)
     if strcmpi(algorithm,'trem')
         sum_psi_old = sum(sum(psi_old));
         var_fact1 = 1/(em.K*sum_psi_old);
@@ -46,9 +63,6 @@ for iter = 1:em.T
         em.var = em.var*psi_ratio + em.gamma*(var_fact2-em.var*psi_ratio);
     end
     psi = psi_old + em.gamma*(psi - psi_old);
-
-%     psi_plot = zeros(em.Y,em.X);
-%     psi_plot((room.N_margin+1):(em.Y_idxmax),(room.N_margin+1):(em.X_idxmax)) = psi;
     
     %% Delete outer margin (around microphones) to eliminate false peaks
     psi_computeMax = psi;
@@ -64,7 +78,7 @@ for iter = 1:em.T
     var_history(iter+1) = em.var;
     psi_history(iter, :, :) =  psi;
 
-    %% Find Location
+    %% Find Location Estimates
     evalc('loc_est(:,iter,:) = estimate_location(psi_computeMax,n_sources,1,5,room);');
 end
 

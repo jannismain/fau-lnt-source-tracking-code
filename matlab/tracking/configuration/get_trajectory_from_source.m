@@ -1,12 +1,16 @@
 function [src_traj] = get_trajectory_from_source(source, movement, samples)
 %get_trajectory  Creates a 3-dimensional trajectory vector
-%
-% [src_traj] = get_trajectory(source, movement, samples)  
-%
+
+%% Description
 % This function generates a trajectory vector based on the input arguments
 % source and movement. 'source' is assumed to be an absolute, 3-dimensional
 % cartesian coordinate pair, whereas 'movement' describes a relative
 % change in position in all three planes.
+
+%% Arguments
+% * *source (mat)*: _matrix of source position coordinates_
+% * *movement (mat)*: _matrix of movement vectors per source_
+% * *samples (int)*: _number of samples simulated across trajectory (default: *100*)_
 
 %% handling optional argument 'samples'
 if nargin > 2 && exist('samples','var') && ~(ischar(samples))
