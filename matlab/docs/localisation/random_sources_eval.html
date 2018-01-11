@@ -1,0 +1,340 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>random_sources_eval</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="random_sources_eval.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</a></li><li><a href="#3">TODO</a></li><li><a href="#4">NOTES</a></li><li><a href="#5">MLINT ANNOTATIONS</a></li><li><a href="#6">Arguments</a></li><li><a href="#7">Initialisation</a></li><li><a href="#8">Trial</a></li><li><a href="#10">Save Results of Single Trial</a></li><li><a href="#12">Save Results of All Trials</a></li><li><a href="#13">End</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)
+</pre><h2 id="2">RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations</h2><p>This is the main routine used for running evaluation trials of the static localisation algorithm.</p><h2 id="3">TODO</h2><div><ul><li>Find out what happens, when sources are known a-priori but wrong (3 instead of 2 for example)</li></ul></div><h2 id="4">NOTES</h2><div><ul><li><tt><a href="matlab:doc('evalc')">evalc()</a></tt> is used to supress output from these functions.</li></ul></div><h2 id="5">MLINT ANNOTATIONS</h2><p>The annotations allow suppress some warnings</p><pre class="codeinput"><span class="comment">%#ok&lt;*ASGLU&gt;  % this suppresses 'value not used' due to evalc() calls</span>
+<span class="comment">%#ok&lt;*NASGU&gt;  % this suppresses 'this value is used before assigned' due to evalc() calls</span>
+<span class="comment">%#ok&lt;*INUSL&gt;  % this suppresses 'input argument might be unused' due to evalc() calls</span>
+<span class="comment">%#ok&lt;*INUSD&gt;</span>
+</pre><h2 id="6">Arguments</h2><div><ul><li><b>description (str)</b>: <i>name of evaluation trial (used as name of results subfolder, default: <b>'no-name-specified'</b>)</i></li><li><b>n_sources (int)</b>: <i>number of sources (comment, default: <b>2</b>)</i></li><li><b>trials (int)</b>: <i>number of trials with identical parameter set (comment, default: <b>10</b>)</i></li><li><b>min_distance (int)</b>: <i>minimum required distance between sources (comment, default: <b>5</b>)</i></li><li><b>distance_wall (int)</b>: <i>minimum required distance between sources and wall (comment, default: <b>12</b>)</i></li><li><b>randomise_samples (bool)</b>: <i>description (comment, default: <b>false</b>)</i></li><li><b>T60 (double)</b>: <i>reverberation time <img src="random_sources_eval_eq04685604560630419633.png" alt="$$ T_{60} $$"> (in seconds, default: <b>0.3</b>)</i></li><li><b>snr (int)</b>: <i>amount of noise added to received signal (in dB, 0 equals no noise, default: <b>0</b>)</i></li><li><b>em_iterations (int)</b>: <i>number of maximum em iterations (default: <b>5</b>)</i></li><li><b>em_conv_threshold (int)</b>: <i>convergence threshold for em algorithm (-1 equals no threshold, default: <b>-1</b>)</i></li><li><b>guess_randomly (bool)</b>: <i>guess location estimates instead of using em algorithm (default: <b>false</b>)</i></li><li><b>reflect_order (int)</b>: <i>maximum reflection order for image-method simulation (-1 equals max, default: <b>3</b>)</i></li><li><b>var_init (double)</b>: <i>initial value for variance (default: <b>0.1</b>)</i></li><li><b>var_fixed (bool)</b>: <i>do not estimate variance for each em iteration (default: <b>false</b>)</i></li><li><b>results_dir ([str|bool])</b>: <i>path to custom results folder (used on remote servers to collect results into specific folder, default: <b>false</b>)</i></li><li><b>alt_err (bool)</b>: <i>use alternative error calculation (default: <b>true</b>)</i></li></ul></div><pre class="codeinput"><span class="keyword">if</span> nargin &lt; 1,  description = <span class="string">'no-name-specified'</span>; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 2,  n_sources = 2; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 3,  trials = 10; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 4,  min_distance = 5; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 5,  distance_wall = 12; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 6,  randomise_samples = true; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 7,  T60 = 0.3; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 8,  snr = 0; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 9,  em_iterations = 10; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 10, em_conv_threshold = -1; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 11, guess_randomly = false; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 12, reflect_order = 3; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 13, var_init = 0.1; fprintf(<span class="string">'WARNING: Using default initial variance (0.1)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 14, var_fixed = false; fprintf(<span class="string">'WARNING: Using default for var_fixed (false)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 15, results_dir = false; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 16, alt_err = true; <span class="keyword">end</span>
+</pre><h2 id="7">Initialisation</h2><pre class="codeinput">cprintf(<span class="string">'-comment'</span>, <span class="string">'                            E V A L U A T I O N                            \n'</span>);
+
+<span class="comment">% change path to results dir</span>
+<span class="keyword">if</span> ~results_dir
+    PATH_SRC = [getuserdir filesep <span class="string">'thesis'</span> filesep];
+<span class="keyword">else</span>
+    PATH_SRC = results_dir;
+<span class="keyword">end</span>
+PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, <span class="string">'src'</span>, filesep, <span class="string">'matlab'</span>, filesep, <span class="string">'localisation'</span>, filesep, <span class="string">'evaluation'</span>, filesep, <span class="string">'results'</span>, filesep);
+PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
+PATH_LATEX_ABS = [PATH_SRC <span class="string">'latex'</span> filesep <span class="string">'data'</span> filesep <span class="string">'plots'</span> filesep <span class="string">'static'</span> filesep <span class="string">'tikz-data'</span> filesep];
+PATH_LATEX_RESULTS = [PATH_SRC <span class="string">'latex'</span> filesep <span class="string">'data'</span> filesep];
+
+oldpath = pwd;
+<span class="comment">% [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists</span>
+[~, ~] = mkdir(PATH_MATLAB_RESULTS);
+cd(PATH_MATLAB_RESULTS);
+[~, ~] = mkdir(<span class="string">'raw'</span>);
+
+<span class="comment">% init filename</span>
+time_start = datestr(now(), <span class="string">'yyyy-mm-dd-HH-MM-SS.FFF'</span>);
+fname_base = sprintf(<span class="string">'%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_var-fixed=%d_var-val=%0.1f_'</span>, time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order, var_fixed, var_init);
+<span class="comment">% init empty matrices</span>
+est_err = zeros(trials, n_sources);
+loc_est = zeros(trials, n_sources, 2);
+loc_est_assorted = zeros(trials, n_sources, 2);
+loc = zeros(trials, n_sources, 2);
+results = zeros(trials, n_sources*5);  <span class="comment">% realX, realY, estX, estY, estErr</span>
+log = <span class="string">''</span>;
+tic;
+</pre><h2 id="8">Trial</h2><pre class="codeinput"><span class="keyword">for</span> trial=1:trials
+</pre><pre class="codeinput">    fprintf(<span class="string">'[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:'</span>, trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
+    [log_conf, fn_conf] = evalc(<span class="string">'config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed);'</span>);
+    load(fn_conf);
+    <span class="keyword">if</span> guess_randomly
+        [log_sim, random_estimate] = evalc(<span class="string">'get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);'</span>);
+        loc_est_assorted(trial, :, :) = random_estimate(:, 1:2);
+    <span class="keyword">else</span>
+        [log_sim, x] = evalc(<span class="string">'simulate(fn_conf, ROOM, R, sources);'</span>);
+        [log_stft, X, phi] = evalc(<span class="string">'stft(fn_conf, x);'</span>);
+        [log_em, psi, real_iterations] = evalc(<span class="string">'em_algorithm(fn_conf, phi);'</span>);
+        [log_estloc, loc_est_assorted(trial, :, :)] = evalc(<span class="string">'estimate_location(psi, n_sources, 2, min_distance, room);'</span>);
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> alt_err
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc(<span class="string">'estimation_error_rad(S, squeeze(loc_est_assorted(trial, :, :)));'</span>);
+    <span class="keyword">else</span>
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc(<span class="string">'estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));'</span>);
+    <span class="keyword">end</span>
+    fprintf(<span class="string">' err_m = %0.2f (t = %4.2f)\n'</span>, mean(est_err(trial, :)), toc');
+    <span class="keyword">if</span> mean(est_err(trial, :))&gt;mean(mean(est_err)*2)
+        <span class="keyword">for</span> s=1:n_sources
+            fprintf(<span class="string">'%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n'</span>, FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="10">Save Results of Single Trial</h2><pre class="codeinput">    loc_est_reshaped = reshape(squeeze(loc_est(trial,:,:))',1,size(loc_est, 2)*size(loc_est, 3));
+    S_reshaped = reshape(S(:, 1:2)', 1, size(S, 1)*2);
+    results(trial, :) = [S_reshaped loc_est_reshaped est_err(trial, :)];
+
+    <span class="keyword">if</span> ~guess_randomly  <span class="comment">% save raw data (fig, config_xxx.mat)</span>
+        fname_trial = sprintf(<span class="string">'%strial_%d_of_%d_'</span>, fname_base, trial, trials);
+        psi_plot = zeros(em.Y,em.X);
+        psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+        <span class="keyword">if</span> LOGGING_FIG
+            fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
+            saveas(fig, strcat(<span class="string">'raw'</span>, filesep, fname_trial, <span class="string">'.fig'</span>), <span class="string">'fig'</span>);
+            close(fig);
+        <span class="keyword">end</span>
+        <span class="comment">% matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);</span>
+        movefile(fn_conf, strcat(<span class="string">'raw'</span>, filesep, fname_trial, <span class="string">'config.mat'</span>));
+        <span class="keyword">if</span> LOGGING
+            logfile = fopen(strcat(<span class="string">'raw'</span>, filesep, fname_trial, <span class="string">'log.txt'</span>), <span class="string">'w'</span>);
+            fprintf(logfile, log_conf);
+            fprintf(logfile, log_sim);
+            fprintf(logfile, log_stft);
+            fprintf(logfile, log_em);
+            fprintf(logfile, log_estloc);
+            fprintf(logfile, log_esterr);
+            fclose(logfile);
+        <span class="keyword">end</span>
+    <span class="keyword">else</span>
+        delete(fn_conf);
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="12">Save Results of All Trials</h2><pre class="codeinput">fprintf(<span class="string">'[  RESULTS  ]: err_mean = %0.2f, max = %0.2f, min = %0.2f (t/trial = %0.2fs, t = %dm %ds)\n'</span>, mean(mean(est_err)), max(max(est_err)), min(min(est_err)), toc/trials, floor(toc/60), round(toc-floor(toc/60)*60, 0));
+save(strcat(fname_base, <span class="string">'results.mat'</span>), <span class="string">'results'</span>); <span class="comment">% for further processing in matlab</span>
+save(strcat(fname_base, <span class="string">'results.txt'</span>), <span class="string">'results'</span>, <span class="string">'-ascii'</span>, <span class="string">'-double'</span>, <span class="string">'-tabs'</span>); <span class="comment">% for further processing in python</span>
+
+<span class="comment">% for display of raw data table in LaTeX</span>
+clabels = get_column_names_result(n_sources);
+matrix2latex(results, strcat(PATH_LATEX_RESULTS, <span class="string">'tables'</span>, filesep, fname_base, <span class="string">'results.tex'</span>), <span class="string">'columnLabels'</span>, clabels);
+</pre><h2 id="13">End</h2><pre class="codeinput">cd(oldpath);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [results] = random_sources_eval(description, n_sources, trials, min_distance, distance_wall, randomise_samples, T60, snr, em_iterations, em_conv_threshold, guess_randomly, reflect_order, var_init, var_fixed, results_dir, alt_err)
+%% RANDOM_SOURCES_EVAL Evaluates the localisation algorithm using random source locations
+% This is the main routine used for running evaluation trials of the static localisation
+% algorithm.
+%% TODO
+% * Find out what happens, when sources are known a-priori but wrong (3
+% instead of 2 for example)
+%
+%% NOTES
+% * |<matlab:doc('evalc') evalc()>| is used to supress output from these functions.
+%
+%% MLINT ANNOTATIONS
+% The annotations allow suppress some warnings
+%#ok<*ASGLU>  % this suppresses 'value not used' due to evalc() calls
+%#ok<*NASGU>  % this suppresses 'this value is used before assigned' due to evalc() calls
+%#ok<*INUSL>  % this suppresses 'input argument might be unused' due to evalc() calls
+%#ok<*INUSD>
+
+%% Arguments
+% * *description (str)*: _name of evaluation trial (used as name of results subfolder, default: *'no-name-specified'*)_
+% * *n_sources (int)*: _number of sources (comment, default: *2*)_
+% * *trials (int)*: _number of trials with identical parameter set (comment, default: *10*)_
+% * *min_distance (int)*: _minimum required distance between sources (comment, default: *5*)_
+% * *distance_wall (int)*: _minimum required distance between sources and wall (comment, default: *12*)_
+% * *randomise_samples (bool)*: _description (comment, default: *false*)_
+% * *T60 (double)*: _reverberation time $$ T_{60} $$ (in seconds, default: *0.3*)_
+% * *snr (int)*: _amount of noise added to received signal (in dB, 0 equals no noise, default: *0*)_
+% * *em_iterations (int)*: _number of maximum em iterations (default: *5*)_
+% * *em_conv_threshold (int)*: _convergence threshold for em algorithm (-1 equals no threshold, default: *-1*)_
+% * *guess_randomly (bool)*: _guess location estimates instead of using em algorithm (default: *false*)_
+% * *reflect_order (int)*: _maximum reflection order for image-method simulation (-1 equals max, default: *3*)_
+% * *var_init (double)*: _initial value for variance (default: *0.1*)_
+% * *var_fixed (bool)*: _do not estimate variance for each em iteration (default: *false*)_
+% * *results_dir ([str|bool])*: _path to custom results folder (used on remote servers to collect results into specific folder, default: *false*)_
+% * *alt_err (bool)*: _use alternative error calculation (default: *true*)_
+
+if nargin < 1,  description = 'no-name-specified'; end
+if nargin < 2,  n_sources = 2; end
+if nargin < 3,  trials = 10; end
+if nargin < 4,  min_distance = 5; end
+if nargin < 5,  distance_wall = 12; end
+if nargin < 6,  randomise_samples = true; end
+if nargin < 7,  T60 = 0.3; end
+if nargin < 8,  snr = 0; end
+if nargin < 9,  em_iterations = 10; end
+if nargin < 10, em_conv_threshold = -1; end
+if nargin < 11, guess_randomly = false; end
+if nargin < 12, reflect_order = 3; end
+if nargin < 13, var_init = 0.1; fprintf('WARNING: Using default initial variance (0.1)\n'); end
+if nargin < 14, var_fixed = false; fprintf('WARNING: Using default for var_fixed (false)\n'); end
+if nargin < 15, results_dir = false; end
+if nargin < 16, alt_err = true; end
+
+%% Initialisation
+cprintf('-comment', '                            E V A L U A T I O N                            \n');
+
+% change path to results dir
+if ~results_dir
+    PATH_SRC = [getuserdir filesep 'thesis' filesep];
+else
+    PATH_SRC = results_dir;
+end
+PATH_MATLAB_RESULTS_ROOT = strcat(PATH_SRC, 'src', filesep, 'matlab', filesep, 'localisation', filesep, 'evaluation', filesep, 'results', filesep);
+PATH_MATLAB_RESULTS = strcat(PATH_MATLAB_RESULTS_ROOT, description);
+PATH_LATEX_ABS = [PATH_SRC 'latex' filesep 'data' filesep 'plots' filesep 'static' filesep 'tikz-data' filesep];
+PATH_LATEX_RESULTS = [PATH_SRC 'latex' filesep 'data' filesep];
+
+oldpath = pwd;
+% [~, ~] = mkdir(PATH_MATLAB_RESULTS_ROOT, description);  % at least 2 argout's are required to suppress warning if dir already exists
+[~, ~] = mkdir(PATH_MATLAB_RESULTS);
+cd(PATH_MATLAB_RESULTS);
+[~, ~] = mkdir('raw');
+
+% init filename
+time_start = datestr(now(), 'yyyy-mm-dd-HH-MM-SS.FFF');
+fname_base = sprintf('%s_s=%d_md=%0.1f_wd=%0.1f_T60=%0.1f_SNR=%d_em=%d_refl-ord=%d_var-fixed=%d_var-val=%0.1f_', time_start, n_sources, min_distance/10, distance_wall/10, T60, snr, em_iterations, reflect_order, var_fixed, var_init);
+% init empty matrices
+est_err = zeros(trials, n_sources);
+loc_est = zeros(trials, n_sources, 2);
+loc_est_assorted = zeros(trials, n_sources, 2);
+loc = zeros(trials, n_sources, 2);
+results = zeros(trials, n_sources*5);  % realX, realY, estX, estY, estErr
+log = '';
+tic;
+
+%% Trial
+for trial=1:trials
+    fprintf('[Trial %2d/%2d] s=%d, md=%0.1f, wd=%0.1f, T60=%0.1f, em=%d, ord=%d:', trial, trials, n_sources, min_distance/10, distance_wall/10, T60, em_iterations, reflect_order);
+    [log_conf, fn_conf] = evalc('config_update(n_sources, true, min_distance, distance_wall, randomize_samples, T60, em_iterations, em_conv_threshold, reflect_order, snr, var_init, var_fixed);');
+    load(fn_conf);
+    if guess_randomly
+        [log_sim, random_estimate] = evalc('get_random_sources(n_sources, distance_wall, min_distance, room.dimensions);');
+        loc_est_assorted(trial, :, :) = random_estimate(:, 1:2);
+    else
+        [log_sim, x] = evalc('simulate(fn_conf, ROOM, R, sources);');
+        [log_stft, X, phi] = evalc('stft(fn_conf, x);');
+        [log_em, psi, real_iterations] = evalc('em_algorithm(fn_conf, phi);');
+        [log_estloc, loc_est_assorted(trial, :, :)] = evalc('estimate_location(psi, n_sources, 2, min_distance, room);');
+    end
+    if alt_err
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error_rad(S, squeeze(loc_est_assorted(trial, :, :)));');
+    else
+        [log_esterr, loc_est(trial, :, :), est_err(trial, :)] = evalc('estimation_error(S, squeeze(loc_est_assorted(trial, :, :)));');
+    end
+    fprintf(' err_m = %0.2f (t = %4.2f)\n', mean(est_err(trial, :)), toc');
+    if mean(est_err(trial, :))>mean(mean(est_err)*2)
+        for s=1:n_sources
+            fprintf('%s Source Location #%d = [x=%0.2f, y=%0.2f], Estimate = [x=%0.2f, y=%0.2f]\n', FORMAT_PREFIX, s, S(s,1:2), loc_est(trial, s, :));
+        end
+    end
+
+    %% Save Results of Single Trial
+    loc_est_reshaped = reshape(squeeze(loc_est(trial,:,:))',1,size(loc_est, 2)*size(loc_est, 3));
+    S_reshaped = reshape(S(:, 1:2)', 1, size(S, 1)*2);
+    results(trial, :) = [S_reshaped loc_est_reshaped est_err(trial, :)];
+
+    if ~guess_randomly  % save raw data (fig, config_xxx.mat)
+        fname_trial = sprintf('%strial_%d_of_%d_', fname_base, trial, trials);
+        psi_plot = zeros(em.Y,em.X);
+        psi_plot((room.N_margin+1):(em.Y-room.N_margin),(room.N_margin+1):(em.X-room.N_margin)) = psi;
+        if LOGGING_FIG
+            fig = plot_results( psi_plot, squeeze(loc_est(trial, :, :)), room);
+            saveas(fig, strcat('raw', filesep, fname_trial, '.fig'), 'fig');
+            close(fig);
+        end
+        % matlab2tikz(strcat(PATH_SRC, '/latex/data/plots/static/', fname_trial, 'fig.tex'), 'figurehandle', fig, 'imagesAsPng', true, 'checkForUpdates', false, 'externalData', false, 'relativeDataPath', 'data/plots/static/tikz-data/', 'dataPath', PATH_LATEX_ABS, 'noSize', false, 'showInfo', false);
+        movefile(fn_conf, strcat('raw', filesep, fname_trial, 'config.mat'));
+        if LOGGING
+            logfile = fopen(strcat('raw', filesep, fname_trial, 'log.txt'), 'w');
+            fprintf(logfile, log_conf);
+            fprintf(logfile, log_sim);
+            fprintf(logfile, log_stft);
+            fprintf(logfile, log_em);
+            fprintf(logfile, log_estloc);
+            fprintf(logfile, log_esterr);
+            fclose(logfile);
+        end
+    else
+        delete(fn_conf);
+    end
+end
+
+%% Save Results of All Trials
+fprintf('[  RESULTS  ]: err_mean = %0.2f, max = %0.2f, min = %0.2f (t/trial = %0.2fs, t = %dm %ds)\n', mean(mean(est_err)), max(max(est_err)), min(min(est_err)), toc/trials, floor(toc/60), round(toc-floor(toc/60)*60, 0));
+save(strcat(fname_base, 'results.mat'), 'results'); % for further processing in matlab
+save(strcat(fname_base, 'results.txt'), 'results', '-ascii', '-double', '-tabs'); % for further processing in python
+
+% for display of raw data table in LaTeX
+clabels = get_column_names_result(n_sources);
+matrix2latex(results, strcat(PATH_LATEX_RESULTS, 'tables', filesep, fname_base, 'results.tex'), 'columnLabels', clabels);
+
+%% End
+cd(oldpath);
+end
+
+##### SOURCE END #####
+--></body></html>

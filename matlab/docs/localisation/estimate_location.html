@@ -1,0 +1,152 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>estimate_location</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="estimate_location.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</a></li><li><a href="#3">Arguments</a></li><li><a href="#4">Returns</a></li><li><a href="#5">determine maximum</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)
+</pre><h2 id="2">ESTIMATE_LOCATION Finds the n_sources most probable locations of sources</h2><h2 id="3">Arguments</h2><div><ul><li><b>psi (mat)</b>: <i>Output of <tt><a href="em_algorithm.html">em_iterations.m</a></tt></i></li><li><b>n_sources (int)</b>: <i>number of locations to be found</i></li><li><b>elimination_area (int)</b>: <i>size of area around found location estimate to eliminate</i></li><li><b>room (struct)</b>: <i>room setup structure from configuration file</i></li></ul></div><h2 id="4">Returns</h2><div><ul><li><b>loc_est (mat)</b>: <i><tt>2xN</tt> matrix of <tt>[x y]</tt> coordinates of estimated locations (i.e. <tt>[2.4, 3.0; 1.2, 4.9]</tt> for <tt>n=2</tt>)</i></li></ul></div><pre class="codeinput">fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc);
+
+<span class="keyword">if</span> nargin&lt;1, error(<span class="string">'input argument "psi" is required!'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin&lt;2, n_sources=2; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin&lt;3, elimination_area=0; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin&lt;4, min_distance=5; <span class="keyword">end</span>
+
+loc_est = zeros(n_sources, 2);
+
+<span class="keyword">for</span> n=1:n_sources
+</pre><h2 id="5">determine maximum</h2><pre class="codeinput">    valid_loc = false;
+    <span class="keyword">while</span> ~valid_loc
+        [~,idx_Xmax] = max(max(psi,[],1));  <span class="comment">% ~ = max. value of psi at identified index</span>
+        [~,idx_Ymax] = max(max(psi,[],2));
+        loc_est(n, 1:2) = [room.grid_x(idx_Xmax),room.grid_y(idx_Ymax)] + room.N_margin*room.grid_resolution;
+        valid_loc = true;
+        <span class="keyword">if</span> n&gt;1  <span class="comment">% is this is not the first estimate, make comparison to other estimates</span>
+            <span class="keyword">for</span> m=1:n-1
+                <span class="keyword">if</span>(norm(loc_est(n, :)-loc_est(m, :)) &lt; min_distance/10)  <span class="comment">% est. too close</span>
+                    psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_area);
+                    <span class="comment">%fprintf('      -&gt; Estimate #%d is within %0.2fm of #%d. Will skip this one!\n', n, min_distance/10, m);</span>
+                    valid_loc = false;
+                    <span class="keyword">break</span>;
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_area);
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> valid_loc, fprintf(<span class="string">'      -&gt; Estimate #%d at x=%0.2f, y=%0.2f\n'</span>, n, loc_est(n, :)); <span class="keyword">end</span>
+        <span class="keyword">if</span> sum(sum(psi))==0, <span class="keyword">break</span>; <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ loc_est ] = estimate_location( psi, n_sources, elimination_area, min_distance, room)
+%% ESTIMATE_LOCATION Finds the n_sources most probable locations of sources
+
+%% Arguments
+% * *psi (mat)*: _Output of |<em_algorithm.html em_iterations.m>|_
+% * *n_sources (int)*: _number of locations to be found_
+% * *elimination_area (int)*: _size of area around found location estimate to eliminate_
+% * *room (struct)*: _room setup structure from configuration file_
+
+%% Returns
+% * *loc_est (mat)*: _|2xN| matrix of |[x y]| coordinates of estimated locations (i.e. |[2.4, 3.0; 1.2, 4.9]| for |n=2|)_
+
+fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc);
+
+if nargin<1, error('input argument "psi" is required!'); end
+if nargin<2, n_sources=2; end
+if nargin<3, elimination_area=0; end
+if nargin<4, min_distance=5; end
+
+loc_est = zeros(n_sources, 2);
+
+for n=1:n_sources
+    %% determine maximum
+    valid_loc = false;
+    while ~valid_loc
+        [~,idx_Xmax] = max(max(psi,[],1));  % ~ = max. value of psi at identified index
+        [~,idx_Ymax] = max(max(psi,[],2));
+        loc_est(n, 1:2) = [room.grid_x(idx_Xmax),room.grid_y(idx_Ymax)] + room.N_margin*room.grid_resolution;
+        valid_loc = true;
+        if n>1  % is this is not the first estimate, make comparison to other estimates
+            for m=1:n-1
+                if(norm(loc_est(n, :)-loc_est(m, :)) < min_distance/10)  % est. too close
+                    psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_area);
+                    %fprintf('      -> Estimate #%d is within %0.2fm of #%d. Will skip this one!\n', n, min_distance/10, m);
+                    valid_loc = false;
+                    break;
+                end
+            end
+        else
+            psi = eliminate_neighbourhood(psi, idx_Xmax, idx_Ymax, elimination_area);
+        end
+        if valid_loc, fprintf('      -> Estimate #%d at x=%0.2f, y=%0.2f\n', n, loc_est(n, :)); end
+        if sum(sum(psi))==0, break; end
+    end
+end
+
+
+##### SOURCE END #####
+--></body></html>

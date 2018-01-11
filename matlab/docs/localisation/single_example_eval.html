@@ -1,0 +1,220 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>single_example_eval</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="single_example_eval.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">SINGLE_EXAMPLE_EVAL Run single evaluation trial</a></li><li><a href="#3">Arguments</a></li><li><a href="#4">Initialisation</a></li><li><a href="#5">Try to Load Existing, Intermediary Results</a></li><li><a href="#6">Generate New Data</a></li><li><a href="#7">Visualise Results</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
+</pre><h2 id="2">SINGLE_EXAMPLE_EVAL Run single evaluation trial</h2><p>This function can be used to run a single evaluation trial without the file management overhead of <tt><a href="./random_sources_eval.html">random_sources_eval</a></tt>. It also provides the ability to load and use intermediary results from previous trials, if they are accessible either in the current workspace or saved as <tt>mat</tt> file.</p><h2 id="3">Arguments</h2><div><ul><li><b>n_sources (int)</b>: <i>number of sources to be simulated (default: <b>2</b>)</i></li><li><b>random_sources (bool)</b>: <i>chose random source locations (default: <b>true</b>)</i></li><li><b>min_distance (int)</b>: <i>minimum required distance between sources (in decimetre, default: <b>5</b>)</i></li><li><b>distance_wall (int)</b>: <i>minimum required distance of sources from wall (in decimetre, default: <b>12</b>)</i></li><li><b>randomise_samples (bool)</b>: <i>description (comment, default: <b>true</b>)</i></li><li><b>T60 (double)</b>: <i>reverberation time (in seconds, default: <b>0.3</b>)</i></li><li><b>em_iterations (int)</b>: <i>number of maximum em iterations (default: <b>5</b>)</i></li><li><b>em_conv_threshold (int)</b>: <i>convergence threshold for em algorithm (-1 equals no threshold, default: <b>-1</b>)</i></li><li><b>reflect_order (int)</b>: <i>maximum reflection order for image-method simulation (-1 equals max, default: <b>3</b>)</i></li><li><b>SNR (int)</b>: <i>amount of noise added to received signal (in dB, 0 equals no noise, default: <b>0</b>)</i></li><li><b>var_init (double)</b>: <i>initial value for variance (default: <b>0.1</b>)</i></li><li><b>var_fixed (bool)</b>: <i>do not estimate variance for each em iteration (default: <b>false</b>)</i></li></ul></div><pre class="codeinput"><span class="keyword">if</span> nargin &lt; 1, n_sources = 2; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 2, random_sources = true; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 3, min_distance = 5; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 4, distance_wall = 12; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 5, randomise_samples = true; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 6, T60 = 0.3; fprintf(<span class="string">'WARNING: Using default for T60 (0.3)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 7, em_iterations = 5; fprintf(<span class="string">'WARNING: Using default for em_iterations (5)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 8, em_conv_threshold = -1; fprintf(<span class="string">'WARNING: Using default for em_conv_threshold (-1)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 9, reflect_order = 3; fprintf(<span class="string">'WARNING: Using default for rir-reflect_order (3)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 10, SNR = 0; fprintf(<span class="string">'WARNING: Using default for SNR (0)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 11, var_init = 0.1; fprintf(<span class="string">'WARNING: Using default initial variance (0.1)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 12, var_fixed = false; fprintf(<span class="string">'WARNING: Using default for var_fixed (false)\n'</span>); <span class="keyword">end</span>
+</pre><h2 id="4">Initialisation</h2><pre class="codeinput">cprintf(<span class="string">'-comment'</span>, <span class="string">'                            E V A L U A T I O N                            \n'</span>);
+tic;
+err = 0;
+</pre><h2 id="5">Try to Load Existing, Intermediary Results</h2><p>This provides a huge benefit during development, as runtime is decreased when reusing already calculated results. NOTE: This has do be adjusted for debugging specific parts of the processing chain.</p><pre class="codeinput"><span class="keyword">try</span>
+    phi = evalin(<span class="string">'base'</span>, <span class="string">'phi'</span>);
+    room = evalin(<span class="string">'base'</span>, <span class="string">'room'</span>);
+    S = evalin(<span class="string">'base'</span>, <span class="string">'S'</span>);
+    room.S = S;
+    psi = evalin(<span class="string">'base'</span>, <span class="string">'psi'</span>);
+    n_sources = evalin(<span class="string">'base'</span>, <span class="string">'n_sources'</span>);
+    min_distance = evalin(<span class="string">'base'</span>, <span class="string">'min_distance'</span>);
+    variance = evalin(<span class="string">'base'</span>, <span class="string">'variance'</span>);
+    <span class="keyword">if</span> size(psi, 3)==1, error(<span class="string">"psi does not include full history!"</span>), <span class="keyword">end</span>
+    fprintf(<span class="string">"Will analyze workspace data\n"</span>);
+<span class="keyword">catch</span>
+    err = err+1;
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> err==1
+    <span class="keyword">try</span>
+        w = what(); w = w.mat;
+        <span class="keyword">if</span> length(w)==2
+            <span class="keyword">for</span> i=1:length(w)
+                load(string(w(i)));
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            error(<span class="string">"No saved data found!"</span>)
+        <span class="keyword">end</span>
+        fprintf(<span class="string">"Will analyze saved data\n"</span>);
+        err=0;
+    <span class="keyword">catch</span>
+        err = err+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="6">Generate New Data</h2><pre class="codeinput"><span class="keyword">if</span> err&gt;0
+    fprintf(<span class="string">"Will generate new data\n"</span>);
+    fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed);
+    load(fn_cfg);
+    x = simulate(fn_cfg, ROOM, R, sources);
+    [~, phi] = stft(fn_cfg, x);
+    [psi, iter, variance] = em_algorithm(fn_cfg, phi, em_iterations, em_conv_threshold, true);
+    delete(<span class="string">'config*.mat'</span>);
+    save(<span class="string">'analysis.mat'</span>);
+<span class="keyword">end</span>
+</pre><h2 id="7">Visualise Results</h2><pre class="codeinput">analyse_em_steps(psi, variance, min_distance, room);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ est_err ] = single_example_eval(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
+%% SINGLE_EXAMPLE_EVAL Run single evaluation trial
+% This function can be used to run a single evaluation trial without the file management 
+% overhead of |<./random_sources_eval.html random_sources_eval>|. It also provides the
+% ability to load and use intermediary results from previous trials, if they are
+% accessible either in the current workspace or saved as |mat| file.
+
+%% Arguments
+% * *n_sources (int)*: _number of sources to be simulated (default: *2*)_
+% * *random_sources (bool)*: _chose random source locations (default: *true*)_
+% * *min_distance (int)*: _minimum required distance between sources (in decimetre, default: *5*)_
+% * *distance_wall (int)*: _minimum required distance of sources from wall (in decimetre, default: *12*)_
+% * *randomise_samples (bool)*: _description (comment, default: *true*)_
+% * *T60 (double)*: _reverberation time (in seconds, default: *0.3*)_
+% * *em_iterations (int)*: _number of maximum em iterations (default: *5*)_
+% * *em_conv_threshold (int)*: _convergence threshold for em algorithm (-1 equals no threshold, default: *-1*)_
+% * *reflect_order (int)*: _maximum reflection order for image-method simulation (-1 equals max, default: *3*)_
+% * *SNR (int)*: _amount of noise added to received signal (in dB, 0 equals no noise, default: *0*)_
+% * *var_init (double)*: _initial value for variance (default: *0.1*)_
+% * *var_fixed (bool)*: _do not estimate variance for each em iteration (default: *false*)_
+
+if nargin < 1, n_sources = 2; end
+if nargin < 2, random_sources = true; end
+if nargin < 3, min_distance = 5; end
+if nargin < 4, distance_wall = 12; end
+if nargin < 5, randomise_samples = true; end
+if nargin < 6, T60 = 0.3; fprintf('WARNING: Using default for T60 (0.3)\n'); end
+if nargin < 7, em_iterations = 5; fprintf('WARNING: Using default for em_iterations (5)\n'); end
+if nargin < 8, em_conv_threshold = -1; fprintf('WARNING: Using default for em_conv_threshold (-1)\n'); end
+if nargin < 9, reflect_order = 3; fprintf('WARNING: Using default for rir-reflect_order (3)\n'); end
+if nargin < 10, SNR = 0; fprintf('WARNING: Using default for SNR (0)\n'); end
+if nargin < 11, var_init = 0.1; fprintf('WARNING: Using default initial variance (0.1)\n'); end
+if nargin < 12, var_fixed = false; fprintf('WARNING: Using default for var_fixed (false)\n'); end
+
+%% Initialisation
+cprintf('-comment', '                            E V A L U A T I O N                            \n');
+tic;
+err = 0;
+
+%% Try to Load Existing, Intermediary Results
+% This provides a huge benefit during development, as runtime is decreased when reusing
+% already calculated results. NOTE: This has do be adjusted for debugging specific parts
+% of the processing chain.
+try
+    phi = evalin('base', 'phi');
+    room = evalin('base', 'room');
+    S = evalin('base', 'S');
+    room.S = S;
+    psi = evalin('base', 'psi');
+    n_sources = evalin('base', 'n_sources');
+    min_distance = evalin('base', 'min_distance');
+    variance = evalin('base', 'variance');
+    if size(psi, 3)==1, error("psi does not include full history!"), end
+    fprintf("Will analyze workspace data\n");
+catch
+    err = err+1;
+end
+    
+if err==1 
+    try
+        w = what(); w = w.mat;
+        if length(w)==2
+            for i=1:length(w)
+                load(string(w(i)));
+            end
+        else
+            error("No saved data found!")
+        end
+        fprintf("Will analyze saved data\n");
+        err=0;
+    catch
+        err = err+1;
+    end
+end
+%% Generate New Data
+if err>0
+    fprintf("Will generate new data\n");
+    fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed);
+    load(fn_cfg);
+    x = simulate(fn_cfg, ROOM, R, sources);
+    [~, phi] = stft(fn_cfg, x);
+    [psi, iter, variance] = em_algorithm(fn_cfg, phi, em_iterations, em_conv_threshold, true);
+    delete('config*.mat');
+    save('analysis.mat');
+end
+
+%% Visualise Results
+analyse_em_steps(psi, variance, min_distance, room);
+end
+##### SOURCE END #####
+--></body></html>

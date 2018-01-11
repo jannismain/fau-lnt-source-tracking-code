@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<toc version="2.0">
+<!-- First tocitem specifies top level in Help browser Contents pane -->
+<!-- This can be a roadmap page, as shown below, or a content page -->
+    <tocitem target="index.html">Source Localisation and Tracking Toolbox
+        <!-- Nest tocitems to create hierarchical entries in  Contents-->
+        <!-- To include icons, use the following syntax for tocitems: -->
+        <!-- <tocitem target="foo.html" image="HelpIcon.NAME"> -->
+        <!-- Title-of-Section </tocitem> -->
+        <!-- where NAME is one of the following (use capital letters): -->
+        <!-- FUNCTION, USER_GUIDE, EXAMPLES, BLOCK, GETTING_STARTED, -->
+        <!-- DEMOS, RELEASE_NOTES --> 
+        <!-- Icon images used for these entries are also stored in -->
+        <!-- matlabroot/toolbox/matlab/icons -->
+        <!-- A Getting Started Guide usually comes first -->
+        <tocitem>Localisation
+            <!-- 2nd and lower TOC levels usually have anchor IDs -->
+            <tocitem>Configuration</tocitem>
+            <tocitem>Evaluation</tocitem>
+            <tocitem>Helpers</tocitem>
+            <tocitem>Plotting</tocitem>
+            <tocitem>Testing</tocitem>
+            <tocitem target="localisation/em_algorithm.html">em_algorithm</tocitem>
+            <tocitem target="localisation/estimate_location.html">estimate_location</tocitem>
+            <tocitem target="localisation/estimation_error_rad.html">estimation_error_rad</tocitem>
+            <tocitem target="localisation/simulate.html">simulate</tocitem>
+            <tocitem target="localisation/stft.html">stft</tocitem>
+        </tocitem>
+        <tocitem>Tracking
+            <tocitem>Configuration</tocitem>
+            <tocitem>Evaluation</tocitem>
+            <tocitem>Plotting</tocitem>
+            <tocitem target="tracking/rem_init.html">rem_init</tocitem>
+            <tocitem target="tracking/rem_tracking.html">rem_tracking</tocitem>
+            <tocitem target="tracking/assign_estimates_tracking.html">assign_estimates_tracking</tocitem>
+            <tocitem target="tracking/simulate_tracking.html">simulate_tracking</tocitem>
+        </tocitem>
+    </tocitem>
+</toc>

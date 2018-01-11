@@ -1,0 +1,253 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>estimation_error_rad</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="estimation_error_rad.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Description</a></li><li><a href="#4">Arguments</a></li><li><a href="#5">Returns</a></li><li><a href="#6">Notes</a></li><li><a href="#7">Initialisation</a></li><li><a href="#8">Compute Error</a></li><li><a href="#10">More than 1 new assignment with current threshold found</a></li><li><a href="#12">Only 1 new assignment with current threshold found</a></li><li><a href="#15">Finalise</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )
+</pre><pre class="codeinput"><span class="comment">%ESTIMATION_ERROR Calculates the estimation error based on the true source positions</span>
+</pre><h2 id="3">Description</h2><p>Find assignment with the minimal estimation error on a per-source basis. First, the <tt>threshold</tt> is initialised to 0. Then the algorithm looks at each source successively and determines, if an estimate is within a circle with the radius <tt>threshold</tt> around a source. If true, this estimate is assigned to its original source location. If false, the <tt>threshold</tt> is increased. This procedure repeats until all estimates have been assigned.</p><h2 id="4">Arguments</h2><div><ul><li><b>S (mat):</b> <i><tt>2xN</tt> matrix that holds source location coordinates (e.g. <tt>[2.4, 2.7; 4.8, 1.0]</tt>)</i></li><li><b>loc_est_assorted (mat):</b> <i><tt>2xN</tt> matrix that holds source location estimates (e.g. <tt>[4.2, 1.1; 2.4, 2.5]</tt>)</i></li></ul></div><h2 id="5">Returns</h2><div><ul><li><b>loc_est (mat):</b> <i><tt>2xN</tt> matrix that holds assigned source location estimates (e.g. <tt>[2.4, 2.5; 4.2, 1.1]</tt>)</i></li><li><b>est_err (mat):</b> <i><tt>1xN</tt> matrix that holds the estimation error per source (e.g. <tt>[0.20; 0.61]</tt>, in metre)</i></li></ul></div><h2 id="6">Notes</h2><div><ul><li>assigned or sorted means, that the order of the estimates corresponds to the order of the sources <i>S</i>.</li><li>unassigned or assorted means, that the order of estimates does <i>NOT</i> correspond to the order of sources <i>S</i>.</li><li>If an estimate is equidistant to two or more source locations, <tt><a href="estimation_error_min.html">estimation_error_min</a></tt> is used as a fallback!</li><li>This error calculation routine is a replacement of the <b>deprecated</b> function <tt><a href="estimation_error.html">estimation_error</a></tt></li></ul></div><pre class="codeinput">fprintf(<span class="string">'\n&lt;%s.m&gt;'</span>, mfilename); fprintf(<span class="string">' (t = %2.4f)\n'</span>, toc);
+<span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Both input arguments "S" and "loc_est" are required!'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> size(S, 1)==1, loc_est_assorted = loc_est_assorted; <span class="keyword">end</span>
+<span class="keyword">if</span> size(S, 1) ~= size(loc_est_assorted, 1), error(<span class="string">'dimensions of input arguments mismatch! (S is %dx%d, loc_est is %dx%d)'</span>, size(S), size(loc_est_assorted)); <span class="keyword">end</span>
+</pre><h2 id="7">Initialisation</h2><p>Initialise all variables used in the procedure below</p><pre class="codeinput">est_err = ones(size(loc_est_assorted, 1), 1)*inf;
+loc_est = zeros(size(loc_est_assorted));
+
+all_assigned = false;
+threshold = 0;
+increment = 0.01;
+</pre><h2 id="8">Compute Error</h2><p>Compute localisation error with increasing thresholds. Stop, when all estimates have been assigned!</p><pre class="codeinput"><span class="keyword">while</span> ~all_assigned
+</pre><pre class="codeinput">    found=0;
+    found_diff=[];
+    pair_idx = [];
+    <span class="keyword">for</span> s=1:size(S, 1)
+        <span class="keyword">for</span> s2=1:size(loc_est_assorted, 1)
+<span class="comment">%             if s2&lt;s || S(s2)==inf || loc_est_assorted(s)==inf, continue; end  % skip</span>
+            diff = norm(S(s2,1:2)-loc_est_assorted(s,1:2));
+            <span class="keyword">if</span> diff &lt;= threshold
+                found = found+1;
+                found_diff = [found_diff diff];
+                pair_idx = [pair_idx; s s2];
+                <span class="keyword">continue</span>;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="10">More than 1 new assignment with current threshold found</h2><p>If multiple assignments are found for a certain threshold value, it could be the case, that either a original source location or a location estimate was assigned multiple times. The <tt>else</tt>-block handles this by falling back to the minimal assignment strategy, while the <tt>if</tt>-block identifies a valid assignment, where two distinct estimates have been assigned to two distinct source locations at the same time.</p><pre class="codeinput">    <span class="keyword">if</span> found&gt;1
+</pre><pre class="codeinput">        <span class="comment">% very complicated way of checking, if there are duplicate values in either column</span>
+        <span class="comment">% (--&gt; multiple assignments of one estimate or source position)</span>
+        <span class="keyword">if</span> length(unique(pair_idx(:,1)))==length(pair_idx(:,1)) &amp;&amp; length(unique(pair_idx(:,2)))==length(pair_idx(:,2))
+            <span class="keyword">for</span> i=1:size(pair_idx, 1)
+                est_err(pair_idx(i,2)) = found_diff(i);
+                loc_est(pair_idx(i,2), 1:2) = loc_est_assorted(pair_idx(i,1), 1:2);
+                loc_est_assorted(pair_idx(i,1), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+                S(pair_idx(i,2), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>  <span class="comment">% multiply assigned estimates or actual source positions!</span>
+            <span class="comment">% find "minimum error assignment" for remaining estimates</span>
+            [est_min, err_min] = estimation_error_min(S(S(:,1)~=inf,:), loc_est_assorted(loc_est_assorted(:,1)~=inf,:));
+            [~,S_est_remaining_idx] = ismember(est_min, loc_est_assorted, <span class="string">'rows'</span>);
+            [~,S_remaining_idx] = ismember(S(S(:,1)~=inf,:),S, <span class="string">'rows'</span>);
+            <span class="comment">% apply minimum error assignment to remaining estimates</span>
+            <span class="keyword">for</span> i=1:length(S_remaining_idx)
+                loc_est(S_remaining_idx(i),:) = loc_est_assorted(S_est_remaining_idx(i),:);
+                est_err(S_remaining_idx(i),:) = err_min(i);
+                loc_est_assorted(S_est_remaining_idx(i), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+                S(S_remaining_idx(i), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+            <span class="keyword">end</span>
+            fprintf(<span class="string">"WARN: Closest estimate assignment not conclusive! Will fall back to minimum error assignment for remaining estimates!"</span>)
+            all_assigned=true;
+        <span class="keyword">end</span>
+</pre><h2 id="12">Only 1 new assignment with current threshold found</h2><p>If only 1 new assignment is identified for a certain threshold, this is the next, most optimal assignment in the context of this assignment strategy.</p><pre class="codeinput">    <span class="keyword">elseif</span> found==1
+        est_err(pair_idx(2)) = found_diff;
+        loc_est(pair_idx(2), 1:2) = loc_est_assorted(pair_idx(1), 1:2);
+        loc_est_assorted(pair_idx(1), 1:2) = inf;  <span class="comment">% remove assigned estimate</span>
+        S(pair_idx(2), 1:2) = inf;  <span class="comment">% remove assigned source</span>
+    <span class="keyword">else</span>
+        <span class="keyword">if</span> min(loc_est_assorted)==inf
+            all_assigned=true;
+        <span class="keyword">else</span>
+            threshold = threshold+increment;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="15">Finalise</h2><pre class="codeinput">est_err(est_err&lt;0.01)=0;  <span class="comment">% removes errors due to floating point arithmetic</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ loc_est, est_err ] = estimation_error_rad( S, loc_est_assorted )
+%ESTIMATION_ERROR Calculates the estimation error based on the true source positions
+
+%% Description
+% Find assignment with the minimal estimation error on a per-source basis. First, the
+% |threshold| is initialised to 0. Then the algorithm looks at each source successively and
+% determines, if an estimate is within a circle with the radius |threshold| around a source.
+% If true, this estimate is assigned to its original source location. If false, the |threshold|
+% is increased. This procedure repeats until all estimates have been assigned.
+
+%% Arguments
+% * *S (mat):* _|2xN| matrix that holds source location coordinates (e.g. |[2.4, 2.7; 4.8, 1.0]|)_
+% * *loc_est_assorted (mat):* _|2xN| matrix that holds source location estimates (e.g. |[4.2, 1.1; 2.4, 2.5]|)_
+
+%% Returns
+% * *loc_est (mat):* _|2xN| matrix that holds assigned source location estimates (e.g. |[2.4, 2.5; 4.2, 1.1]|)_
+% * *est_err (mat):* _|1xN| matrix that holds the estimation error per source (e.g. |[0.20; 0.61]|, in metre)_
+
+%% Notes
+% * assigned or sorted means, that the order of the estimates corresponds to the order of
+% the sources _S_.
+% * unassigned or assorted means, that the order of estimates does _NOT_ correspond to the
+% order of sources _S_.
+% * If an estimate is equidistant to two or more source locations,
+% |<estimation_error_min.html estimation_error_min>| is used as a fallback!
+% * This error calculation routine is a replacement of the *deprecated* function |<estimation_error.html estimation_error>|
+
+fprintf('\n<%s.m>', mfilename); fprintf(' (t = %2.4f)\n', toc);
+if nargin<2, error('Both input arguments "S" and "loc_est" are required!'); end
+if size(S, 1)==1, loc_est_assorted = loc_est_assorted; end
+if size(S, 1) ~= size(loc_est_assorted, 1), error('dimensions of input arguments mismatch! (S is %dx%d, loc_est is %dx%d)', size(S), size(loc_est_assorted)); end
+
+%% Initialisation
+% Initialise all variables used in the procedure below
+est_err = ones(size(loc_est_assorted, 1), 1)*inf;
+loc_est = zeros(size(loc_est_assorted));
+
+all_assigned = false;
+threshold = 0;
+increment = 0.01;
+
+%% Compute Error
+% Compute localisation error with increasing thresholds. Stop, when all estimates have
+% been assigned!
+while ~all_assigned
+    found=0;
+    found_diff=[];
+    pair_idx = [];
+    for s=1:size(S, 1)
+        for s2=1:size(loc_est_assorted, 1)
+%             if s2<s || S(s2)==inf || loc_est_assorted(s)==inf, continue; end  % skip
+            diff = norm(S(s2,1:2)-loc_est_assorted(s,1:2));
+            if diff <= threshold
+                found = found+1;
+                found_diff = [found_diff diff];
+                pair_idx = [pair_idx; s s2];
+                continue;
+            end
+        end 
+    end
+    %% More than 1 new assignment with current threshold found
+    % If multiple assignments are found for a certain threshold value, it could be the
+    % case, that either a original source location or a location estimate was assigned
+    % multiple times. The |else|-block handles this by falling back to the minimal
+    % assignment strategy, while the |if|-block identifies a valid assignment, where two
+    % distinct estimates have been assigned to two distinct source locations at the same
+    % time.
+    if found>1
+        % very complicated way of checking, if there are duplicate values in either column
+        % (REPLACE_WITH_DASH_DASH> multiple assignments of one estimate or source position)
+        if length(unique(pair_idx(:,1)))==length(pair_idx(:,1)) && length(unique(pair_idx(:,2)))==length(pair_idx(:,2))
+            for i=1:size(pair_idx, 1)
+                est_err(pair_idx(i,2)) = found_diff(i);
+                loc_est(pair_idx(i,2), 1:2) = loc_est_assorted(pair_idx(i,1), 1:2);
+                loc_est_assorted(pair_idx(i,1), 1:2) = inf;  % remove assigned estimate
+                S(pair_idx(i,2), 1:2) = inf;  % remove assigned source
+            end
+        else  % multiply assigned estimates or actual source positions!
+            % find "minimum error assignment" for remaining estimates
+            [est_min, err_min] = estimation_error_min(S(S(:,1)~=inf,:), loc_est_assorted(loc_est_assorted(:,1)~=inf,:));
+            [~,S_est_remaining_idx] = ismember(est_min, loc_est_assorted, 'rows');
+            [~,S_remaining_idx] = ismember(S(S(:,1)~=inf,:),S, 'rows');
+            % apply minimum error assignment to remaining estimates
+            for i=1:length(S_remaining_idx)
+                loc_est(S_remaining_idx(i),:) = loc_est_assorted(S_est_remaining_idx(i),:);
+                est_err(S_remaining_idx(i),:) = err_min(i);
+                loc_est_assorted(S_est_remaining_idx(i), 1:2) = inf;  % remove assigned estimate
+                S(S_remaining_idx(i), 1:2) = inf;  % remove assigned source
+            end
+            fprintf("WARN: Closest estimate assignment not conclusive! Will fall back to minimum error assignment for remaining estimates!")
+            all_assigned=true;
+        end
+    %% Only 1 new assignment with current threshold found
+    % If only 1 new assignment is identified for a certain threshold, this is the next,
+    % most optimal assignment in the context of this assignment strategy.
+    elseif found==1 
+        est_err(pair_idx(2)) = found_diff;
+        loc_est(pair_idx(2), 1:2) = loc_est_assorted(pair_idx(1), 1:2);
+        loc_est_assorted(pair_idx(1), 1:2) = inf;  % remove assigned estimate
+        S(pair_idx(2), 1:2) = inf;  % remove assigned source
+    else
+        if min(loc_est_assorted)==inf
+            all_assigned=true;
+        else
+            threshold = threshold+increment;
+        end
+    end
+end
+
+%% Finalise
+est_err(est_err<0.01)=0;  % removes errors due to floating point arithmetic
+
+end
+##### SOURCE END #####
+--></body></html>

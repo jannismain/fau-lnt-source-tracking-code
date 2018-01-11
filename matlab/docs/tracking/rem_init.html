@@ -1,0 +1,147 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>rem_init</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="rem_init.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Description</a></li><li><a href="#4">Arguments</a></li><li><a href="#5">Returns</a></li><li><a href="#6">Initialisation</a></li><li><a href="#7">Compute Distances</a></li><li><a href="#8">Compute expected PRPs</a></li><li><a href="#9">Compute angular distances</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ ang_dist ] = rem_init( phi )
+</pre><pre class="codeinput"><span class="comment">%REM_INIT Initial steps required before tracking algorithm can be used.</span>
+</pre><h2 id="3">Description</h2><p>Initial steps required before tracking algorithm <tt><a href="./rem_tracking.html">rem_tracking.m</a></tt> can be used.</p><h2 id="4">Arguments</h2><div><ul><li><b>phi (mat)</b>: <i>matrix of PRPs in each location <tt>X</tt> and <tt>Y</tt> for each microphone pair <tt>M</tt></i></li></ul></div><h2 id="5">Returns</h2><div><ul><li><b>ang_dist (mat)</b>: <i>matrix of angular distances (shape: <tt>K x T x X x Y x M</tt>)</i></li></ul></div><h2 id="6">Initialisation</h2><pre class="codeinput">load(<span class="string">'config.mat'</span>)
+m = <span class="string">"Initialize EM Algorithm"</span>; counter = next_step(m, counter);
+
+freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
+phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
+phi_mat = repmat(phi_mat,1,1,em.Ynet,em.Xnet,1);
+</pre><h2 id="7">Compute Distances</h2><pre class="codeinput">m = <span class="string">"Compute distances..."</span>; counter = next_step(m, counter);
+norm_differences = zeros(em.Ynet,em.Xnet,em.M);
+<span class="keyword">for</span> idx_pairs = 1:em.M
+    <span class="keyword">for</span> idx_x = (room.N_margin+1):(em.X_idxmax)
+        <span class="keyword">for</span> idx_y = (room.N_margin+1):(em.Y_idxmax)
+            norm_differences(idx_y-room.N_margin,idx_x-room.N_margin,idx_pairs) = norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2,1:2),2) - norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2-1,1:2),2);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
+fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+</pre><h2 id="8">Compute expected PRPs</h2><pre class="codeinput">m = <span class="string">"Compute phi tilde..."</span>; counter = next_step(m, counter);
+phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); <span class="comment">% K/T/Y/X</span>
+clear <span class="string">norm_differences</span>;
+fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+</pre><h2 id="9">Compute angular distances</h2><pre class="codeinput">m = <span class="string">"Compute angular distances..."</span>; counter = next_step(m, counter);
+phi_diff = bsxfun(@minus,phi_mat,phi_tilde_mat);
+ang_dist = bsxfun(@power,abs((phi_diff)),2);  <span class="comment">% 26 x 296 x 41 x 41 x 12</span>
+fprintf(<span class="string">'%s done! (t = %2.4f)\n'</span>, FORMAT_PREFIX, toc);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ ang_dist ] = rem_init( phi )
+%REM_INIT Initial steps required before tracking algorithm can be used.
+
+%% Description
+% Initial steps required before tracking algorithm |<./rem_tracking.html rem_tracking.m>| 
+% can be used.
+
+%% Arguments
+% * *phi (mat)*: _matrix of PRPs in each location |X| and |Y| for each microphone pair |M|_
+
+%% Returns
+% * *ang_dist (mat)*: _matrix of angular distances (shape: |K x T x X x Y x M|)_
+
+%% Initialisation
+load('config.mat')
+m = "Initialize EM Algorithm"; counter = next_step(m, counter);
+
+freq_mat = reshape(fft_freq_range,em.K,1,1,1,1);
+phi_mat = reshape(phi,em.K,em.T,1,1,room.R_pairs);
+phi_mat = repmat(phi_mat,1,1,em.Ynet,em.Xnet,1);
+
+%% Compute Distances
+m = "Compute distances..."; counter = next_step(m, counter);
+norm_differences = zeros(em.Ynet,em.Xnet,em.M);
+for idx_pairs = 1:em.M
+    for idx_x = (room.N_margin+1):(em.X_idxmax)
+        for idx_y = (room.N_margin+1):(em.Y_idxmax)
+            norm_differences(idx_y-room.N_margin,idx_x-room.N_margin,idx_pairs) = norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2,1:2),2) - norm([room.grid_x(idx_x),room.grid_y(idx_y)]-room.R(idx_pairs*2-1,1:2),2);
+        end
+    end
+end
+norm_differences = reshape(norm_differences,1,1,size(norm_differences,1),size(norm_differences,2),size(norm_differences,3));
+fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
+
+%% Compute expected PRPs
+m = "Compute phi tilde..."; counter = next_step(m, counter);
+phi_tilde_mat = exp(-1i*(bsxfun(@times,2*pi*freq(fft_freq_range), (norm_differences)/(room.c)))); % K/T/Y/X
+clear norm_differences;
+fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
+
+%% Compute angular distances
+m = "Compute angular distances..."; counter = next_step(m, counter);
+phi_diff = bsxfun(@minus,phi_mat,phi_tilde_mat);
+ang_dist = bsxfun(@power,abs((phi_diff)),2);  % 26 x 296 x 41 x 41 x 12
+fprintf('%s done! (t = %2.4f)\n', FORMAT_PREFIX, toc);
+end
+
+##### SOURCE END #####
+--></body></html>

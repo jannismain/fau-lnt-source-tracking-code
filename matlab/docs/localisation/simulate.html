@@ -1,0 +1,235 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>simulate</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="simulate.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Description</a></li><li><a href="#4">Arguments</a></li><li><a href="#5">Caveats</a></li><li><a href="#6">Ideas for Improvement</a></li><li><a href="#7">Initialisation</a></li><li><a href="#8">Calculate RIRs</a></li><li><a href="#9">Load Source Data</a></li><li><a href="#10">Y x RIRs</a></li><li><a href="#11">Mix Signals at Receiver Pairs</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [x] = simulate(fn_cfg, ROOM, R, sources, mix)
+</pre><pre class="codeinput"><span class="comment">% SIMULATE Simulates received signals in a room with audio sources and receivers.</span>
+</pre><h2 id="3">Description</h2><p>Simulates received signals in a room with audio sources and receivers. For the simulation, the <a href="https://github.com/ehabets/RIR-Generator">RIR-Generator</a> by Emanuel Habets is used. If <tt>SNR~=0</tt> in <tt>fn_cfg</tt>, AWGN is added with the corresponding <tt>dB</tt> value.</p><h2 id="4">Arguments</h2><div><ul><li><b>fn_cfg (str)</b>: <i>filename of configuration file (e.g. <tt>'config_5x8d0.mat'</tt>)</i></li><li><b>ROOM (mat)</b>: room dimensions <i>(3x1 matrix, e.g. <tt>[6, 6, 6.1]</tt>)</i></li><li><b>R (mat)</b>: receiver position matrix <i>(3x2*M matrix)</i></li><li><b>sources (mat)</b>: sources parameter struct that contains the following two attributes</li><li><b>sources.positions (mat)</b>: matrix of source positions <i>(3xS matrix)</i></li><li><b>sources.samples (mat)</b>: matrix of speech sample file names <i>(5xS matrix, e.g. <tt>['1.WAV', '3.WAV', '2.WAV']</tt> for <tt>S=3</tt>)</i></li><li><b>mix (bool)</b>: mix simulated signals together per microphone pair <i>(default: <b>true</b>)</i></li></ul></div><h2 id="5">Caveats</h2><div><ul><li><tt>SNR=0</tt> in <tt>fn_cfg</tt> means no noise, <i>not</i> noise with <tt>0dB</tt></li></ul></div><h2 id="6">Ideas for Improvement</h2><div><ul><li>There should be a way to use fftfilt without nested for loops using reshape on H and S_data</li><li>Also, we go from time- to stft domain back to time domain (fftfilt) only to transform back into stft-domain in the next step. Better: Directly multiply signal in STFT-domain (without fftfilt). <b>Note</b>: This may bring additional work (e.g. reshaping to specified size)</li></ul></div><h2 id="7">Initialisation</h2><pre class="codeinput"><span class="keyword">try</span> fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc); <span class="keyword">end</span>
+load(fn_cfg)
+<span class="keyword">if</span> nargin&lt;5, mix=true;<span class="keyword">end</span>
+</pre><h2 id="8">Calculate RIRs</h2><pre class="codeinput">m = sprintf(<span class="string">'Calculate RIR for each Source-Receiver combination... (t = %2.4f)'</span>, toc); counter = next_step(m, counter); <span class="comment">%#ok&lt;*NODEF&gt;</span>
+
+H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
+<span class="keyword">for</span> mic_pair = 1:n_receiver_pairs
+    <span class="keyword">for</span> s = 1:n_sources
+        H(:, s, :,mic_pair) = rir_generator(<span class="keyword">...</span>
+        room.c, <span class="keyword">...</span>
+        fs, <span class="keyword">...</span>
+        R((mic_pair*2-1):(mic_pair*2),:,:), <span class="keyword">...</span>
+        sources.positions(s, :), <span class="keyword">...</span>
+        ROOM, <span class="keyword">...</span>
+        rir.t_reverb, <span class="keyword">...</span>
+        rir.length, <span class="keyword">...</span>
+        mics.type, <span class="keyword">...</span>
+        rir.reflect_order, <span class="keyword">...</span>
+        3)';
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+H = H/(max(max(max(max(H)))));
+fprintf(<span class="string">'%s Generated RIR %dx%dx%dx%d\n'</span>, FORMAT_PREFIX, size(H, 1), size(H, 2), size(H, 3), size(H, 4));
+</pre><h2 id="9">Load Source Data</h2><p>Load speech samples, trim signal to the length specified in <tt>fn_cfg</tt> and add AWGN, if <tt>SNR~=0</tt>.</p><pre class="codeinput">m = sprintf(<span class="string">'Load source data... (t = %2.4f)'</span>, toc); counter = next_step(m, counter);
+
+    S_data = zeros(source_length*fs, n_sources);
+    <span class="keyword">for</span> s = 1:n_sources
+        [temp, fs_temp] = audioread(sources.samples(s, :));
+        <span class="keyword">if</span> fs_temp ~= fs
+            temp = resample(temp, fs, fs_temp);
+            <span class="keyword">if</span> SNR&gt;0
+                temp = awgn(temp, SNR, <span class="string">'measured'</span>);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        <span class="keyword">if</span> length(temp)&gt;source_length*fs
+            S_data(1:source_length*fs, s) = temp(1:source_length*fs);
+        <span class="keyword">else</span>
+            S_data(1:length(temp), s) = temp;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="10">Y x RIRs</h2><p>Convolute source data with RIR to compute received signal</p><pre class="codeinput">m = sprintf(<span class="string">'Convolute source data with room impulse response... (t = %2.4f)'</span>, toc); counter = next_step(m, counter); <span class="comment">%#ok&lt;*NASGU&gt;</span>
+
+    n_samples_y = source_length*fs;
+
+    Y = zeros(n_samples_y, n_sources, 2, n_receiver_pairs);
+    <span class="keyword">for</span> mic_pair = 1:n_receiver_pairs
+        <span class="keyword">for</span> mic = 1:2
+            <span class="keyword">for</span> s = 1:n_sources
+                Y(:, s, mic, mic_pair) = fftfilt(squeeze(H(:, s, mic, mic_pair)), S_data(:, s));
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><h2 id="11">Mix Signals at Receiver Pairs</h2><p><i>Optional:</i> Mix signals for receiver pairs.</p><pre class="codeinput"><span class="keyword">if</span> mix
+    m = sprintf(<span class="string">'Mixing Signals... (t = %2.4f)'</span>, toc); counter = next_step(m, counter); <span class="comment">%#ok&lt;*NASGU&gt;</span>
+        x = squeeze(sum(Y, 2));
+<span class="keyword">else</span>
+    x = Y;
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [x] = simulate(fn_cfg, ROOM, R, sources, mix)
+% SIMULATE Simulates received signals in a room with audio sources and receivers.
+
+%% Description
+% Simulates received signals in a room with audio sources and receivers. For the
+% simulation, the <https://github.com/ehabets/RIR-Generator RIR-Generator> by Emanuel
+% Habets is used. If |SNR~=0| in |fn_cfg|, AWGN is added with the corresponding |dB|
+% value.
+
+%% Arguments
+% * *fn_cfg (str)*: _filename of configuration file (e.g. |'config_5x8d0.mat'|)_
+% * *ROOM (mat)*: room dimensions _(3x1 matrix, e.g. |[6, 6, 6.1]|)_
+% * *R (mat)*: receiver position matrix _(3x2*M matrix)_
+% * *sources (mat)*: sources parameter struct that contains the following two attributes
+% *     *sources.positions (mat)*: matrix of source positions _(3xS matrix)_
+% *     *sources.samples (mat)*: matrix of speech sample file names _(5xS matrix, e.g. |['1.WAV', '3.WAV', '2.WAV']| for |S=3|)_
+% * *mix (bool)*: mix simulated signals together per microphone pair _(default: *true*)_
+
+%% Caveats
+% * |SNR=0| in |fn_cfg| means no noise, _not_ noise with |0dB|
+
+%% Ideas for Improvement
+% * There should be a way to use fftfilt without nested for loops using reshape on H and S_data
+% * Also, we go from time- to stft domain back to time domain (fftfilt) only to transform 
+% back into stft-domain in the next step. Better: Directly multiply signal in STFT-domain (without fftfilt). 
+% *Note*: This may bring additional work (e.g. reshaping to specified size)
+
+%% Initialisation
+try fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc); end
+load(fn_cfg)
+if nargin<5, mix=true;end
+
+%% Calculate RIRs
+m = sprintf('Calculate RIR for each Source-Receiver combination... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NODEF>
+
+H = zeros(rir.length, n_sources, 2, n_receiver_pairs);
+for mic_pair = 1:n_receiver_pairs
+    for s = 1:n_sources
+        H(:, s, :,mic_pair) = rir_generator(...
+        room.c, ...
+        fs, ...
+        R((mic_pair*2-1):(mic_pair*2),:,:), ...
+        sources.positions(s, :), ...
+        ROOM, ...
+        rir.t_reverb, ...
+        rir.length, ...
+        mics.type, ...
+        rir.reflect_order, ...
+        3)';
+    end
+end
+H = H/(max(max(max(max(H)))));
+fprintf('%s Generated RIR %dx%dx%dx%d\n', FORMAT_PREFIX, size(H, 1), size(H, 2), size(H, 3), size(H, 4));
+
+%% Load Source Data
+% Load speech samples, trim signal to the length specified in |fn_cfg| and add AWGN, if
+% |SNR~=0|. 
+m = sprintf('Load source data... (t = %2.4f)', toc); counter = next_step(m, counter);
+
+    S_data = zeros(source_length*fs, n_sources);
+    for s = 1:n_sources
+        [temp, fs_temp] = audioread(sources.samples(s, :));
+        if fs_temp ~= fs
+            temp = resample(temp, fs, fs_temp);
+            if SNR>0
+                temp = awgn(temp, SNR, 'measured');
+            end
+        end
+
+        if length(temp)>source_length*fs
+            S_data(1:source_length*fs, s) = temp(1:source_length*fs);
+        else
+            S_data(1:length(temp), s) = temp;
+        end
+    end
+
+%% Y x RIRs
+% Convolute source data with RIR to compute received signal
+m = sprintf('Convolute source data with room impulse response... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
+
+    n_samples_y = source_length*fs;
+
+    Y = zeros(n_samples_y, n_sources, 2, n_receiver_pairs);
+    for mic_pair = 1:n_receiver_pairs
+        for mic = 1:2
+            for s = 1:n_sources
+                Y(:, s, mic, mic_pair) = fftfilt(squeeze(H(:, s, mic, mic_pair)), S_data(:, s));
+            end
+        end
+    end
+
+%% Mix Signals at Receiver Pairs
+% _Optional:_ Mix signals for receiver pairs.
+if mix
+    m = sprintf('Mixing Signals... (t = %2.4f)', toc); counter = next_step(m, counter); %#ok<*NASGU>
+        x = squeeze(sum(Y, 2));
+else
+    x = Y;
+end
+end
+
+##### SOURCE END #####
+--></body></html>

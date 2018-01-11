@@ -1,0 +1,208 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>rem_tracking</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="rem_tracking.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Description</a></li><li><a href="#4">Arguments</a></li><li><a href="#5">Return</a></li><li><a href="#6">Variables</a></li><li><a href="#7">Create Variables</a></li><li><a href="#8">init iteration</a></li><li><a href="#9">Compute Resposibility (Expectation)</a></li><li><a href="#10">Compute Component Weights (Maximization)</a></li><li><a href="#11">Estimate Variance (Maximization)</a></li><li><a href="#12">Delete outer margin (around microphones) to eliminate false peaks</a></li><li><a href="#13">Save Values</a></li><li><a href="#14">Find Location Estimates</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ psi, loc_est, var_history, psi_history ] = rem_tracking( ang_dist, algorithm, var_init )
+</pre><pre class="codeinput"><span class="comment">%REM_TRACKING Source Tracking Algorithm using recursive EM</span>
+</pre><h2 id="3">Description</h2><p>Source Tracking Algorithm using recursive EM</p><h2 id="4">Arguments</h2><div><ul><li><b>ang_dist (mat)</b>: <i>angular distances computed in <tt><a href="./rem_init.html">rem_init.m</a></tt></i></li><li><b>algorithm (str)</b>: <i>Name of algorithm to use (either <tt>'CREM'</tt> or <tt>'TREM'</tt>)</i></li><li><b>var_init (double)</b>: <i>initial value for variance (Overrides value set in <tt>'config.mat'</tt>)</i></li></ul></div><h2 id="5">Return</h2><div><ul><li><b>psi (mat)</b>: <i>matrix with weights of Gaussian components</i></li><li><b>loc_est (mat)</b>: <i>coordinates of location estimates for all time steps <tt>em.T</tt></i></li><li><b>var_history (mat)</b>: <i>coordinates of location estimates for all time steps <tt>em.T</tt></i></li><li><b>psi_history (mat)</b>: <i>matrix of Gaussian component weights for all time steps <tt>em.T</tt></i></li></ul></div><h2 id="6">Variables</h2><div><ul><li><b>psi_old (mat)</b>: <i><tt>psi</tt> of last iteration</i></li><li><b>mu (mat)</b>: <i>responsibility of Gaussian component for each position</i></li></ul></div><pre class="codeinput">load(<span class="string">'config.mat'</span>)
+<span class="keyword">if</span> nargin&lt;2, error(<span class="string">"Provide algorithm (either 'crem' or 'trem')"</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin&gt;2, fprintf(<span class="string">'WARN: Overwriting em.var with %1.2f (was %1.2f)'</span>, var_init, em.var); em.var = var_init; <span class="keyword">end</span>
+</pre><h2 id="7">Create Variables</h2><pre class="codeinput">m = <span class="string">"EM-Iterations..."</span>; counter = next_step(m, counter);
+
+psi = ones(em.Ynet,em.Xnet,1) * (1 /(em.Xnet)*(em.Ynet));
+psi_old = zeros(size(psi));
+loc_est = zeros(n_sources, em.T, 2);
+var_history = zeros(em.T+1, 1);
+var_history(1) = em.var;
+psi_history = zeros(em.T, size(psi, 1), size(psi, 2));
+
+<span class="keyword">for</span> iter = 1:em.T
+</pre><h2 id="8">init iteration</h2><pre class="codeinput">    fprintf(<span class="string">'%s EM Iter. #%2d: '</span>, FORMAT_PREFIX, iter);
+    fprintf(<span class="string">'\x0394\x03C8 = %2.4f, \x03C3 = %1.4f (t = %2.4f)\n'</span>,norm(psi(:)-psi_old(:)), em.var, toc);  <span class="comment">% \x0394\x03C8 = Delta Psi, \x03C3 = \sigma</span>
+    psi_old = psi;
+</pre><h2 id="9">Compute Resposibility (Expectation)</h2><pre class="codeinput">    gaussian = (1 / (em.var * pi))*exp(-ang_dist(:,iter,:,:,:) / (em.var));
+    pdf = bsxfun(@times,reshape(psi,1,1,em.Ynet,em.Xnet,1),prod(gaussian,5));
+
+    mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,1,1,1));
+    mu(isnan(mu)) = 0;
+</pre><h2 id="10">Compute Component Weights (Maximization)</h2><pre class="codeinput">    psi = squeeze(sum(mu,1)/(em.K));
+    psi(psi&lt;=0) = eps;
+</pre><h2 id="11">Estimate Variance (Maximization)</h2><pre class="codeinput">    <span class="keyword">if</span> strcmpi(algorithm,<span class="string">'trem'</span>)
+        sum_psi_old = sum(sum(psi_old));
+        var_fact1 = 1/(em.K*sum_psi_old);
+        var_fact2 = sum(sum(sum(mu.*((1/em.M)*sum(ang_dist(:,iter,:,:,:), 5)-em.var))));
+        em.var = em.var + em.gamma*var_fact1*var_fact2;
+    <span class="keyword">elseif</span> strcmpi(algorithm,<span class="string">'crem'</span>)
+        <span class="keyword">if</span> iter==1, psi_old = psi; <span class="keyword">end</span>
+        psi_ratio = sum(sum(psi_old))/sum(sum(psi));
+        var_fact2 = (sum(sum(sum(mu.*sum(ang_dist(:,iter,:,:,:), 5)))))/(em.K*em.M*sum(sum(psi)));
+        em.var = em.var*psi_ratio + em.gamma*(var_fact2-em.var*psi_ratio);
+    <span class="keyword">end</span>
+    psi = psi_old + em.gamma*(psi - psi_old);
+</pre><h2 id="12">Delete outer margin (around microphones) to eliminate false peaks</h2><pre class="codeinput">    psi_computeMax = psi;
+    b=2;
+    <span class="keyword">if</span> size(psi_computeMax, 3) == 1
+        psi_computeMax(1:b,:) = 0;
+        psi_computeMax(size(psi, 1)-b:size(psi, 1),:) = 0;
+        psi_computeMax(:,1:b) = 0;
+        psi_computeMax(:,size(psi, 2)-b:size(psi, 2)) = 0;
+    <span class="keyword">end</span>
+</pre><h2 id="13">Save Values</h2><pre class="codeinput">    var_history(iter+1) = em.var;
+    psi_history(iter, :, :) =  psi;
+</pre><h2 id="14">Find Location Estimates</h2><pre class="codeinput">    evalc(<span class="string">'loc_est(:,iter,:) = estimate_location(psi_computeMax,n_sources,1,5,room);'</span>);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ psi, loc_est, var_history, psi_history ] = rem_tracking( ang_dist, algorithm, var_init )
+%REM_TRACKING Source Tracking Algorithm using recursive EM
+
+%% Description
+% Source Tracking Algorithm using recursive EM
+%
+%% Arguments
+% * *ang_dist (mat)*: _angular distances computed in |<./rem_init.html rem_init.m>|_
+% * *algorithm (str)*: _Name of algorithm to use (either |'CREM'| or |'TREM'|)_
+% * *var_init (double)*: _initial value for variance (Overrides value set in |'config.mat'|)_
+
+%% Return
+% * *psi (mat)*: _matrix with weights of Gaussian components_
+% * *loc_est (mat)*: _coordinates of location estimates for all time steps |em.T|_
+% * *var_history (mat)*: _coordinates of location estimates for all time steps |em.T|_
+% * *psi_history (mat)*: _matrix of Gaussian component weights for all time steps |em.T|_
+
+%% Variables
+% * *psi_old (mat)*: _|psi| of last iteration_
+% * *mu (mat)*: _responsibility of Gaussian component for each position_
+
+load('config.mat')
+if nargin<2, error("Provide algorithm (either 'crem' or 'trem')"); end
+if nargin>2, fprintf('WARN: Overwriting em.var with %1.2f (was %1.2f)', var_init, em.var); em.var = var_init; end
+
+%% Create Variables
+m = "EM-Iterations..."; counter = next_step(m, counter);
+
+psi = ones(em.Ynet,em.Xnet,1) * (1 /(em.Xnet)*(em.Ynet));
+psi_old = zeros(size(psi));
+loc_est = zeros(n_sources, em.T, 2);
+var_history = zeros(em.T+1, 1);
+var_history(1) = em.var;
+psi_history = zeros(em.T, size(psi, 1), size(psi, 2));
+
+for iter = 1:em.T
+    %% init iteration
+    fprintf('%s EM Iter. #%2d: ', FORMAT_PREFIX, iter);
+    fprintf('\x0394\x03C8 = %2.4f, \x03C3 = %1.4f (t = %2.4f)\n',norm(psi(:)-psi_old(:)), em.var, toc);  % \x0394\x03C8 = Delta Psi, \x03C3 = \sigma
+    psi_old = psi;
+
+    %% Compute Resposibility (Expectation)
+    gaussian = (1 / (em.var * pi))*exp(-ang_dist(:,iter,:,:,:) / (em.var));
+    pdf = bsxfun(@times,reshape(psi,1,1,em.Ynet,em.Xnet,1),prod(gaussian,5));
+    
+    mu = bsxfun(@rdivide,pdf,reshape(sum(sum(pdf,4),3),em.K,1,1,1));
+    mu(isnan(mu)) = 0;
+    
+    %% Compute Component Weights (Maximization)
+    psi = squeeze(sum(mu,1)/(em.K));
+    psi(psi<=0) = eps;
+    
+    %% Estimate Variance (Maximization)
+    if strcmpi(algorithm,'trem')
+        sum_psi_old = sum(sum(psi_old));
+        var_fact1 = 1/(em.K*sum_psi_old);
+        var_fact2 = sum(sum(sum(mu.*((1/em.M)*sum(ang_dist(:,iter,:,:,:), 5)-em.var))));
+        em.var = em.var + em.gamma*var_fact1*var_fact2;
+    elseif strcmpi(algorithm,'crem')
+        if iter==1, psi_old = psi; end
+        psi_ratio = sum(sum(psi_old))/sum(sum(psi));
+        var_fact2 = (sum(sum(sum(mu.*sum(ang_dist(:,iter,:,:,:), 5)))))/(em.K*em.M*sum(sum(psi)));
+        em.var = em.var*psi_ratio + em.gamma*(var_fact2-em.var*psi_ratio);
+    end
+    psi = psi_old + em.gamma*(psi - psi_old);
+    
+    %% Delete outer margin (around microphones) to eliminate false peaks
+    psi_computeMax = psi;
+    b=2;
+    if size(psi_computeMax, 3) == 1
+        psi_computeMax(1:b,:) = 0;
+        psi_computeMax(size(psi, 1)-b:size(psi, 1),:) = 0;
+        psi_computeMax(:,1:b) = 0;
+        psi_computeMax(:,size(psi, 2)-b:size(psi, 2)) = 0;
+    end
+    
+    %% Save Values
+    var_history(iter+1) = em.var;
+    psi_history(iter, :, :) =  psi;
+
+    %% Find Location Estimates
+    evalc('loc_est(:,iter,:) = estimate_location(psi_computeMax,n_sources,1,5,room);');
+end
+
+end
+
+##### SOURCE END #####
+--></body></html>

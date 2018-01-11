@@ -1,0 +1,437 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>config_update</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-11"><meta name="DC.source" content="config_update.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">CONFIG_UPDATE Creates config-file and returns its filename.</a></li><li><a href="#3">Arguments</a></li><li><a href="#4">Returns</a></li><li><a href="#5">Output Variables</a></li><li><a href="#6">Simulation Variables</a></li><li><a href="#7">Environment Variables</a></li><li><a href="#8">Blub</a></li><li><a href="#9">Receiver Positions</a></li><li><a href="#10">Source position(s)</a></li><li><a href="#11">STFT Variables</a></li><li><a href="#12">GMM Variables</a></li><li><a href="#13">EM Variables</a></li><li><a href="#14">Location Estimation Variables</a></li><li><a href="#15">Logging Variables</a></li><li><a href="#16">Save config_xxx.mat</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
+</pre><h2 id="2">CONFIG_UPDATE Creates config-file and returns its filename.</h2><p>The filename that is returned can be used by other functions to load the parameter set defined here.</p><h2 id="3">Arguments</h2><div><ul><li><b>n_sources (int)</b>: <i>number of sources to be simulated (default: <b>2</b>)</i></li><li><b>random_sources (bool)</b>: <i>chose random source locations (default: <b>true</b>)</i></li><li><b>min_distance (int)</b>: <i>minimum required distance between sources (in decimetre, default: <b>5</b>)</i></li><li><b>distance_wall (int)</b>: <i>minimum required distance of sources from wall (in decimetre, default: <b>12</b>)</i></li><li><b>randomise_samples (bool)</b>: <i>randomise speech sample order (default: <b>true</b>)</i></li><li><b>T60 (double)</b>: <i>reverberation time (in seconds, default: <b>0.3</b>)</i></li><li><b>em_iterations (int)</b>: <i>number of maximum em iterations (default: <b>5</b>)</i></li><li><b>em_conv_threshold (int)</b>: <i>convergence threshold for em algorithm (-1 equals no threshold, default: <b>-1</b>)</i></li><li><b>reflect_order (int)</b>: <i>maximum reflection order for image-method simulation (-1 equals max, default: <b>3</b>)</i></li><li><b>SNR (int)</b>: <i>amount of noise added to received signal (in dB, 0 equals no noise, default: <b>0</b>)</i></li><li><b>var_init (double)</b>: <i>initial value for variance (default: <b>0.1</b>)</i></li><li><b>var_fixed (bool)</b>: <i>do not estimate variance for each em iteration (default: <b>false</b>)</i></li></ul></div><h2 id="4">Returns</h2><div><ul><li><b>fn_cfg (str)</b>: <i>filename of configuration file (i.e. <tt>config_5x8d0.mat</tt>)</i></li></ul></div><pre class="codeinput"><span class="keyword">if</span> nargin &lt; 1, n_sources = 2; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 2, random_sources = true; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 3, min_distance = 5; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 4, distance_wall = 12; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 5, randomise_samples = true; <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 6, T60 = 0.3; fprintf(<span class="string">'WARNING: Using default for T60 (0.3)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 7, em_iterations = 5; fprintf(<span class="string">'WARNING: Using default for em_iterations (5)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 8, em_conv_threshold = -1; fprintf(<span class="string">'WARNING: Using default for em_conv_threshold (-1)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 9, reflect_order = 3; fprintf(<span class="string">'WARNING: Using default for rir-reflect_order (3)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 10, SNR = 0; fprintf(<span class="string">'WARNING: Using default for SNR (0)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 11, var_init = 0.1; fprintf(<span class="string">'WARNING: Using default initial variance (0.1)\n'</span>); <span class="keyword">end</span>
+<span class="keyword">if</span> nargin &lt; 12, var_fixed = false; fprintf(<span class="string">'WARNING: Using default for var_fixed (false)\n'</span>); <span class="keyword">end</span>
+
+<span class="keyword">try</span> fprintf(<span class="string">'\n&lt;%s.m&gt; (t = %2.4f)\n'</span>, mfilename, toc); <span class="keyword">end</span>
+</pre><h2 id="5">Output Variables</h2><pre class="codeinput">PLOT_BORDER = .06;
+FORMAT_PREFIX = <span class="string">'      -&gt;'</span>; <span class="comment">% indents output of each step</span>
+counter = 1;
+</pre><h2 id="6">Simulation Variables</h2><pre class="codeinput">fs = 16000;                         <span class="comment">% Sample frequency (samples/s)</span>
+room.c = 343;                       <span class="comment">% Sound velocity (m/s)</span>
+rir.t_reverb = T60;                <span class="comment">% Reverberationtime (s)</span>
+<span class="keyword">if</span> T60&gt;0.3
+    rir.length = fs*T60;           <span class="comment">% Number of samples</span>
+<span class="keyword">else</span>
+    rir.length = fs*0.5;
+<span class="keyword">end</span>
+mics.type = <span class="string">'omnidirectional'</span>;      <span class="comment">% Type of microphone</span>
+rir.reflect_order = reflect_order;  <span class="comment">% &#8722;1 equals maximum reflection order!</span>
+room.dimension = 3;                 <span class="comment">% Room dimension</span>
+mics.orientation = [pi/2 0];        <span class="comment">% Microphone orientation [azimuth elevation] in radians</span>
+mics.hp_filter = 1;                 <span class="comment">% Enable high-pass filter</span>
+mics.distance_wall = 1;
+</pre><h2 id="7">Environment Variables</h2><p>Room dimensions <tt>[ x y z ]</tt> in metre</p><pre class="codeinput">ROOM = [6 6 6.1];
+room.dimensions = [6 6 6.1];
+</pre><h2 id="8">Blub</h2><p><a href="../matlab/addpath_recurse.m">Test</a></p><h2 id="9">Receiver Positions</h2><p>Cartesian coordinates of receiver <tt>[x y z]</tt> in metre</p><pre class="codeinput">RminX = mics.distance_wall;
+RminY = mics.distance_wall;
+RmaxX = room.dimensions(1)-mics.distance_wall;
+RmaxY = room.dimensions(2)-mics.distance_wall;
+R    = [2.1, RminY, 1.0;  <span class="comment">% bottom</span>
+        2.3, RminY, 1.0;
+        2.7, RminY, 1.0;
+        2.9, RminY, 1.0;
+        3.7, RminY, 1.0;
+        3.9, RminY, 1.0;
+        RmaxX, 2.2, 1.0;  <span class="comment">% right</span>
+        RmaxX, 2.4, 1.0;
+        RmaxX, 2.8, 1.0;
+        RmaxX, 3.0, 1.0;
+        RmaxX, 3.8, 1.0;
+        RmaxX, 4.0, 1.0;
+        2.2, RmaxY, 1.0;  <span class="comment">% top</span>
+        2.4, RmaxY, 1.0;
+        3.0, RmaxY, 1.0;
+        3.2, RmaxY, 1.0;
+        3.8, RmaxY, 1.0;
+        4.0, RmaxY, 1.0;
+        RminX, 2.1, 1.0;  <span class="comment">% left</span>
+        RminX, 2.3, 1.0;
+        RminX, 2.9, 1.0;
+        RminX, 3.1, 1.0;
+        RminX, 3.7, 1.0;
+        RminX, 3.9, 1.0];
+room.R = R;
+room.R_pairs = size(R, 1)/2;
+</pre><h2 id="10">Source position(s)</h2><p>Cartesian coordinates of sources <tt>[x y z]</tt> in metre</p><pre class="codeinput"><span class="keyword">if</span> random_sources == false
+    S    = [3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            5 5 1];
+    S = S(1:n_sources,:);
+<span class="keyword">else</span>
+    S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
+<span class="keyword">end</span>
+room.S = S;
+sources.positions = S;
+<span class="keyword">for</span> n=1:7
+    <span class="keyword">if</span> n&gt;9  <span class="comment">% this is necessary when more than 9 sources need to be supported!</span>
+        fname = <span class="string">'ABCDEFGHIJKLMNOPQRST'</span>;
+        n_str = fname(n-9);
+    <span class="keyword">else</span>
+        n_str = int2str(n);
+    <span class="keyword">end</span>
+    sources.samples(n, :) = strcat(n_str,<span class="string">'.WAV'</span>);
+<span class="keyword">end</span>
+<span class="keyword">if</span> n_sources&gt;8
+    fprintf(<span class="string">'WARN: only 7 audio samples available at the moment!'</span>);
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> randomise_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); <span class="keyword">end</span>
+
+sources.signal_length = 3;  <span class="comment">% length of source signals [s]</span>
+sources.wall_distance = distance_wall;  <span class="comment">% enforced distance from outer wall</span>
+
+n_receivers = size(R, 1);
+n_receiver_pairs = n_receivers/2;
+n_sources = size(S, 1);  <span class="comment">% REDUNDANT</span>
+sources.n = size(S, 1);
+source_length = sources.signal_length;  <span class="comment">% REDUNDANT</span>
+sources.length = sources.signal_length;  <span class="comment">% length of source signals [s]</span>
+d_r = R(2, 1) - R(1, 1);
+</pre><h2 id="11">STFT Variables</h2><p>Variables necessary for the short time Fourier transformation (STFT)</p><pre class="codeinput">fft_window_time = 0.05;
+fft_window_samples = round(fft_window_time*fs);  <span class="comment">% 500</span>
+fft_window = hanning(fft_window_samples);  <span class="comment">% 500x1</span>
+
+fft_step_time =   0.01;
+fft_step_samples = round(fft_step_time*fs);  <span class="comment">% 300</span>
+
+fft_overlap_samples = fft_window_samples - fft_step_samples;  <span class="comment">% 200 overlapping samples</span>
+fft_bins = 2^(ceil(log(fft_window_samples)/log(2)));  <span class="comment">% 512 fft bins for STFT</span>
+fft_bins_net = fft_bins/2+1;
+fft_trunc = 500;
+
+fft_freq_range = 40:65;  <span class="comment">% NOTE: Empirically chosen</span>
+freq = ((0:fft_bins/2)/fft_bins*fs).'; <span class="comment">% frequency vector [Hz]</span>
+</pre><h2 id="12">GMM Variables</h2><p>Variables of the Gaussian mixture model (GMM)</p><pre class="codeinput">room.grid_resolution = 0.1;
+room.N_margin = 1/room.grid_resolution;
+room.grid_x = (0:room.grid_resolution:room.dimensions(1));
+room.grid_y = (0:room.grid_resolution:room.dimensions(2));
+[room.pos_x, room.pos_y] = meshgrid(room.grid_x, room.grid_y);
+room.X = length(room.grid_x);
+room.Y = length(room.grid_y);
+room.n_pos = room.X * room.Y;  <span class="comment">% Number of Gridpoints</span>
+</pre><h2 id="13">EM Variables</h2><p>Variables used by <tt>em_algorithm.m</tt></p><pre class="codeinput">em.var = var_init;
+em.var_fixed = var_fixed;
+
+em.S = sources.n;
+em.K = length(fft_freq_range);
+em.T = 296;  <span class="comment">% # of time bins, NOTE: not needed anymore, as now recalculated in |em_algorithm.m| when wrong</span>
+em.X = length(room.grid_x);  <span class="comment">% all possible gridpoints for X and Y</span>
+em.Y = length(room.grid_y);
+em.Xnet = em.X-2*room.N_margin;  <span class="comment">% all gridpoints used in estimation</span>
+em.Ynet = em.Y-2*room.N_margin;
+em.P = em.X*em.Y; <span class="comment">% Number of Gridpoints</span>
+em.M = room.R_pairs;
+em.conv_threshold = em_conv_threshold;
+em.iterations = em_iterations;
+</pre><h2 id="14">Location Estimation Variables</h2><p>used in <tt>estimate_location.m</tt></p><pre class="codeinput">elimination_radius = 0;
+</pre><h2 id="15">Logging Variables</h2><p>used in evaluation scripts to redirect output to log-files.</p><pre class="codeinput">verbose = true;
+LOGGING = false;
+LOGGING_FIG = true;
+log_sim=<span class="string">''</span>;
+log_stft=<span class="string">''</span>;
+log_em=<span class="string">''</span>;
+log_estloc=<span class="string">''</span>;
+log_esterr=<span class="string">''</span>;
+</pre><h2 id="16">Save config_xxx.mat</h2><p>When saving the configuration to the file system, a random suffix is added to the filename, to allow for parallel trials within the same directory (otherwise, <tt>config.mat</tt> could be overwritten by other instances)</p><p>Filename Example: <tt>config_ygnw2.mat</tt></p><pre class="codeinput">fn_cfg = sprintf(<span class="string">'config_%s.mat'</span>, rand_string(5));
+save(fn_cfg);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function fn_cfg = config_update(n_sources, random_sources, min_distance, distance_wall, randomise_samples, T60, em_iterations, em_conv_threshold, reflect_order, SNR, var_init, var_fixed)
+%% CONFIG_UPDATE Creates config-file and returns its filename.
+% 
+% The filename that is returned can be used by other functions to load the parameter set
+% defined here.
+%
+%% Arguments
+% 
+% * *n_sources (int)*: _number of sources to be simulated (default: *2*)_
+% * *random_sources (bool)*: _chose random source locations (default: *true*)_
+% * *min_distance (int)*: _minimum required distance between sources (in decimetre, default: *5*)_
+% * *distance_wall (int)*: _minimum required distance of sources from wall (in decimetre, default: *12*)_
+% * *randomise_samples (bool)*: _randomise speech sample order (default: *true*)_
+% * *T60 (double)*: _reverberation time (in seconds, default: *0.3*)_
+% * *em_iterations (int)*: _number of maximum em iterations (default: *5*)_
+% * *em_conv_threshold (int)*: _convergence threshold for em algorithm (-1 equals no threshold, default: *-1*)_
+% * *reflect_order (int)*: _maximum reflection order for image-method simulation (-1 equals max, default: *3*)_
+% * *SNR (int)*: _amount of noise added to received signal (in dB, 0 equals no noise, default: *0*)_
+% * *var_init (double)*: _initial value for variance (default: *0.1*)_
+% * *var_fixed (bool)*: _do not estimate variance for each em iteration (default: *false*)_
+
+%% Returns
+% * *fn_cfg (str)*: _filename of configuration file (i.e. |config_5x8d0.mat|)_
+
+if nargin < 1, n_sources = 2; end
+if nargin < 2, random_sources = true; end
+if nargin < 3, min_distance = 5; end
+if nargin < 4, distance_wall = 12; end
+if nargin < 5, randomise_samples = true; end
+if nargin < 6, T60 = 0.3; fprintf('WARNING: Using default for T60 (0.3)\n'); end
+if nargin < 7, em_iterations = 5; fprintf('WARNING: Using default for em_iterations (5)\n'); end
+if nargin < 8, em_conv_threshold = -1; fprintf('WARNING: Using default for em_conv_threshold (-1)\n'); end
+if nargin < 9, reflect_order = 3; fprintf('WARNING: Using default for rir-reflect_order (3)\n'); end
+if nargin < 10, SNR = 0; fprintf('WARNING: Using default for SNR (0)\n'); end
+if nargin < 11, var_init = 0.1; fprintf('WARNING: Using default initial variance (0.1)\n'); end
+if nargin < 12, var_fixed = false; fprintf('WARNING: Using default for var_fixed (false)\n'); end
+
+try fprintf('\n<%s.m> (t = %2.4f)\n', mfilename, toc); end
+
+%% Output Variables
+PLOT_BORDER = .06;
+FORMAT_PREFIX = '      ->'; % indents output of each step
+counter = 1;
+
+%% Simulation Variables
+fs = 16000;                         % Sample frequency (samples/s)
+room.c = 343;                       % Sound velocity (m/s)
+rir.t_reverb = T60;                % Reverberationtime (s)
+if T60>0.3
+    rir.length = fs*T60;           % Number of samples
+else
+    rir.length = fs*0.5;
+end
+mics.type = 'omnidirectional';      % Type of microphone
+rir.reflect_order = reflect_order;  % −1 equals maximum reflection order!
+room.dimension = 3;                 % Room dimension
+mics.orientation = [pi/2 0];        % Microphone orientation [azimuth elevation] in radians
+mics.hp_filter = 1;                 % Enable high-pass filter
+mics.distance_wall = 1;
+
+%% Environment Variables
+% Room dimensions |[ x y z ]| in metre
+ROOM = [6 6 6.1];
+room.dimensions = [6 6 6.1];
+
+%% Blub
+% <../matlab/addpath_recurse.m Test>
+
+%% Receiver Positions
+% Cartesian coordinates of receiver |[x y z]| in metre
+RminX = mics.distance_wall;
+RminY = mics.distance_wall;
+RmaxX = room.dimensions(1)-mics.distance_wall;
+RmaxY = room.dimensions(2)-mics.distance_wall;
+R    = [2.1, RminY, 1.0;  % bottom
+        2.3, RminY, 1.0;
+        2.7, RminY, 1.0;
+        2.9, RminY, 1.0;
+        3.7, RminY, 1.0;
+        3.9, RminY, 1.0;
+        RmaxX, 2.2, 1.0;  % right
+        RmaxX, 2.4, 1.0;
+        RmaxX, 2.8, 1.0;
+        RmaxX, 3.0, 1.0;
+        RmaxX, 3.8, 1.0;
+        RmaxX, 4.0, 1.0;
+        2.2, RmaxY, 1.0;  % top
+        2.4, RmaxY, 1.0;
+        3.0, RmaxY, 1.0;
+        3.2, RmaxY, 1.0;
+        3.8, RmaxY, 1.0;
+        4.0, RmaxY, 1.0;
+        RminX, 2.1, 1.0;  % left
+        RminX, 2.3, 1.0;
+        RminX, 2.9, 1.0;
+        RminX, 3.1, 1.0;
+        RminX, 3.7, 1.0;
+        RminX, 3.9, 1.0];
+room.R = R;
+room.R_pairs = size(R, 1)/2;
+
+%% Source position(s)
+% Cartesian coordinates of sources |[x y z]| in metre
+if random_sources == false
+    S    = [3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            3.3 3 1;
+            2.7 3 1;
+            4 4.5 1;
+            5 5 1];
+    S = S(1:n_sources,:);
+else
+    S = get_random_sources(n_sources, distance_wall, min_distance, ROOM);
+end
+room.S = S;
+sources.positions = S;
+for n=1:7
+    if n>9  % this is necessary when more than 9 sources need to be supported!
+        fname = 'ABCDEFGHIJKLMNOPQRST';
+        n_str = fname(n-9);
+    else
+        n_str = int2str(n);
+    end
+    sources.samples(n, :) = strcat(n_str,'.WAV');
+end
+if n_sources>8
+    fprintf('WARN: only 7 audio samples available at the moment!');
+end
+
+if randomise_samples, sources.samples = sources.samples(randperm(length(sources.samples), n_sources), :); end
+
+sources.signal_length = 3;  % length of source signals [s]
+sources.wall_distance = distance_wall;  % enforced distance from outer wall
+
+n_receivers = size(R, 1);
+n_receiver_pairs = n_receivers/2;
+n_sources = size(S, 1);  % REDUNDANT
+sources.n = size(S, 1);
+source_length = sources.signal_length;  % REDUNDANT
+sources.length = sources.signal_length;  % length of source signals [s]
+d_r = R(2, 1) - R(1, 1);
+
+%% STFT Variables
+% Variables necessary for the short time Fourier transformation (STFT)
+fft_window_time = 0.05;
+fft_window_samples = round(fft_window_time*fs);  % 500
+fft_window = hanning(fft_window_samples);  % 500x1
+
+fft_step_time =   0.01;
+fft_step_samples = round(fft_step_time*fs);  % 300
+
+fft_overlap_samples = fft_window_samples - fft_step_samples;  % 200 overlapping samples
+fft_bins = 2^(ceil(log(fft_window_samples)/log(2)));  % 512 fft bins for STFT
+fft_bins_net = fft_bins/2+1;
+fft_trunc = 500;
+
+fft_freq_range = 40:65;  % NOTE: Empirically chosen
+freq = ((0:fft_bins/2)/fft_bins*fs).'; % frequency vector [Hz]
+
+%% GMM Variables
+% Variables of the Gaussian mixture model (GMM)
+room.grid_resolution = 0.1;
+room.N_margin = 1/room.grid_resolution;
+room.grid_x = (0:room.grid_resolution:room.dimensions(1));
+room.grid_y = (0:room.grid_resolution:room.dimensions(2));
+[room.pos_x, room.pos_y] = meshgrid(room.grid_x, room.grid_y);
+room.X = length(room.grid_x);
+room.Y = length(room.grid_y);
+room.n_pos = room.X * room.Y;  % Number of Gridpoints
+
+%% EM Variables
+% Variables used by |em_algorithm.m|
+em.var = var_init;
+em.var_fixed = var_fixed;
+
+em.S = sources.n;
+em.K = length(fft_freq_range);
+em.T = 296;  % # of time bins, NOTE: not needed anymore, as now recalculated in |em_algorithm.m| when wrong
+em.X = length(room.grid_x);  % all possible gridpoints for X and Y
+em.Y = length(room.grid_y);
+em.Xnet = em.X-2*room.N_margin;  % all gridpoints used in estimation
+em.Ynet = em.Y-2*room.N_margin;
+em.P = em.X*em.Y; % Number of Gridpoints
+em.M = room.R_pairs;
+em.conv_threshold = em_conv_threshold;
+em.iterations = em_iterations;
+
+%% Location Estimation Variables
+% used in |estimate_location.m|
+elimination_radius = 0;  
+
+%% Logging Variables
+% used in evaluation scripts to redirect output to log-files.
+verbose = true;
+LOGGING = false;
+LOGGING_FIG = true;
+log_sim='';
+log_stft='';
+log_em='';
+log_estloc='';
+log_esterr='';
+
+%% Save config_xxx.mat
+% When saving the configuration to the file system, a random suffix is added to the filename,
+% to allow for parallel trials within the same directory (otherwise, |config.mat| could be
+% overwritten by other instances)
+%
+% Filename Example: |config_ygnw2.mat|
+fn_cfg = sprintf('config_%s.mat', rand_string(5));
+save(fn_cfg);
+
+end
+
+##### SOURCE END #####
+--></body></html>
